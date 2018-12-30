@@ -53,12 +53,12 @@ ByeBugger is a single-player educational game that teaches players software engi
 
 ByeBugger is implemented using the MERN stack (MongoDB, Express, React, and Node.js). The game is rendered using HTML5 Canvas and WebGL/three.js and real-time updates are tracked with ...??
 
-##### Backend: MongoDB/Express
+#### Backend: MongoDB/Express
 
 User Model: handle, email, password
 Stats Model: user id, score
 
-##### Frontend: React/Node.js
+#### Frontend: React/Node.js
 
 ## Accomplished over the Weekend
 
