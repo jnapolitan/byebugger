@@ -2,8 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Stat = require('../../models/Stat');
 
-router.post('/',
-    passport.authenticate('jwt', { session: false }), (req, res) => {
+router.post('/', (req, res) => {
   
       const newStat = new Stat({
         user: req.user.id,
