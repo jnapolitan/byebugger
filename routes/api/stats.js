@@ -4,8 +4,9 @@ const Stat = require('../../models/Stat');
 const passport = require('passport');
 
 router.get("/", (req, res) => {
-    State.find()
-        .sort({ date: -1 })
+    Stat.find()
+        .sort({ score: -1 })
+        .limit(10)
         .then(stats => res.json(stats))
         .catch(err => res.status(404).json({ noStatsFound: 'No stats found' }));
 });

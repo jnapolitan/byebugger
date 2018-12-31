@@ -6,6 +6,10 @@ const StatSchema = new Schema({
         type: Schema.Types.ObjectId,
         required: true
     },
+    handle: {
+        type: String,
+        required: true
+    },
     score: {
         type: Number,
         required: true
