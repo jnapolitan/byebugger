@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 export const getStats = () => {
-    return axios.get('/api/tweets');
+    return axios.get('/api/stats');
 };
 
 export const getUserStats = id => {
@@ -9,5 +9,5 @@ export const getUserStats = id => {
 };
 
 export const postStat = data => {
-    return axios.post('/api/tweets/', data);
+    return axios.post('/api/stats/', data);
 }
