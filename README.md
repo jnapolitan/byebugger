@@ -68,9 +68,10 @@ Stats Model: user id, score
 
 ## Group Members & Work Breakdown
 
-- [Julian Napolitan](https://github.com/jnapolitan)
-- [Sue Park](https://github.com/spark1031)
-- [Eric To](https://github.com/eric-to)
+* [Julian Napolitan](https://github.com/jnapolitan)
+* [Sue Park](https://github.com/spark1031)
+* [Eric To](https://github.com/eric-to)
+    * Procedural generated dungeon, object collision
 
 <!-- ### August 26 - August 27
 
