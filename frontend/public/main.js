@@ -88,6 +88,7 @@ var mapW = map.length;
 const setupScene = () => {
   const units = mapW;
 
+  // Floor and ceiling
   // TODO: Readjust plane sizing and replace all textures
   const floorCeilMat = new t.TextureLoader().load('https://pbs.twimg.com/media/DQG5kVSXkAAb03B.jpg');
   // Possible to use max ansi, but performance might suffer
@@ -114,17 +115,14 @@ const setupScene = () => {
   scene.add(ceiling);
 
   // Walls
-  // Some common materials/textures are: Basic, Lambert, and Phong
-  // Basic is always unlit, whereas the latter 2 are affected by lighting
-  var cube = new t.CubeGeometry(UNITSIZE, UNITSIZE, UNITSIZE);
-  var materials = [
-    new t.MeshLambertMaterial({ map: t.ImageUtils.loadTexture('https://pbs.twimg.com/media/DQG5kVSXkAAb03B.jpg') }),
-    new t.MeshLambertMaterial({ map: t.ImageUtils.loadTexture('https://pbs.twimg.com/media/DQG5kVSXkAAb03B.jpg') })
-  ];
+  // MeshBasic is unaffected by lighting, unlike MeshLambert and MeshPhong
+  const cube = new t.CubeGeometry(UNITSIZE, UNITSIZE, UNITSIZE);
+  let wallMat = new t.TextureLoader().load('https://pbs.twimg.com/media/DQG5kVSXkAAb03B.jpg');
+  wallMat = new t.MeshLambertMaterial({ map: wallMat });
   for (let i = 0; i < mapW; i++) {
     for (let j = 0, m = map[i].length; j < m; j++) {
       if (map[i][j]) {
-        var wall = new t.Mesh(cube, materials[map[i][j] - 1]);
+        let wall = new t.Mesh(cube, wallMat);
         wall.position.x = (i - units / 2) * UNITSIZE;
         wall.position.y = WALLHEIGHT / 3;
         wall.position.z = (j - units / 2) * UNITSIZE;
