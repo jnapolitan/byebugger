@@ -46,7 +46,7 @@ body {
   color: #55e7ff;
 }
 
-.radar {
+#radar {
   background-color: #111111;
   border: 1px solid #111111;
   border-radius: 4px;

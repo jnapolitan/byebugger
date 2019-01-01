@@ -3,12 +3,13 @@ const WIDTH = window.innerWidth;
 const HEIGHT = window.innerHeight;
 const ASPECT = WIDTH / HEIGHT;
 const UNITSIZE = 250;
-const WALLHEIGHT = UNITSIZE / 3;
+const WALLHEIGHT = UNITSIZE;
 
 // Alias THREE as t
 const t = THREE;
 
 var cam = new t.PerspectiveCamera(75, ASPECT, 1, 10000);
+var canJump;
 var controls = new t.PointerLockControls(cam);
 var renderer = new t.WebGLRenderer({ antialias: false });
 var scene = new t.Scene();
@@ -23,7 +24,7 @@ var prevTime = performance.now();
 var velocity = new t.Vector3();
 var direction = new t.Vector3();
 
-//helper function to make a two dimentional array that takes a number and the dimentions of the array
+// Helper for 2D grid
 function createArray(num, dimensions) {
   var array = [];
   for (var i = 0; i < dimensions; i++) {
@@ -35,12 +36,11 @@ function createArray(num, dimensions) {
   return array;
 }
 
-//lets create a randomly generated map for our dungeon crawler
 function createMap() {
   let dimensions = 20, // width and height of the map
     maxTunnels = 50, // max number of tunnels possible
     maxLength = 8, // max length each tunnel can have
-    map = createArray(1, dimensions), // create a 2d array full of 1's
+    map = createArray(1, dimensions),
     currentRow = Math.floor(Math.random() * dimensions), // our current row - start at a random spot
     currentColumn = Math.floor(Math.random() * dimensions), // our current column - start at a random spot
     directions = [[-1, 0], [1, 0], [0, -1], [0, 1]], // array to get a random direction from (left,right,up,down)
@@ -58,35 +58,42 @@ function createMap() {
       randomDirection = directions[Math.floor(Math.random() * directions.length)];
     } while ((randomDirection[0] === -lastDirection[0] && randomDirection[1] === -lastDirection[1]) || (randomDirection[0] === lastDirection[0] && randomDirection[1] === lastDirection[1]));
 
-    var randomLength = Math.ceil(Math.random() * maxLength), //length the next tunnel will be (max of maxLength)
-      tunnelLength = 0; //current length of tunnel being created
+    var randomLength = Math.ceil(Math.random() * maxLength),
+      tunnelLength = 0;
 
     // lets loop until our tunnel is long enough or until we hit an edge
     while (tunnelLength < randomLength) {
 
-      //break the loop if it is going out of the map
+      // break the loop if it is going out of the map
       if (((currentRow === 0) && (randomDirection[0] === -1)) ||
         ((currentColumn === 0) && (randomDirection[1] === -1)) ||
         ((currentRow === dimensions - 1) && (randomDirection[0] === 1)) ||
         ((currentColumn === dimensions - 1) && (randomDirection[1] === 1))) {
         break;
       } else {
-        map[currentRow][currentColumn] = 0; //set the value of the index in map to 0 (a tunnel, making it one longer)
-        currentRow += randomDirection[0]; //add the value from randomDirection to row and col (-1, 0, or 1) to update our location
+        map[currentRow][currentColumn] = 0;
+        currentRow += randomDirection[0];
         currentColumn += randomDirection[1];
-        tunnelLength++; //the tunnel is now one longer, so lets increment that variable
+        tunnelLength++;
       }
     }
 
-    if (tunnelLength) { // update our variables unless our last loop broke before we made any part of a tunnel
-      lastDirection = randomDirection; //set lastDirection, so we can remember what way we went
-      maxTunnels--; // we created a whole tunnel so lets decrement how many we have left to create
+    if (tunnelLength) {
+      lastDirection = randomDirection;
+      maxTunnels--;
     }
   }
-  return map; // all our tunnels have been created and our map is complete, so lets return it to our render()
+  return map;
 };
 
 var map = createMap();
+for (let i = 0; i < map.length; i++) {
+  for (let j = 0; j < map[0].length; j++) {
+    if (j === 0 || i === 0 || j === map[0].length - 1 || i === map.length - 1) {
+      map[i][j] = 1;
+    }
+  }
+}
 var mapW = map.length;
 
 // Set up environment
@@ -312,10 +319,10 @@ function drawRadar() {
 
 // Start screen
 $(document).ready(() => {
-  $('body').append('<div id="start-screen-container"></div>')
-  $('#start-screen-container').append('<img id="logo" src="https://static1.textcraft.net/data1/4/7/47ec57212c1063d986640e55e8fffed17cc1603fda39a3ee5e6b4b0d3255bfef95601890afd80709da39a3ee5e6b4b0d3255bfef95601890afd8070911e0e0a6c9273f3b1ad5cf500cddc6e2.png"></img>')
-  $('#start-screen-container').append('<button id="start-button">START</button>');
-  $('#start-screen-container').one('click', function (e) {
+  $('body').append('<div class="start-screen-container"></div>')
+  $('.start-screen-container').append('<img class="logo" src="https://static1.textcraft.net/data1/4/7/47ec57212c1063d986640e55e8fffed17cc1603fda39a3ee5e6b4b0d3255bfef95601890afd80709da39a3ee5e6b4b0d3255bfef95601890afd8070911e0e0a6c9273f3b1ad5cf500cddc6e2.png"></img>')
+  $('.start-screen-container').append('<button class="start-button">START</button>');
+  $('.start-screen-container').one('click', function (e) {
     e.preventDefault();
     $(this).fadeOut();
     init();
