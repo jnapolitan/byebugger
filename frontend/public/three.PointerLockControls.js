@@ -3,8 +3,6 @@
  * @author Mugen87 / https://github.com/Mugen87
  */
 
-import THREE from 'three';
-
 THREE.PointerLockControls = function ( camera, domElement ) {
 	var scope = this;
 

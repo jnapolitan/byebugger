@@ -16,7 +16,7 @@ class MainPage extends React.Component {
           <button className="start-button">START</button>
 
           {/* TODO: Temporary music player */}
-          <audio controls autoplay loop>
+          <audio controls autoPlay loop>
             <source src="http://66.90.93.122/ost/minecraft/rcmuwtbq/Volume%20Alpha%20-%2019%20-%20Cat.mp3" />
           </audio>
 
