@@ -132,37 +132,25 @@ const setupScene = () => {
   }
 
   // Lighting
-  // Light1 and light2 come in from converse directions
-  // It's important to apply both lights, so that the walls are lit up
-  // from all perspectives
-  var directionalLight1 = new t.DirectionalLight(0xF7EFBE, 0.7);
+  // Light1 and Light2 face away from each other
+  const directionalLight1 = new t.DirectionalLight(0xF7EFBE, 0.7);
   directionalLight1.position.set(0.5, 1, 0.5);
   scene.add(directionalLight1);
-  var directionalLight2 = new t.DirectionalLight(0xF7EFBE, 0.5);
+  const directionalLight2 = new t.DirectionalLight(0xF7EFBE, 0.5);
   directionalLight2.position.set(-0.5, -1, -0.5);
   scene.add(directionalLight2);
 }
 
 // Setup game
 function init() {
-  // THREE.js's high-performance timer -- helps to make animation smooth
-  clock = new t.Clock();
-  // Helper class for projecting 2D rays (on the screen) to 3D rays (virtual world)
-  // projector = new t.Projector();
-  // Always need to set this up when using THREE.js
   scene = new t.Scene();
-  // TODO: Look at the docs to see whether this has been updated
-  // Add fog to the world to create a sense of depth
   scene.fog = new t.FogExp2(0xD6F1FF, 0.0005);
 
   // Always need to set up camera so we know the perspective from where we render our screen
   cam = new t.PerspectiveCamera(75, ASPECT, 1, 10000); // FOV, aspect ratio, near, far
   cam.position.y = UNITSIZE * .1; // Raise the camera off the ground
-  // scene.add(cam);
 
   // Camera moves with player controls
-  // TODO: Might want to make some changes to FirstPersonControls since it was
-  // designed for flying (could be wrong)
   controls = new t.PointerLockControls(cam);
   scene.add(controls.getObject());
 
@@ -196,6 +184,7 @@ function init() {
         break;
     }
   };
+
   var onKeyUp = function (event) {
     switch (event.keyCode) {
       case 38: // up
@@ -240,30 +229,30 @@ function init() {
 
 // Helper function for browser frames
 function animate() {
-    requestAnimationFrame(animate);
+  requestAnimationFrame(animate);
 
-    raycaster.ray.origin.copy(controls.getObject().position);
-    raycaster.ray.origin.y -= 10;
+  raycaster.ray.origin.copy(controls.getObject().position);
+  raycaster.ray.origin.y -= 10;
 
-    var time = performance.now();
-    var delta = (time - prevTime) / 1000;
-    velocity.x -= velocity.x * 10.0 * delta;
-    velocity.z -= velocity.z * 10.0 * delta;
-    velocity.y -= 9.8 * 100.0 * delta; // 100.0 = mass
-    direction.z = Number(moveForward) - Number(moveBackward);
-    direction.x = Number(moveLeft) - Number(moveRight);
-    direction.normalize(); // this ensures consistent movements in all directions
-    if (moveForward || moveBackward) velocity.z -= direction.z * 1200.0 * delta;
-    if (moveLeft || moveRight) velocity.x -= direction.x * 1200.0 * delta;
-    controls.getObject().translateX(velocity.x * delta);
-    controls.getObject().translateY(velocity.y * delta);
-    controls.getObject().translateZ(velocity.z * delta);
-    if (controls.getObject().position.y < 10) {
-      velocity.y = 0;
-      controls.getObject().position.y = 10;
-      canJump = true;
-    }
-    prevTime = time;
+  var time = performance.now();
+  var delta = (time - prevTime) / 1000;
+  velocity.x -= velocity.x * 10.0 * delta;
+  velocity.z -= velocity.z * 10.0 * delta;
+  velocity.y -= 9.8 * 100.0 * delta; // 100.0 = mass
+  direction.z = Number(moveForward) - Number(moveBackward);
+  direction.x = Number(moveLeft) - Number(moveRight);
+  direction.normalize(); // this ensures consistent movements in all directions
+  if (moveForward || moveBackward) velocity.z -= direction.z * 1200.0 * delta;
+  if (moveLeft || moveRight) velocity.x -= direction.x * 1200.0 * delta;
+  controls.getObject().translateX(velocity.x * delta);
+  controls.getObject().translateY(velocity.y * delta);
+  controls.getObject().translateZ(velocity.z * delta);
+  if (controls.getObject().position.y < 10) {
+    velocity.y = 0;
+    controls.getObject().position.y = 10;
+    canJump = true;
+  }
+  prevTime = time;
 
   renderer.render(scene, cam);
 }
@@ -284,15 +273,15 @@ function drawRadar() {
       var d = 0;
       for (var k = 0, n = ai.length; k < n; k++) {
         var e = getMapSector(ai[k].position);
-        if (i == e.x && j == e.z) {
+        if (i === e.x && j === e.z) {
           d++;
         }
       }
-      if (i == c.x && j == c.z && d == 0) {
+      if (i === c.x && j === c.z && d === 0) {
         context.fillStyle = '#0000FF';
         context.fillRect(i * 7, j * 7, (i + 1) * 7, (j + 1) * 7);
       }
-      else if (i == c.x && j == c.z) {
+      else if (i === c.x && j === c.z) {
         context.fillStyle = '#AA33FF';
         context.fillRect(i * 7, j * 7, (i + 1) * 7, (j + 1) * 7);
         context.fillStyle = '#000000';
