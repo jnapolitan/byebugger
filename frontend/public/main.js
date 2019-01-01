@@ -1,13 +1,12 @@
 // Important variables
-const WIDTH = window.innerWidth,
-  HEIGHT = window.innerHeight,
-  ASPECT = WIDTH / HEIGHT,
-  UNITSIZE = 250,
-  WALLHEIGHT = UNITSIZE / 3;
+const WIDTH = window.innerWidth;
+const HEIGHT = window.innerHeight;
+const ASPECT = WIDTH / HEIGHT;
+const UNITSIZE = 250;
+const WALLHEIGHT = UNITSIZE / 3;
 
 // Alias THREE as t
-var t = THREE;
-var runAnim = true;
+const t = THREE;
 
 // For FPS controls
 var raycaster;
@@ -16,10 +15,8 @@ var moveBackward = false;
 var moveLeft = false;
 var moveRight = false;
 var prevTime = performance.now();
-var velocity = new THREE.Vector3();
-var direction = new THREE.Vector3();
-var vertex = new THREE.Vector3();
-var color = new THREE.Color();
+var velocity = new t.Vector3();
+var direction = new t.Vector3();
 
 //helper function to make a two dimentional array that takes a number and the dimentions of the array
 function createArray(num, dimensions) {
@@ -84,39 +81,36 @@ function createMap() {
   return map; // all our tunnels have been created and our map is complete, so lets return it to our render()
 };
 
-const map = createMap();
+var map = createMap();
 var mapW = map.length;
-var mapH = map[0].length;
 
 // Set up environment
 const setupScene = () => {
   const units = mapW;
 
-  // TODO: The sizing is overkill, use the map's actual size
-  let floorTex = new t.TextureLoader().load('https://pbs.twimg.com/media/DQG5kVSXkAAb03B.jpg');
-  floorTex.anisotropy = 32;
-  floorTex.repeat.set(100, 100);
-  floorTex.wrapT = t.RepeatWrapping;
-  floorTex.wrapS = t.RepeatWrapping;
-  floorGeo = new t.PlaneBufferGeometry(10000, 10000);
-  let mat = new t.MeshLambertMaterial({
-    map: floorTex
+  // TODO: Readjust plane sizing and replace all textures
+  const floorCeilMat = new t.TextureLoader().load('https://pbs.twimg.com/media/DQG5kVSXkAAb03B.jpg');
+  // Possible to use max ansi, but performance might suffer
+  floorCeilMat.anisotropy = 32;
+  floorCeilMat.repeat.set(100, 100);
+  floorCeilMat.wrapT = t.RepeatWrapping;
+  floorCeilMat.wrapS = t.RepeatWrapping;
+  // PlaneBufferGeometry is a lower memory alternative to PlaneGeometry
+  const floorCeilGeo = new t.PlaneBufferGeometry(10000, 10000);
+  // TODO: Try out different types of material
+  let texture = new t.MeshLambertMaterial({
+    map: floorCeilMat
   });
-  let floor = new t.Mesh(floorGeo, mat);
+
+  let floor = new t.Mesh(floorCeilGeo, texture);
+  let ceiling = new t.Mesh(floorCeilGeo, texture);
+
   floor.position.y = -10;
   floor.rotation.x = Math.PI / -2;
-  scene.add(floor);
-
-
-  let ceilingTex = new t.TextureLoader().load('https://pbs.twimg.com/media/DQG5i7nW0AAVxxU.jpg');
-  ceilingTex.anisotropy = 32;
-  ceilingTex.repeat.set(100, 100);
-  ceilingTex.wrapT = t.RepeatWrapping;
-  ceilingTex.wrapS = t.RepeatWrapping;
-  ceilingGeo = new t.PlaneBufferGeometry(10000, 10000);
-  let ceiling = new t.Mesh(ceilingGeo, mat);
   ceiling.position.y = 200;
   ceiling.rotation.x = Math.PI / 2;
+
+  scene.add(floor);
   scene.add(ceiling);
 
   // Walls
@@ -200,6 +194,8 @@ function init() {
         if (canJump === true) velocity.y += 350;
         canJump = false;
         break;
+      default:
+        break;
     }
   };
   var onKeyUp = function (event) {
@@ -220,21 +216,23 @@ function init() {
       case 68: // d
         moveRight = false;
         break;
+      default:
+        break;
     }
   };
   document.addEventListener('keydown', onKeyDown, false);
   document.addEventListener('keyup', onKeyUp, false);
-  raycaster = new THREE.Raycaster(new THREE.Vector3(), new THREE.Vector3(0, - 1, 0), 0, 10);
+  raycaster = new t.Raycaster(new t.Vector3(), new t.Vector3(0, - 1, 0), 0, 10);
 
   // Add objects to the world
   setupScene();
 
-  renderer = new t.WebGLRenderer({ antialias: true });
+  // TODO: setting antialias to false seems to increase performance - why?
+  renderer = new t.WebGLRenderer({ antialias: false });
   renderer.setPixelRatio(window.devicePixelRatio);
-  renderer.setSize(WIDTH, HEIGHT); // Give the renderer the canvas size
+  renderer.setSize(window.innerWidth, window.innerHeight); // Give the renderer the canvas size
 
   // Add the canvas to the document
-  // renderer.domElement.style.backgroundColor = '#D6F1FF';
   renderer.setClearColor('#D6F1FF');
   document.body.appendChild(renderer.domElement);
 
@@ -242,13 +240,8 @@ function init() {
   $('body').append('<canvas id="radar" width="180" height="180"></canvas>');
 }
 
-function render() {
-  renderer.render(scene, cam); // Repaint
-}
-
 // Helper function for browser frames
 function animate() {
-  if (runAnim) {
     requestAnimationFrame(animate);
 
     raycaster.ray.origin.copy(controls.getObject().position);
@@ -273,7 +266,6 @@ function animate() {
       canJump = true;
     }
     prevTime = time;
-  }
 
   renderer.render(scene, cam);
 }
@@ -283,11 +275,6 @@ function getMapSector(v) {
   var x = Math.floor((v.x + UNITSIZE / 2) / UNITSIZE + mapW / 2);
   var z = Math.floor((v.z + UNITSIZE / 2) / UNITSIZE + mapW / 2);
   return { x: x, z: z };
-}
-
-function checkWallCollision(v) {
-  var c = getMapSector(v);
-  return map[c.x][c.z] > 0;
 }
 
 function drawRadar() {
