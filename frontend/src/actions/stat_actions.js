@@ -39,4 +39,4 @@ export const fetchStat = data => dispatch => (
     postStat(data)
         .then(stat => dispatch(receiveNewStat(stat)))
         .catch(err => console.log(err))
-)
+);

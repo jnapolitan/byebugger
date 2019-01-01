@@ -1,0 +1,57 @@
+html, body {
+  height: 100%;
+}
+
+body {
+  background-image: url("https://media.giphy.com/media/7n1LUw0jmnPkk/giphy.gif");
+  background-position: center;
+  background-size: cover;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.start-screen-container {
+  animation: Float 1s linear infinite;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+@keyframes Float {
+  0%, 100% {
+    margin-top: -10px;
+  }
+  50% {
+    margin-top: 0;
+  }
+}
+
+.start-button {
+  background:	#55e7ff;
+  border: 1px solid #201148;
+  border-radius: 4px;
+  color: #ff34b3;
+  cursor: pointer;
+  font-family: "Georgia";
+  font-size: 20px;
+  font-weight: 900;
+  height: 40px;
+  margin-top: 10px;
+  width: 110px;
+}
+
+.start-button:hover {
+  background: #ff34b3;
+  color: #55e7ff;
+}
+
+.radar {
+  background-color: #111111;
+  border: 1px solid #111111;
+  border-radius: 4px;
+  bottom: 10px;
+  left: 10px;
+  position: absolute;
+  z-index: 10;
+}
