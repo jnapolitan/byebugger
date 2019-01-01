@@ -8,6 +8,11 @@ const WALLHEIGHT = UNITSIZE / 3;
 // Alias THREE as t
 const t = THREE;
 
+var cam = new t.PerspectiveCamera(75, ASPECT, 1, 10000);
+var controls = new t.PointerLockControls(cam);
+var renderer = new t.WebGLRenderer({ antialias: false });
+var scene = new t.Scene();
+
 // For FPS controls
 var raycaster;
 var moveForward = false;
@@ -143,15 +148,15 @@ const setupScene = () => {
 
 // Setup game
 function init() {
-  scene = new t.Scene();
+  // scene = new t.Scene();
   scene.fog = new t.FogExp2(0xD6F1FF, 0.0005);
 
   // Always need to set up camera so we know the perspective from where we render our screen
-  cam = new t.PerspectiveCamera(75, ASPECT, 1, 10000); // FOV, aspect ratio, near, far
+  // cam = new t.PerspectiveCamera(75, ASPECT, 1, 10000); // FOV, aspect ratio, near, far
   cam.position.y = UNITSIZE * .1; // Raise the camera off the ground
 
   // Camera moves with player controls
-  controls = new t.PointerLockControls(cam);
+  // controls = new t.PointerLockControls(cam);
   scene.add(controls.getObject());
 
   document.addEventListener('click', function () {
@@ -215,7 +220,7 @@ function init() {
   setupScene();
 
   // TODO: setting antialias to false seems to increase performance - why?
-  renderer = new t.WebGLRenderer({ antialias: false });
+  // renderer = new t.WebGLRenderer({ antialias: false });
   renderer.setPixelRatio(window.devicePixelRatio);
   renderer.setSize(window.innerWidth, window.innerHeight); // Give the renderer the canvas size
 
