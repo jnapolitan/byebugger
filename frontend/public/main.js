@@ -2,7 +2,7 @@
 const WIDTH = window.innerWidth;
 const HEIGHT = window.innerHeight;
 const ASPECT = WIDTH / HEIGHT;
-const UNITSIZE = 250;
+const UNITSIZE = 128;
 const WALLHEIGHT = UNITSIZE;
 
 // Alias THREE as t
@@ -23,68 +23,6 @@ var moveRight = false;
 var prevTime = performance.now();
 var velocity = new t.Vector3();
 var direction = new t.Vector3();
-
-// Helper for 2D grid
-function createArray(num, dimensions) {
-  var array = [];
-  for (var i = 0; i < dimensions; i++) {
-    array.push([]);
-    for (var j = 0; j < dimensions; j++) {
-      array[i].push(num);
-    }
-  }
-  return array;
-}
-
-function createMap() {
-  let dimensions = 20, // width and height of the map
-    maxTunnels = 50, // max number of tunnels possible
-    maxLength = 8, // max length each tunnel can have
-    map = createArray(1, dimensions),
-    currentRow = Math.floor(Math.random() * dimensions), // our current row - start at a random spot
-    currentColumn = Math.floor(Math.random() * dimensions), // our current column - start at a random spot
-    directions = [[-1, 0], [1, 0], [0, -1], [0, 1]], // array to get a random direction from (left,right,up,down)
-    lastDirection = [], // save the last direction we went
-    randomDirection; // next turn/direction - holds a value from directions
-
-  // lets create some tunnels - while maxTunnels, dimentions, and maxLength  is greater than 0.
-  while (maxTunnels && dimensions && maxLength) {
-
-    // lets get a random direction - until it is a perpendicular to our lastDirection
-    // if the last direction = left or right,
-    // then our new direction has to be up or down,
-    // and vice versa
-    do {
-      randomDirection = directions[Math.floor(Math.random() * directions.length)];
-    } while ((randomDirection[0] === -lastDirection[0] && randomDirection[1] === -lastDirection[1]) || (randomDirection[0] === lastDirection[0] && randomDirection[1] === lastDirection[1]));
-
-    var randomLength = Math.ceil(Math.random() * maxLength),
-      tunnelLength = 0;
-
-    // lets loop until our tunnel is long enough or until we hit an edge
-    while (tunnelLength < randomLength) {
-
-      // break the loop if it is going out of the map
-      if (((currentRow === 0) && (randomDirection[0] === -1)) ||
-        ((currentColumn === 0) && (randomDirection[1] === -1)) ||
-        ((currentRow === dimensions - 1) && (randomDirection[0] === 1)) ||
-        ((currentColumn === dimensions - 1) && (randomDirection[1] === 1))) {
-        break;
-      } else {
-        map[currentRow][currentColumn] = 0;
-        currentRow += randomDirection[0];
-        currentColumn += randomDirection[1];
-        tunnelLength++;
-      }
-    }
-
-    if (tunnelLength) {
-      lastDirection = randomDirection;
-      maxTunnels--;
-    }
-  }
-  return map;
-};
 
 var map = createMap();
 for (let i = 0; i < map.length; i++) {
@@ -120,7 +58,7 @@ const setupScene = () => {
 
   floor.position.y = -10;
   floor.rotation.x = Math.PI / -2;
-  ceiling.position.y = 200;
+  ceiling.position.y = 100;
   ceiling.rotation.x = Math.PI / 2;
 
   scene.add(floor);
@@ -130,7 +68,10 @@ const setupScene = () => {
   // MeshBasic is unaffected by lighting, unlike MeshLambert and MeshPhong
   const cube = new t.CubeGeometry(UNITSIZE, UNITSIZE, UNITSIZE);
   let wallMat = new t.TextureLoader().load('https://pbs.twimg.com/media/DQG5kVSXkAAb03B.jpg');
-  wallMat = new t.MeshLambertMaterial({ map: wallMat });
+  wallMat.repeat.set(2, 2);
+  wallMat.wrapT = t.RepeatWrapping;
+  wallMat.wrapS = t.RepeatWrapping;
+  wallMat = new t.MeshToonMaterial({ map: wallMat });
   for (let i = 0; i < mapW; i++) {
     for (let j = 0, m = map[i].length; j < m; j++) {
       if (map[i][j]) {
@@ -151,19 +92,17 @@ const setupScene = () => {
   const directionalLight2 = new t.DirectionalLight(0xF7EFBE, 0.5);
   directionalLight2.position.set(-0.5, -1, -0.5);
   scene.add(directionalLight2);
+  var light = new t.AmbientLight('purple');
+  scene.add(light);
 }
 
 // Setup game
 function init() {
   // scene = new t.Scene();
-  scene.fog = new t.FogExp2(0xD6F1FF, 0.0005);
-
+  scene.fog = new t.FogExp2('black', 0.0020);
   // Always need to set up camera so we know the perspective from where we render our screen
-  // cam = new t.PerspectiveCamera(75, ASPECT, 1, 10000); // FOV, aspect ratio, near, far
   cam.position.y = UNITSIZE * .1; // Raise the camera off the ground
-
   // Camera moves with player controls
-  // controls = new t.PointerLockControls(cam);
   scene.add(controls.getObject());
 
   document.addEventListener('click', function () {
@@ -254,6 +193,7 @@ function animate() {
   direction.z = Number(moveForward) - Number(moveBackward);
   direction.x = Number(moveLeft) - Number(moveRight);
   direction.normalize(); // this ensures consistent movements in all directions
+  // TODO: Update camera position
   if (moveForward || moveBackward) velocity.z -= direction.z * 1200.0 * delta;
   if (moveLeft || moveRight) velocity.x -= direction.x * 1200.0 * delta;
   controls.getObject().translateX(velocity.x * delta);
@@ -290,7 +230,7 @@ function drawRadar() {
         }
       }
       if (i === c.x && j === c.z && d === 0) {
-        context.fillStyle = '#0000FF';
+        context.fillStyle = 'rgba(170, 51, 255, 1)';
         context.fillRect(i * 7, j * 7, (i + 1) * 7, (j + 1) * 7);
       }
       else if (i === c.x && j === c.z) {
@@ -306,7 +246,7 @@ function drawRadar() {
         context.fillText('' + d, i * 7 + 8, j * 7 + 12);
       }
       else if (map[i][j] > 0) {
-        context.fillStyle = '#666666';
+        context.fillStyle = 'rgba(102, 102, 102, 1)';
         context.fillRect(i * 7, j * 7, (i + 1) * 7, (j + 1) * 7);
       }
       else {
@@ -319,14 +259,18 @@ function drawRadar() {
 
 // Start screen
 $(document).ready(() => {
-  $('body').append('<div class="start-screen-container"></div>')
-  $('.start-screen-container').append('<img class="logo" src="https://static1.textcraft.net/data1/4/7/47ec57212c1063d986640e55e8fffed17cc1603fda39a3ee5e6b4b0d3255bfef95601890afd80709da39a3ee5e6b4b0d3255bfef95601890afd8070911e0e0a6c9273f3b1ad5cf500cddc6e2.png"></img>')
+  $('body').append('<div class="start-screen-container"></div>');
+  $('.start-screen-container').append('<img class="logo" src="https://static1.textcraft.net/data1/4/7/47ec57212c1063d986640e55e8fffed17cc1603fda39a3ee5e6b4b0d3255bfef95601890afd80709da39a3ee5e6b4b0d3255bfef95601890afd8070911e0e0a6c9273f3b1ad5cf500cddc6e2.png"></img>');
   $('.start-screen-container').append('<button class="start-button">START</button>');
   $('.start-screen-container').one('click', function (e) {
     e.preventDefault();
     $(this).fadeOut();
     init();
+    $('body').append('<img class="floor-title" src="https://static1.textcraft.net/data1/c/d/cd29149206b0527bd8c02af9bbf3d1bab8882c74da39a3ee5e6b4b0d3255bfef95601890afd80709da39a3ee5e6b4b0d3255bfef95601890afd807098626b16c099e53d50b4b4e9e7a56bd90.png"></img>');
+    setInterval(() => {
+      $('.floor-title').fadeOut(3000);
+    }, 1000);
     setInterval(drawRadar, 1000);
     animate();
-  })
-})
+  });
+});

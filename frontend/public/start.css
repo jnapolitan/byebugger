@@ -55,3 +55,9 @@ body {
   position: absolute;
   z-index: 10;
 }
+
+.floor-title {
+  position: absolute;
+  top: 30%;
+  z-index: 10;
+}
