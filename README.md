@@ -1,7 +1,5 @@
 # ByeBugger
 
-### ByeBugger
-
 Single-player 3D interactive educational game centered around software engineering concepts.
 
 - [Live Site]()
