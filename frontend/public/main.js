@@ -48,6 +48,8 @@ const setupScene = () => {
 
   // Floor and ceiling
   // TODO: Readjust plane sizing and replace all textures
+  // Look for vaporwave grids:
+  // https://res.cloudinary.com/teepublic/image/private/s--tQSSo6bK--/t_Preview/b_rgb:191919,c_limit,f_jpg,h_630,q_90,w_630/v1506824583/production/designs/1941165_0.jpg
   const floorCeilMat = new t.TextureLoader().load('https://pbs.twimg.com/media/DQG5kVSXkAAb03B.jpg');
   // It's possible to use max anisotropy, but performance might suffer
   floorCeilMat.anisotropy = 32;
@@ -226,8 +228,8 @@ function init() {
 function animate() {
   requestAnimationFrame(animate);
 
-  // Rotate the ceiling for funsies
-  ceiling.rotation.z += .001;
+  // TODO: Figure out best rotation
+  // ceiling.rotation.z += .001;
 
   // TODO: Not important for now. Remove this if there's no good use for it.
   raycaster.ray.origin.copy(controls.getObject().position);
