@@ -2,7 +2,7 @@
 
 ### ByeBugger
 
-Single-player educational software engineering game.
+Single-player 3D interactive educational game centered around software engineering concepts.
 
 - [Live Site]()
 - [Background and Overview](#background-and-overview)
@@ -17,7 +17,7 @@ Single-player educational software engineering game.
 
 ## Background and Overview
 
-ByeBugger is a single-player educational game that teaches players software engineering concepts through the act of solving bugs. Running into bugs and learning how to debug your code are integral parts to the software development process. ByeBugger introduces its player to this process by having him/her run through a map to catch bugs. When caught, these bugs present themselves as real-life computer science bugs, which the player needs to solve to gain points and move up the leader board. Will you catch 'em all and reign above all the other ByeBuggers out there?
+ByeBugger is a single-player interactive 3D educational game that teaches players software engineering concepts through the act of cathing and solving bugs. Running into bugs and learning how to debug common coding problems are integral parts to the software development process. ByeBugger introduces its player to this process by having him/her run through a map to catch bugs. When caught, these bugs present themselves as real computer software bugs (in Ruby and Javascript), which the player needs to solve to gain points and move up the leader board. Will you catch 'em all and reign above all the other ByeBuggers out there?
 
 <!-- We will need to:
 - store user and info (time of when they played, their score) in database
@@ -34,29 +34,34 @@ ByeBugger is a single-player educational game that teaches players software engi
   - [ ] Textures/environment
   - [ ] Life-line objects
 - [ ] Player control logic
-- [ ] Bug trajectory logic
+- [ ] Bug behavior logic
 - [ ] Game logic
   - [ ] Point system
+  - [ ] Collision
+  - [ ] Controls / user input
 - [ ] Production README
 
 #### Bonus Features
 
 - [ ] Level difficulty logic
-  - [ ] Adjust speed of bugs
   - [ ] Introduce obstacle logic
     - [ ] Product manager logic
+  - [ ] Second floor to map
+  - [ ] Bugs avoid player
   - [ ] Final level:
     - [ ] Beat Heroku boss
     - [ ] Player looks for master key to defeat boss
+- [ ] User profile pages
+- [ ] User generated questions
 
 ## Technologies
 
-ByeBugger is implemented using the MERN stack (MongoDB, Express, React, and Node.js). The game is rendered using HTML5 Canvas and WebGL/three.js and real-time updates are tracked with ...??
+ByeBugger is implemented using the MERN stack (MongoDB, Express, React, and Node.js) to keep track of players and a leaderboard of scores, as well as abstract game elements into React components. The game is rendered using HTML5 Canvas and WebGL/three.js and real-time updates are tracked via redux global state.
 
 #### Backend: MongoDB/Express
 
 User Model: handle, email, password
-Stats Model: user id, score
+Stats Model: user id, user handle, score
 
 #### Frontend: React/Node.js
 
@@ -65,54 +70,53 @@ Stats Model: user id, score
 - Set up database
 - Proposal README
 - Implement user authorization on database backend
+- Initial environment rendering and user controls
+- Initial bug logic
 
 ## Group Members & Work Breakdown
 
 * [Julian Napolitan](https://github.com/jnapolitan)
+    * Bug / enemy AI behavior and logic
 * [Sue Park](https://github.com/spark1031)
+    * Bug capture / solve components and logic
 * [Eric To](https://github.com/eric-to)
     * Procedural generated dungeon, object collision
 
 <!-- ### August 26 - August 27
 
-- Build skeleton React site - **Kyle**
-- Build the skeleton Chrome extension - **Nick**
-- Investigate Google API methods and test collection of data - **Jeremiah**
-- Begin setting up D3 visualization - **Kavian**
+### Jan 2
 
-### August 27
-
-- Continue and complete the basic work from Sunday - **All**
-- Build login view on Chrome extension - **Nick/Jeremiah**
-- Decide which data to save in database, and how to structure it **All will discuss**
-- Write and test methods to save browser data to database - **Jeremiah/Nick**
+- Refactor/integrate current bug AI into most recent environment **Julian**
+- Refactor controls for collision and evolve environment aesthetic **Eric***
+- Initial approach to bug capture/solve logic - **Sue**
 
 ### Day 2
 
-- Connect user authorization database to Chrome front end - **Kyle**
-- Connect React-based Web application to database - **Kyle/Kavian**
-- Meet to decide duties for next three days
+- Continue evolving / implementing bug AI with additional randomized / unique behavior **Julian**
+- Research potential of binary space partitioning for dungeon generation  **Eric***
+- Implement initial bug capture/solve logic into most recent environment - **Sue**
 
 ### Day 3
 
-- Continue implementation of visualization on Web application using D3 library
-- Add methods to fetch data for popups in visualization
-- Run tests of completed Chrome extension
+- v1 bug AI and testing complete and implemented **Julian**
+- v1 dynamic dungeon environment generation complete and implemented  **Eric***
+- v1 bug capture/solve logic and testing complete and implemented - **Sue**
 
 ### Day 4
 
-- Complete visualization of data on Web application
-- Add popups to visualization
-- Make seed/demo data and visualizations for guest user
+- Polish bug AI assets and optimize game playing experience (speed, regeneration) **Julian**
+- Polish dynamic dungeon environment generation / finalize supporting elements (lighting, textures) **Eric***
+- Polish bug capture/solve logic and research solutions for housing questions in DB - **Sue**
 
 ### Day 5
 
-- Add search capability to Web application
-- Add search capability to Chrome extension
-- Make demo page (required for Chrome extensions -- may not be required since this project has a live page too)
+- Start work on bonus feature: Bugs deliberately avoid player **Julian**
+- Start work on bonus feature: Second floor to map with stairs **Eric**
+- Start work on bous feature: User generated questions
 
 ### Day 6
 
-- Complete Production README.md - **Jeremiah**
-- Refine design/CSS
-- Finish testing and debugging - **All team members** -->
+- Complete Production README.md - **All team members**
+- Implement completed bonus features **All team members**
+- Finalize assets and aesthetic **All team members**
+- Finish testing and debugging - **All team members**
