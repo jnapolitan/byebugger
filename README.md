@@ -87,13 +87,13 @@ Stats Model: user id, user handle, score
 ### Jan 2
 
 - Refactor/integrate current bug AI into most recent environment **Julian**
-- Refactor controls for collision and evolve environment aesthetic **Eric***
+- Refactor controls for collision and evolve environment aesthetic **Eric**
 - Initial approach to bug capture/solve logic - **Sue**
 
 ### Day 2
 
 - Continue evolving / implementing bug AI with additional randomized / unique behavior **Julian**
-- Research potential of binary space partitioning for dungeon generation  **Eric***
+- Research potential of binary space partitioning for dungeon generation  **Eric**
 - Implement initial bug capture/solve logic into most recent environment - **Sue**
 
 ### Day 3
@@ -105,14 +105,14 @@ Stats Model: user id, user handle, score
 ### Day 4
 
 - Polish bug AI assets and optimize game playing experience (speed, regeneration) **Julian**
-- Polish dynamic dungeon environment generation / finalize supporting elements (lighting, textures) **Eric***
+- Polish dynamic dungeon environment generation / finalize supporting elements (lighting, textures) **Eric**
 - Polish bug capture/solve logic and research solutions for housing questions in DB - **Sue**
 
 ### Day 5
 
 - Start work on bonus feature: Bugs deliberately avoid player **Julian**
 - Start work on bonus feature: Second floor to map with stairs **Eric**
-- Start work on bous feature: User generated questions
+- Start work on bous feature: User generated questions **Sue**
 
 ### Day 6
 
