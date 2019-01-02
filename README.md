@@ -15,7 +15,7 @@ Single-player 3D interactive educational game centered around software engineeri
 
 ## Background and Overview
 
-ByeBugger is a single-player interactive 3D educational game that teaches players software engineering concepts through the act of cathing and solving bugs. Running into bugs and learning how to debug common coding problems are integral parts to the software development process. ByeBugger introduces its player to this process by having him/her run through a map to catch bugs. When caught, these bugs present themselves as real computer software bugs (in Ruby and Javascript), which the player needs to solve to gain points and move up the leader board. Will you catch 'em all and reign above all the other ByeBuggers out there?
+ByeBugger is a single-player interactive 3D educational game that teaches players software engineering concepts through the act of catching and solving bugs. Running into bugs and learning how to debug common coding problems are integral parts to the software development process. ByeBugger introduces its player to this process by having him/her run through a map to catch bugs. When caught, these bugs present themselves as real computer software bugs (in Ruby and Javascript), which the player needs to solve to gain points and move up the leader board. Will you catch 'em all and reign above all the other ByeBuggers out there?
 
 <!-- We will need to:
 - store user and info (time of when they played, their score) in database
