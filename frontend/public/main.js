@@ -1,29 +1,34 @@
-// Important variables
 const WIDTH = window.innerWidth;
 const HEIGHT = window.innerHeight;
 const ASPECT = WIDTH / HEIGHT;
-const UNITSIZE = 128;
+const UNITSIZE = 128; // In pixels
 const WALLHEIGHT = UNITSIZE;
 
-// Alias THREE as t
+// TODO: Remove this reference when we use the node module Three
 const t = THREE;
 
-var cam = new t.PerspectiveCamera(75, ASPECT, 1, 10000);
-var canJump;
-var controls = new t.PointerLockControls(cam);
+// Set up the camera (the player's perspective)
+var camera = new t.PerspectiveCamera(75, ASPECT, 1, 10000); // FOV, aspect, near, far
+var canJump; // For later use when we handle the player's keyboard input
+// Set up controls (custom first-person controls)
+// TODO: This class needs to update the camera's position (right now it doesn't)
+var controls = new t.PointerLockControls(camera);
+// What we'll be using to render the scene - set antialias to false for better performance
 var renderer = new t.WebGLRenderer({ antialias: false });
+// Set up the scene (a world in Three.js terms). We'll add objects to the scene later.
 var scene = new t.Scene();
 
-// For FPS controls
-var raycaster;
-var moveForward = false;
+// Variables for FPS controls
+var direction = new t.Vector3();
 var moveBackward = false;
+var moveForward = false;
 var moveLeft = false;
 var moveRight = false;
 var prevTime = performance.now();
+var raycaster;
 var velocity = new t.Vector3();
-var direction = new t.Vector3();
 
+// Creates a 2D grid of 1s and 0s, which will be used to render the 3D world
 var map = createMap();
 for (let i = 0; i < map.length; i++) {
   for (let j = 0; j < map[0].length; j++) {
@@ -34,48 +39,56 @@ for (let i = 0; i < map.length; i++) {
 }
 var mapW = map.length;
 
-// Set up environment
+
+////// Set up the environment //////
 const setupScene = () => {
   const units = mapW;
 
   // Floor and ceiling
   // TODO: Readjust plane sizing and replace all textures
   const floorCeilMat = new t.TextureLoader().load('https://pbs.twimg.com/media/DQG5kVSXkAAb03B.jpg');
-  // Possible to use max ansi, but performance might suffer
+  // It's possible to use max anisotropy, but performance might suffer
   floorCeilMat.anisotropy = 32;
   floorCeilMat.repeat.set(100, 100);
   floorCeilMat.wrapT = t.RepeatWrapping;
   floorCeilMat.wrapS = t.RepeatWrapping;
   // PlaneBufferGeometry is a lower memory alternative to PlaneGeometry
   const floorCeilGeo = new t.PlaneBufferGeometry(10000, 10000);
-  // TODO: Try out different types of material
   let texture = new t.MeshLambertMaterial({
     map: floorCeilMat
   });
 
+  // Three.Mesh takes in 1. geometry and 2. material/texture
   let floor = new t.Mesh(floorCeilGeo, texture);
   let ceiling = new t.Mesh(floorCeilGeo, texture);
 
   floor.position.y = -10;
   floor.rotation.x = Math.PI / -2;
+
+  // Rotation makes it so that the ceiling mirrors the floor on the opposite side
   ceiling.position.y = 100;
   ceiling.rotation.x = Math.PI / 2;
 
+  // Add the floor and ceiling to the world
   scene.add(floor);
   scene.add(ceiling);
 
-  // Walls
-  // MeshBasic is unaffected by lighting, unlike MeshLambert and MeshPhong
-  const cube = new t.CubeGeometry(UNITSIZE, UNITSIZE, UNITSIZE);
-  let wallMat = new t.TextureLoader().load('https://pbs.twimg.com/media/DQG5kVSXkAAb03B.jpg');
+  // Walls - note MeshLambertMaterial is affected by lighting
+  // TODO: Replace texture
+  const wallMat = new t.TextureLoader().load('https://pbs.twimg.com/media/DQG5kVSXkAAb03B.jpg');
   wallMat.repeat.set(2, 2);
   wallMat.wrapT = t.RepeatWrapping;
   wallMat.wrapS = t.RepeatWrapping;
-  wallMat = new t.MeshToonMaterial({ map: wallMat });
+  const block = new t.CubeGeometry(WALLHEIGHT, WALLHEIGHT, WALLHEIGHT);
+  let wallTexture = new t.MeshLambertMaterial({
+    map: wallMat
+  });
+
+  // Iterate through the 2D map I computed above and place the walls where needed
   for (let i = 0; i < mapW; i++) {
     for (let j = 0, m = map[i].length; j < m; j++) {
       if (map[i][j]) {
-        let wall = new t.Mesh(cube, wallMat);
+        let wall = new t.Mesh(block, wallTexture);
         wall.position.x = (i - units / 2) * UNITSIZE;
         wall.position.y = WALLHEIGHT / 3;
         wall.position.z = (j - units / 2) * UNITSIZE;
@@ -85,26 +98,28 @@ const setupScene = () => {
   }
 
   // Lighting
-  // Light1 and Light2 face away from each other
+  // Note that light1 and light2 are required. Both lights
+  // face away from each other - without one, one side of
+  // the wall will be pitch black from the player's perspective
   const directionalLight1 = new t.DirectionalLight(0xF7EFBE, 0.7);
   directionalLight1.position.set(0.5, 1, 0.5);
   scene.add(directionalLight1);
   const directionalLight2 = new t.DirectionalLight(0xF7EFBE, 0.5);
   directionalLight2.position.set(-0.5, -1, -0.5);
   scene.add(directionalLight2);
-  var light = new t.AmbientLight('purple');
-  scene.add(light);
+  // TODO: Remove temporary ambient lighting
+  const allLight = new t.AmbientLight('purple');
+  scene.add(allLight);
 }
 
-// Setup game
+// Setup the game
 function init() {
-  // scene = new t.Scene();
   scene.fog = new t.FogExp2('black', 0.0020);
-  // Always need to set up camera so we know the perspective from where we render our screen
-  cam.position.y = UNITSIZE * .1; // Raise the camera off the ground
-  // Camera moves with player controls
+  camera.position.y = UNITSIZE * .1; // Ensures the player is above the floor
+  // It may not look like it, but this adds the camera to the scene
   scene.add(controls.getObject());
 
+  // TODO: Move the controls logic into another file if possible
   document.addEventListener('click', function () {
     controls.lock();
   }, false);
@@ -158,23 +173,24 @@ function init() {
         break;
     }
   };
+
   document.addEventListener('keydown', onKeyDown, false);
   document.addEventListener('keyup', onKeyUp, false);
+  // TODO: Remove raycaster if there's no good use for it
   raycaster = new t.Raycaster(new t.Vector3(), new t.Vector3(0, - 1, 0), 0, 10);
 
   // Add objects to the world
   setupScene();
 
-  // TODO: setting antialias to false seems to increase performance - why?
-  // renderer = new t.WebGLRenderer({ antialias: false });
+  // TODO: Maybe move this to where renderer is instantiated for more coherent code
   renderer.setPixelRatio(window.devicePixelRatio);
-  renderer.setSize(window.innerWidth, window.innerHeight); // Give the renderer the canvas size
+  renderer.setSize(window.innerWidth, window.innerHeight);
 
   // Add the canvas to the document
-  renderer.setClearColor('#D6F1FF');
+  renderer.setClearColor('#D6F1FF'); // Sky color (if the sky was visible)
   document.body.appendChild(renderer.domElement);
 
-  // Add the radar
+  // Add the minimap
   $('body').append('<canvas id="radar" width="180" height="180"></canvas>');
 }
 
@@ -182,9 +198,11 @@ function init() {
 function animate() {
   requestAnimationFrame(animate);
 
+  // TODO: Not important for now. Remove this if there's no good use for it.
   raycaster.ray.origin.copy(controls.getObject().position);
   raycaster.ray.origin.y -= 10;
 
+  // Controls/movement related logic
   var time = performance.now();
   var delta = (time - prevTime) / 1000;
   velocity.x -= velocity.x * 10.0 * delta;
@@ -192,13 +210,15 @@ function animate() {
   velocity.y -= 9.8 * 100.0 * delta; // 100.0 = mass
   direction.z = Number(moveForward) - Number(moveBackward);
   direction.x = Number(moveLeft) - Number(moveRight);
-  direction.normalize(); // this ensures consistent movements in all directions
-  // TODO: Update camera position
+  direction.normalize(); // Ensures consistent movement in all directions
+
+  // TODO: Update the camera position
   if (moveForward || moveBackward) velocity.z -= direction.z * 1200.0 * delta;
   if (moveLeft || moveRight) velocity.x -= direction.x * 1200.0 * delta;
   controls.getObject().translateX(velocity.x * delta);
   controls.getObject().translateY(velocity.y * delta);
   controls.getObject().translateZ(velocity.z * delta);
+
   if (controls.getObject().position.y < 10) {
     velocity.y = 0;
     controls.getObject().position.y = 10;
@@ -206,20 +226,22 @@ function animate() {
   }
   prevTime = time;
 
-  renderer.render(scene, cam);
+  // Deals with what portion of the scene the player sees
+  renderer.render(scene, camera);
 }
 
-// Helper functions
+////// Helper function(s) //////
 function getMapSector(v) {
   var x = Math.floor((v.x + UNITSIZE / 2) / UNITSIZE + mapW / 2);
   var z = Math.floor((v.z + UNITSIZE / 2) / UNITSIZE + mapW / 2);
   return { x: x, z: z };
 }
 
-function drawRadar() {
+// Creates the minimap
+function drawMinimap() {
   var ai = [];
-  var c = getMapSector(cam.position), context = document.getElementById('radar').getContext('2d');
-  context.font = '10px Helvetica';
+  var c = getMapSector(camera.position), context = document.getElementById('radar').getContext('2d');
+  context.font = '10px Georgia';
   for (var i = 0; i < mapW; i++) {
     for (var j = 0, m = map[i].length; j < m; j++) {
       var d = 0;
@@ -257,7 +279,8 @@ function drawRadar() {
   }
 }
 
-// Start screen
+// Creates start screen
+// TODO: Refactor this into a React component and move it to a different file
 $(document).ready(() => {
   $('body').append('<div class="start-screen-container"></div>');
   $('.start-screen-container').append('<img class="logo" src="https://static1.textcraft.net/data1/4/7/47ec57212c1063d986640e55e8fffed17cc1603fda39a3ee5e6b4b0d3255bfef95601890afd80709da39a3ee5e6b4b0d3255bfef95601890afd8070911e0e0a6c9273f3b1ad5cf500cddc6e2.png"></img>');
@@ -270,7 +293,7 @@ $(document).ready(() => {
     setInterval(() => {
       $('.floor-title').fadeOut(3000);
     }, 1000);
-    setInterval(drawRadar, 1000);
+    setInterval(drawMinimap, 1000);
     animate();
   });
 });
