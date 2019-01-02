@@ -81,8 +81,8 @@ Stats Model: user id, user handle, score
     * Bug capture / solve components and logic
 * [Eric To](https://github.com/eric-to)
     * Procedural generated dungeon, object collision
-
-<!-- ### August 26 - August 27
+    
+## Weekly Project Plan
 
 ### Jan 2
 
