@@ -238,6 +238,7 @@ function getMapSector(v) {
 }
 
 // Creates the minimap
+// TODO: Clean up this code however possible before deployment
 function drawMinimap() {
   var ai = [];
   var c = getMapSector(camera.position), context = document.getElementById('radar').getContext('2d');
