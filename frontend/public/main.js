@@ -61,8 +61,8 @@ const setupScene = () => {
   });
 
   // Three.Mesh takes in 1. geometry and 2. material/texture
-  let floor = new t.Mesh(floorCeilGeo, texture);
-  let ceiling = new t.Mesh(floorCeilGeo, texture);
+  const floor = new t.Mesh(floorCeilGeo, texture);
+  ceiling = new t.Mesh(floorCeilGeo, texture);
 
   floor.position.y = -10;
   floor.rotation.x = Math.PI / -2;
@@ -112,6 +112,36 @@ const setupScene = () => {
   // TODO: Remove temporary ambient lighting
   const allLight = new t.AmbientLight('purple');
   scene.add(allLight);
+
+  // Particles
+  // TODO: This is only experimental code
+  // These methods might be deprecated?
+  const particleCount = 1800;
+  const particles = new t.Geometry();
+  const particleMat = new t.PointsMaterial({
+    color: 0xFFFFFF,
+    size: 20
+  });
+
+  for (let i = 0; i < particleCount; i++) {
+    let particleX = Math.random() * 500 - 250;
+    let particleY = Math.random() * 500 - 250;
+    let particleZ = Math.random() * 500 - 250;
+    let particle = new t.Vector3(
+      new t.Vector3(particleX, particleY, particleZ)
+    );
+
+    particles.vertices.push(particle);
+  }
+
+  const particleSystem = new t.Points(
+    particles,
+    particleMat
+  );
+
+  particleSystem.position.y = 50;
+
+  scene.add(particleSystem);
 }
 
 // Setup the game
@@ -196,6 +226,9 @@ function init() {
 function animate() {
   requestAnimationFrame(animate);
 
+  // Rotate the ceiling for funsies
+  ceiling.rotation.z += .001;
+
   // TODO: Not important for now. Remove this if there's no good use for it.
   raycaster.ray.origin.copy(controls.getObject().position);
   raycaster.ray.origin.y -= 10;
@@ -239,7 +272,8 @@ function getMapSector(v) {
 // TODO: Clean up this code however possible before deployment
 function drawMinimap() {
   var ai = [];
-  var c = getMapSector(camera.position), context = document.getElementById('radar').getContext('2d');
+  var c = getMapSector(camera.position)
+  var context = document.getElementById('radar').getContext('2d');
   context.font = '10px Georgia';
   for (var i = 0; i < mapW; i++) {
     for (var j = 0, m = map[i].length; j < m; j++) {
