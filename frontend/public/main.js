@@ -15,6 +15,8 @@ var canJump; // For later use when we handle the player's keyboard input
 var controls = new t.PointerLockControls(camera);
 // What we'll be using to render the scene - set antialias to false for better performance
 var renderer = new t.WebGLRenderer({ antialias: false });
+renderer.setPixelRatio(window.devicePixelRatio);
+renderer.setSize(window.innerWidth, window.innerHeight);
 // Set up the scene (a world in Three.js terms). We'll add objects to the scene later.
 var scene = new t.Scene();
 
@@ -181,10 +183,6 @@ function init() {
 
   // Add objects to the world
   setupScene();
-
-  // TODO: Maybe move this to where renderer is instantiated for more coherent code
-  renderer.setPixelRatio(window.devicePixelRatio);
-  renderer.setSize(window.innerWidth, window.innerHeight);
 
   // Add the canvas to the document
   renderer.setClearColor('#D6F1FF'); // Sky color (if the sky was visible)
