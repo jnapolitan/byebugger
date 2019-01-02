@@ -84,7 +84,7 @@ Stats Model: user id, user handle, score
     
 ## Weekly Project Plan
 
-### Jan 2
+### Day 1
 
 - Refactor/integrate current bug AI into most recent environment - **Julian**
 - Refactor controls for collision and evolve environment aesthetic - **Eric**
