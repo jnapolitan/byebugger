@@ -3,6 +3,7 @@ const HEIGHT = window.innerHeight;
 const ASPECT = WIDTH / HEIGHT;
 const UNITSIZE = 128; // In pixels
 const WALLHEIGHT = UNITSIZE;
+const AIMOVESPEED = 100;
 
 // TODO: Remove this reference when we use the node module Three
 const t = THREE;
@@ -20,12 +21,15 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 // Set up the scene (a world in Three.js terms). We'll add objects to the scene later.
 var scene = new t.Scene();
 
-// Initialize constanr for number of AI and global array variable to house AI objects
-const NUMAI = 10;
+// Initialize constant for number of AI and global array variable to house AI objects
+const NUMAI = 100;
 const ai = [];
 
 // Initialize global array variable to house AI animations
 const aiAnimations = [];
+
+// Set up camera listener for AI audio
+const listener = new t.AudioListener();
 
 // Variables for FPS controls
 var direction = new t.Vector3();
@@ -38,7 +42,7 @@ var raycaster;
 var velocity = new t.Vector3();
 
 // Creates a 2D grid of 1s and 0s, which will be used to render the 3D world
-var map = new BSPTree().generateLevel(100, 100);
+var map = new BSPTree().generateLevel(25, 25);
 for (let i = 0; i < map.length; i++) {
   for (let j = 0; j < map[0].length; j++) {
     if (j === 0 || i === 0 || j === map[0].length - 1 || i === map.length - 1) {
@@ -180,40 +184,6 @@ function addAI() {
   o.add(aiSound);
 }
 
-
-// Texture animator for AI utilizing sprites 
-// Sprite frames are animated during the update function using the specified duration
-function TextureAnimator(texture, horizTiles, numTiles) {
-  this.horizTiles = horizTiles;
-  this.numberOfTiles = numTiles;
-
-  // Assign a random animation display duration (less than a second) for each sprite
-  this.tileDisplayDuration = Math.floor(Math.random() * 900);
-
-  // Set texture wrapping and configure repeat
-  texture.wrapS = t.RepeatWrapping;
-  texture.repeat.set(1 / this.horizTiles);
-
-  // Set current tile display time and frame to zero
-  this.currentDisplayTime = 0;
-  this.currentTile = 0;
-
-  // Check every 100 ms to see if sprite tile should be updated
-  // and offset accordingly
-  // Reset currentTile after reaching last tile of sprite
-  this.updateSprite = function() {
-    this.currentDisplayTime += 100;
-    while (this.currentDisplayTime > this.tileDisplayDuration) {
-      this.currentDisplayTime -= this.tileDisplayDuration;
-      this.currentTile++;
-      if (this.currentTile == this.numberOfTiles)
-        this.currentTile = 0;
-      let currentColumn = this.currentTile % this.horizTiles;
-      texture.offset.x = currentColumn / this.horizTiles;
-    }
-  };
-}
-
 // Run addAI for each AI object
 function setupAI() {
   for (var i = 0; i < NUMAI; i++) {
@@ -337,16 +307,52 @@ function animate() {
   }
   prevTime = time;
 
+  // Update AI.
+  const aispeed = delta * AIMOVESPEED;
+  for (let i = ai.length - 1; i >= 0; i--) {
+    let aiObj = ai[i];
+
+    // Move AI
+    let r = Math.random();
+    if (r > 0.995) {
+      aiObj.lastRandomX = Math.random() * 2 - 1;
+      aiObj.lastRandomZ = Math.random() * 2 - 1;
+    }
+
+    aiObj.translateX(aispeed * aiObj.lastRandomX);
+    aiObj.translateZ(aispeed * aiObj.lastRandomZ);
+
+    let aiPos = getMapSector(aiObj.position);
+    if (aiPos.x < 0 || aiPos.x >= mapW || checkWallCollision(aiObj.position)) {
+      aiObj.translateX(-2 * aispeed * aiObj.lastRandomX);
+      aiObj.translateZ(-2 * aispeed * aiObj.lastRandomZ);
+      aiObj.lastRandomX = Math.random() * 2 - 1;
+      aiObj.lastRandomZ = Math.random() * 2 - 1;
+    }
+    if (aiPos.x < -1 || aiPos.x > mapW || aiPos.z < -1 || aiPos.z > mapH) {
+      ai.splice(i, 1);
+      scene.remove(aiObj);
+      addAI();
+    }
+  }
+
   // Deals with what portion of the scene the player sees
   renderer.render(scene, camera);
 }
 
 ////// Helper function(s) //////
-function getMapSector(v) {
-  var x = Math.floor((v.x + UNITSIZE / 2) / UNITSIZE + mapW / 2);
-  var z = Math.floor((v.z + UNITSIZE / 2) / UNITSIZE + mapW / 2);
-  return { x: x, z: z };
-}
+const getMapSector = (v) => {
+  let x = Math.floor(((v.x + 20) + UNITSIZE / 2) / UNITSIZE + mapW / 2);
+  let z = Math.floor(((v.z + 20) + UNITSIZE / 2) / UNITSIZE + mapW / 2);
+  let x2 = Math.floor(((v.x - 20) + UNITSIZE / 2) / UNITSIZE + mapW / 2);
+  let z2 = Math.floor(((v.z - 20) + UNITSIZE / 2) / UNITSIZE + mapW / 2);
+  return {
+    x: x,
+    z: z,
+    x2: x2,
+    z2: z2
+  };
+};
 
 // Creates the minimap
 // TODO: Clean up this code however possible before deployment
@@ -391,6 +397,47 @@ function drawMinimap() {
     }
   }
 }
+
+// Texture animator for AI utilizing sprites 
+// Sprite frames are animated during the update function using the specified duration
+function TextureAnimator(texture, horizTiles, numTiles) {
+  this.horizTiles = horizTiles;
+  this.numberOfTiles = numTiles;
+
+  // Assign a random animation display duration (less than a second) for each sprite
+  this.tileDisplayDuration = Math.floor(Math.random() * 900);
+
+  // Set texture wrapping and configure repeat
+  texture.wrapS = t.RepeatWrapping;
+  texture.repeat.set(1 / this.horizTiles);
+
+  // Set current tile display time and frame to zero
+  this.currentDisplayTime = 0;
+  this.currentTile = 0;
+
+  // Check every 100 ms to see if sprite tile should be updated
+  // and offset accordingly
+  // Reset currentTile after reaching last tile of sprite
+  this.updateSprite = function () {
+    this.currentDisplayTime += 100;
+    while (this.currentDisplayTime > this.tileDisplayDuration) {
+      this.currentDisplayTime -= this.tileDisplayDuration;
+      this.currentTile++;
+      if (this.currentTile == this.numberOfTiles)
+        this.currentTile = 0;
+      let currentColumn = this.currentTile % this.horizTiles;
+      texture.offset.x = currentColumn / this.horizTiles;
+    }
+  };
+}
+
+// Check for wall collision
+const checkWallCollision = (obj) => {
+  let currentPos = getMapSector(obj);
+  if (map[currentPos.x][currentPos.z] > 0 || map[currentPos.x2][currentPos.z2] > 0 || 
+    map[currentPos.x][currentPos.z2] > 0 || map[currentPos.x2][currentPos.z] > 0) 
+    return true;
+};
 
 // Creates start screen
 // TODO: Refactor this into a React component and move it to a different file
