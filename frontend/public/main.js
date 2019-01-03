@@ -138,7 +138,6 @@ const getRandBetween = (lo, hi) => {
 function addAI() {
 
   // Array of three different sprite textures
-
   const aiSpriteTextures = [
     'https://s3-us-west-1.amazonaws.com/towndcloud-seed/buttergly-bugger-sprite.png',
     'https://s3-us-west-1.amazonaws.com/towndcloud-seed/galaga-bug-sprite.png',
@@ -179,7 +178,7 @@ function addAI() {
   aiAnimations.push(new TextureAnimator(aiTexture, 2, 1, 2, 1000));
 
   // create the PositionalAudio object (passing in the listener)
-  const aiSound = new t.PositionalAudio(listener);
+  // const aiSound = new t.PositionalAudio(listener);
 
   // load AI sound and set it as the PositionalAudio object's buffer
   // const audioLoader = new t.AudioLoader();
@@ -329,16 +328,20 @@ function animate() {
   for (let i = ai.length - 1; i >= 0; i--) {
     let aiObj = ai[i];
 
-    // Move AI
+    // Generate new random coord values 
     let r = Math.random();
     if (r > 0.995) {
       aiObj.randomX = Math.random() * 2 - 1;
       aiObj.randomZ = Math.random() * 2 - 1;
     }
 
+    // Attempt moving bugger across the axis at aispeed
     aiObj.translateX(aispeed * aiObj.randomX);
     aiObj.translateZ(aispeed * aiObj.randomZ);
 
+
+    // Check if trajectory is leading off the map or hitting a wall
+    // Reverse trajectory if true
     let aiPos = getMapSector(aiObj.position);
     if (aiPos.x < 0 || aiPos.x >= mapW || checkWallCollision(aiObj.position)) {
       aiObj.translateX(-2 * aispeed * aiObj.randomX);
@@ -346,11 +349,12 @@ function animate() {
       aiObj.randomX = Math.random() * 2 - 1;
       aiObj.randomZ = Math.random() * 2 - 1;
     }
-    if (aiPos.x < -1 || aiPos.x > mapW || aiPos.z < -1 || aiPos.z > mapH) {
-      ai.splice(i, 1);
-      scene.remove(aiObj);
-      addAI();
-    }
+    // Checks if bug is off the map...maybe unecessary 
+    // if (aiPos.x < -1 || aiPos.x > mapW || aiPos.z < -1 || aiPos.z > mapH) {
+    //   ai.splice(i, 1);
+    //   scene.remove(aiObj);
+    //   addAI();
+    // }
   }
 
   // Deals with what portion of the scene the player sees
