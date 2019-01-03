@@ -3,6 +3,7 @@ const HEIGHT = window.innerHeight;
 const ASPECT = WIDTH / HEIGHT;
 const UNITSIZE = 128; // In pixels
 const WALLHEIGHT = UNITSIZE;
+const AIMOVESPEED = 100;
 
 // TODO: Remove this reference when we use the node module Three
 const t = THREE;
@@ -20,6 +21,16 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 // Set up the scene (a world in Three.js terms). We'll add objects to the scene later.
 var scene = new t.Scene();
 
+// Initialize constant for number of AI and global array variable to house AI objects
+const NUMAI = 100;
+const ai = [];
+
+// Initialize global array variable to house AI animations
+const aiAnimations = [];
+
+// Set up camera listener for AI audio
+const listener = new t.AudioListener();
+
 // Variables for FPS controls
 var direction = new t.Vector3();
 var moveBackward = false;
@@ -31,7 +42,7 @@ var raycaster;
 var velocity = new t.Vector3();
 
 // Creates a 2D grid of 1s and 0s, which will be used to render the 3D world
-var map = new BSPTree().generateLevel(100, 100);
+var map = new BSPTree().generateLevel(25, 25);
 for (let i = 0; i < map.length; i++) {
   for (let j = 0; j < map[0].length; j++) {
     if (j === 0 || i === 0 || j === map[0].length - 1 || i === map.length - 1) {
@@ -40,6 +51,7 @@ for (let i = 0; i < map.length; i++) {
   }
 }
 var mapW = map.length;
+var mapH = map[0].length;
 
 
 ////// Set up the environment //////
@@ -116,6 +128,80 @@ const setupScene = () => {
   scene.add(allLight);
 }
 
+//Get a random integer between lo and hi, inclusive.
+//Assumes lo and hi are integers and lo is lower than hi.
+const getRandBetween = (lo, hi) => {
+  return parseInt(Math.floor(Math.random() * (hi - lo + 1)) + lo, 10);
+};
+
+// Create and deploy a single AI object
+function addAI() {
+
+  // Array of three different sprite textures
+  const aiSpriteTextures = [
+    'https://s3-us-west-1.amazonaws.com/towndcloud-seed/buttergly-bugger-sprite.png',
+    'https://s3-us-west-1.amazonaws.com/towndcloud-seed/galaga-bug-sprite.png',
+    'https://s3-us-west-1.amazonaws.com/towndcloud-seed/winged-bug-sprite.png'
+  ];
+
+  let x, z;
+
+  // Get camera position to avoid spawning on top of player
+  const c = getMapSector(camera.position);
+
+  // Sample from aiSpriteTextures array to create a random bugger
+  const aiTexture = new t.TextureLoader().load(aiSpriteTextures[Math.floor(Math.random() * aiSpriteTextures.length)]);
+
+  // Add texture, create sprite using material and set scale
+  let aiMaterial = new t.SpriteMaterial({ /*color: 0xEE3333,*/
+    map: aiTexture,
+    fog: true
+  });
+  let o = new t.Sprite(aiMaterial);
+  o.scale.set(40, 40, 1);
+
+  // Generate random coords within the map until bugger is not on the player or in a wall
+  do {
+    x = getRandBetween(0, mapW - 1);
+    z = getRandBetween(0, mapH - 1);
+  } while (map[x][z] > 0 || (x == c.x && z == c.z));
+
+  // Format coords, set position, and random directions (X and Z) to be used for animating direction
+  x = Math.floor(x - mapW / 2) * UNITSIZE;
+  z = Math.floor(z - mapW / 2) * UNITSIZE;
+  o.position.set(x, UNITSIZE * 0.15, z);
+  o.pathPos = 1;
+  o.randomX = Math.random();
+  o.randomZ = Math.random();
+
+  // Add TextureAnimator to animations array to be iterated through and processed in animation function
+  aiAnimations.push(new TextureAnimator(aiTexture, 2, 1, 2, 1000));
+
+  // create the PositionalAudio object (passing in the listener)
+  // const aiSound = new t.PositionalAudio(listener);
+
+  // load AI sound and set it as the PositionalAudio object's buffer
+  // const audioLoader = new t.AudioLoader();
+  // audioLoader.load('https://s3-us-west-1.amazonaws.com/towndcloud-seed/bug-glitch-1.mp3', function (buffer) {
+  //   aiSound.setBuffer(buffer);
+  //   aiSound.setRefDistance(5);
+  //   aiSound.setLoop(true);
+  //   aiSound.setRolloffFactor(2);
+  //   aiSound.play();
+  // });
+
+  ai.push(o);
+  scene.add(o);
+  // o.add(aiSound);
+}
+
+// Run addAI for each AI object
+function setupAI() {
+  for (var i = 0; i < NUMAI; i++) {
+    addAI();
+  }
+}
+
 // Setup the game
 function init() {
   scene.fog = new t.FogExp2('black', 0.0020);
@@ -186,6 +272,9 @@ function init() {
   // Add objects to the world
   setupScene();
 
+  // Add AI buggers
+  setupAI();
+
   // Add the canvas to the document
   renderer.setClearColor('#D6F1FF'); // Sky color (if the sky was visible)
   document.body.appendChild(renderer.domElement);
@@ -235,16 +324,63 @@ function animate() {
   }
   prevTime = time;
 
+  // Animate AI
+  aiAnimations.forEach(animation => {
+    animation.update(Math.floor(Math.random() * 1800) * delta);
+  });
+
+  // Update AI.
+  const aispeed = delta * AIMOVESPEED;
+  for (let i = ai.length - 1; i >= 0; i--) {
+    let aiObj = ai[i];
+
+    // Generate new random coord values 
+    let r = Math.random();
+    if (r > 0.995) {
+      aiObj.randomX = Math.random() * 2 - 1;
+      aiObj.randomZ = Math.random() * 2 - 1;
+    }
+
+    // Attempt moving bugger across the axis at aispeed
+    aiObj.translateX(aispeed * aiObj.randomX);
+    aiObj.translateZ(aispeed * aiObj.randomZ);
+
+
+    // Check if trajectory is leading off the map or hitting a wall
+    // Reverse trajectory if true
+    let aiPos = getMapSector(aiObj.position);
+    if (aiPos.x < 0 || aiPos.x >= mapW || checkWallCollision(aiObj.position)) {
+      aiObj.translateX(-2 * aispeed * aiObj.randomX);
+      aiObj.translateZ(-2 * aispeed * aiObj.randomZ);
+      aiObj.randomX = Math.random() * 2 - 1;
+      aiObj.randomZ = Math.random() * 2 - 1;
+    }
+
+    // Check if bug is off the map, and if true remove and add a new one
+    if (aiPos.x < -1 || aiPos.x > mapW || aiPos.z < -1 || aiPos.z > mapH) {
+      ai.splice(i, 1);
+      scene.remove(aiObj);
+      addAI();
+    }
+  }
+
   // Deals with what portion of the scene the player sees
   renderer.render(scene, camera);
 }
 
 ////// Helper function(s) //////
-function getMapSector(v) {
-  var x = Math.floor((v.x + UNITSIZE / 2) / UNITSIZE + mapW / 2);
-  var z = Math.floor((v.z + UNITSIZE / 2) / UNITSIZE + mapW / 2);
-  return { x: x, z: z };
-}
+const getMapSector = (v) => {
+  let x = Math.floor(((v.x + 20) + UNITSIZE / 2) / UNITSIZE + mapW / 2);
+  let z = Math.floor(((v.z + 20) + UNITSIZE / 2) / UNITSIZE + mapW / 2);
+  let x2 = Math.floor(((v.x - 20) + UNITSIZE / 2) / UNITSIZE + mapW / 2);
+  let z2 = Math.floor(((v.z - 20) + UNITSIZE / 2) / UNITSIZE + mapW / 2);
+  return {
+    x: x,
+    z: z,
+    x2: x2,
+    z2: z2
+  };
+};
 
 // Creates the minimap
 // TODO: Clean up this code however possible before deployment
@@ -289,6 +425,52 @@ function drawMinimap() {
     }
   }
 }
+
+// Texture animator for AI utilizing sprites 
+// Sprite frames are animated during the update function using the specified duration
+function TextureAnimator(texture, tilesHoriz, tilesVert, numTiles, tileDispDuration) {
+  // note: texture passed by reference, will be updated by the update function.
+
+  this.tilesHorizontal = tilesHoriz;
+  this.tilesVertical = tilesVert;
+  // how many images does this spritesheet contain?
+  //  usually equals tilesHoriz * tilesVert, but not necessarily,
+  //  if there at blank tiles at the bottom of the spritesheet. 
+  this.numberOfTiles = numTiles;
+  texture.wrapS = texture.wrapT = t.RepeatWrapping;
+  texture.repeat.set(1 / this.tilesHorizontal, 1 / this.tilesVertical);
+
+  // how long should each image be displayed?
+  this.tileDisplayDuration = tileDispDuration;
+
+  // how long has the current image been displayed?
+  this.currentDisplayTime = 0;
+
+  // which image is currently being displayed?
+  this.currentTile = 0;
+
+  this.update = function (milliSec) {
+    this.currentDisplayTime += milliSec;
+    while (this.currentDisplayTime > this.tileDisplayDuration) {
+      this.currentDisplayTime -= this.tileDisplayDuration;
+      this.currentTile++;
+      if (this.currentTile == this.numberOfTiles)
+        this.currentTile = 0;
+      var currentColumn = this.currentTile % this.tilesHorizontal;
+      texture.offset.x = currentColumn / this.tilesHorizontal;
+      var currentRow = Math.floor(this.currentTile / this.tilesHorizontal);
+      texture.offset.y = currentRow / this.tilesVertical;
+    }
+  };
+}
+
+// Check for wall collision
+const checkWallCollision = (obj) => {
+  let currentPos = getMapSector(obj);
+  if (map[currentPos.x][currentPos.z] > 0 || map[currentPos.x2][currentPos.z2] > 0 || 
+    map[currentPos.x][currentPos.z2] > 0 || map[currentPos.x2][currentPos.z] > 0) 
+    return true;
+};
 
 // Creates start screen
 // TODO: Refactor this into a React component and move it to a different file
