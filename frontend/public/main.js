@@ -114,36 +114,6 @@ const setupScene = () => {
   // TODO: Remove temporary ambient lighting
   const allLight = new t.AmbientLight('purple');
   scene.add(allLight);
-
-  // Particles
-  // TODO: This is only experimental code
-  // These methods might be deprecated?
-  const particleCount = 1800;
-  const particles = new t.Geometry();
-  const particleMat = new t.PointsMaterial({
-    color: 0xFFFFFF,
-    size: 20
-  });
-
-  for (let i = 0; i < particleCount; i++) {
-    let particleX = Math.random() * 500 - 250;
-    let particleY = Math.random() * 500 - 250;
-    let particleZ = Math.random() * 500 - 250;
-    let particle = new t.Vector3(
-      new t.Vector3(particleX, particleY, particleZ)
-    );
-
-    particles.vertices.push(particle);
-  }
-
-  const particleSystem = new t.Points(
-    particles,
-    particleMat
-  );
-
-  particleSystem.position.y = 50;
-
-  scene.add(particleSystem);
 }
 
 // Setup the game
