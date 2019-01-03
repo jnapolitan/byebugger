@@ -137,6 +137,8 @@ const getRandBetween = (lo, hi) => {
 // Create and deploy a single AI object
 function addAI() {
 
+  // Array of three different sprite textures
+
   const aiSpriteTextures = [
     'https://s3-us-west-1.amazonaws.com/towndcloud-seed/buttergly-bugger-sprite.png',
     'https://s3-us-west-1.amazonaws.com/towndcloud-seed/galaga-bug-sprite.png',
@@ -144,27 +146,37 @@ function addAI() {
   ];
 
   let x, z;
+
+  // Get camera position to avoid spawning on top of player
   const c = getMapSector(camera.position);
+
+  // Sample from aiSpriteTextures array to create a random bugger
   const aiTexture = new t.TextureLoader().load(aiSpriteTextures[Math.floor(Math.random() * aiSpriteTextures.length)]);
-  aiAnimations.push(new TextureAnimator(aiTexture, 2, 1, 2));
+
+  // Add texture, create sprite using material and set scale
   let aiMaterial = new t.SpriteMaterial({ /*color: 0xEE3333,*/
     map: aiTexture,
     fog: true
   });
   let o = new t.Sprite(aiMaterial);
   o.scale.set(40, 40, 1);
+
+  // Generate random coords within the map until bugger is not on the player or in a wall
   do {
     x = getRandBetween(0, mapW - 1);
     z = getRandBetween(0, mapH - 1);
   } while (map[x][z] > 0 || (x == c.x && z == c.z));
+
+  // Format coords, set position, and random directions (X and Z) to be used for animating direction
   x = Math.floor(x - mapW / 2) * UNITSIZE;
   z = Math.floor(z - mapW / 2) * UNITSIZE;
   o.position.set(x, UNITSIZE * 0.15, z);
   o.pathPos = 1;
-  o.lastRandomX = Math.random();
-  o.lastRandomZ = Math.random();
-  o.lastShot = Date.now(); // Higher-fidelity timers aren't a big deal here.
-  o.health = 100;
+  o.randomX = Math.random();
+  o.randomZ = Math.random();
+
+  // Add TextureAnimator to animations array to be iterated through and processed in animation function
+  aiAnimations.push(new TextureAnimator(aiTexture, 2, 1, 2, 1000));
 
   // create the PositionalAudio object (passing in the listener)
   const aiSound = new t.PositionalAudio(listener);
@@ -307,6 +319,11 @@ function animate() {
   }
   prevTime = time;
 
+  // Animate AI
+  aiAnimations.forEach(animation => {
+    animation.update(Math.floor(Math.random() * 1800) * delta);
+  });
+
   // Update AI.
   const aispeed = delta * AIMOVESPEED;
   for (let i = ai.length - 1; i >= 0; i--) {
@@ -315,19 +332,19 @@ function animate() {
     // Move AI
     let r = Math.random();
     if (r > 0.995) {
-      aiObj.lastRandomX = Math.random() * 2 - 1;
-      aiObj.lastRandomZ = Math.random() * 2 - 1;
+      aiObj.randomX = Math.random() * 2 - 1;
+      aiObj.randomZ = Math.random() * 2 - 1;
     }
 
-    aiObj.translateX(aispeed * aiObj.lastRandomX);
-    aiObj.translateZ(aispeed * aiObj.lastRandomZ);
+    aiObj.translateX(aispeed * aiObj.randomX);
+    aiObj.translateZ(aispeed * aiObj.randomZ);
 
     let aiPos = getMapSector(aiObj.position);
     if (aiPos.x < 0 || aiPos.x >= mapW || checkWallCollision(aiObj.position)) {
-      aiObj.translateX(-2 * aispeed * aiObj.lastRandomX);
-      aiObj.translateZ(-2 * aispeed * aiObj.lastRandomZ);
-      aiObj.lastRandomX = Math.random() * 2 - 1;
-      aiObj.lastRandomZ = Math.random() * 2 - 1;
+      aiObj.translateX(-2 * aispeed * aiObj.randomX);
+      aiObj.translateZ(-2 * aispeed * aiObj.randomZ);
+      aiObj.randomX = Math.random() * 2 - 1;
+      aiObj.randomZ = Math.random() * 2 - 1;
     }
     if (aiPos.x < -1 || aiPos.x > mapW || aiPos.z < -1 || aiPos.z > mapH) {
       ai.splice(i, 1);
@@ -400,33 +417,38 @@ function drawMinimap() {
 
 // Texture animator for AI utilizing sprites 
 // Sprite frames are animated during the update function using the specified duration
-function TextureAnimator(texture, horizTiles, numTiles) {
-  this.horizTiles = horizTiles;
+function TextureAnimator(texture, tilesHoriz, tilesVert, numTiles, tileDispDuration) {
+  // note: texture passed by reference, will be updated by the update function.
+
+  this.tilesHorizontal = tilesHoriz;
+  this.tilesVertical = tilesVert;
+  // how many images does this spritesheet contain?
+  //  usually equals tilesHoriz * tilesVert, but not necessarily,
+  //  if there at blank tiles at the bottom of the spritesheet. 
   this.numberOfTiles = numTiles;
+  texture.wrapS = texture.wrapT = t.RepeatWrapping;
+  texture.repeat.set(1 / this.tilesHorizontal, 1 / this.tilesVertical);
 
-  // Assign a random animation display duration (less than a second) for each sprite
-  this.tileDisplayDuration = Math.floor(Math.random() * 900);
+  // how long should each image be displayed?
+  this.tileDisplayDuration = tileDispDuration;
 
-  // Set texture wrapping and configure repeat
-  texture.wrapS = t.RepeatWrapping;
-  texture.repeat.set(1 / this.horizTiles);
-
-  // Set current tile display time and frame to zero
+  // how long has the current image been displayed?
   this.currentDisplayTime = 0;
+
+  // which image is currently being displayed?
   this.currentTile = 0;
 
-  // Check every 100 ms to see if sprite tile should be updated
-  // and offset accordingly
-  // Reset currentTile after reaching last tile of sprite
-  this.updateSprite = function () {
-    this.currentDisplayTime += 100;
+  this.update = function (milliSec) {
+    this.currentDisplayTime += milliSec;
     while (this.currentDisplayTime > this.tileDisplayDuration) {
       this.currentDisplayTime -= this.tileDisplayDuration;
       this.currentTile++;
       if (this.currentTile == this.numberOfTiles)
         this.currentTile = 0;
-      let currentColumn = this.currentTile % this.horizTiles;
-      texture.offset.x = currentColumn / this.horizTiles;
+      var currentColumn = this.currentTile % this.tilesHorizontal;
+      texture.offset.x = currentColumn / this.tilesHorizontal;
+      var currentRow = Math.floor(this.currentTile / this.tilesHorizontal);
+      texture.offset.y = currentRow / this.tilesVertical;
     }
   };
 }
