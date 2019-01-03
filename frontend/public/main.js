@@ -31,7 +31,7 @@ var raycaster;
 var velocity = new t.Vector3();
 
 // Creates a 2D grid of 1s and 0s, which will be used to render the 3D world
-var map = createMap();
+var map = new BSPTree().generateLevel(100, 100);
 for (let i = 0; i < map.length; i++) {
   for (let j = 0; j < map[0].length; j++) {
     if (j === 0 || i === 0 || j === map[0].length - 1 || i === map.length - 1) {
@@ -229,7 +229,7 @@ function animate() {
   requestAnimationFrame(animate);
 
   // TODO: Figure out best rotation
-  // ceiling.rotation.z += .001;
+  // ceiling.rotation.z += .0005;
 
   // TODO: Not important for now. Remove this if there's no good use for it.
   raycaster.ray.origin.copy(controls.getObject().position);
@@ -276,7 +276,7 @@ function drawMinimap() {
   var ai = [];
   var c = getMapSector(camera.position)
   var context = document.getElementById('radar').getContext('2d');
-  context.font = '10px Georgia';
+  context.font = '1px Georgia';
   for (var i = 0; i < mapW; i++) {
     for (var j = 0, m = map[i].length; j < m; j++) {
       var d = 0;
@@ -288,27 +288,27 @@ function drawMinimap() {
       }
       if (i === c.x && j === c.z && d === 0) {
         context.fillStyle = 'rgba(170, 51, 255, 1)';
-        context.fillRect(i * 7, j * 7, (i + 1) * 7, (j + 1) * 7);
+        context.fillRect(i * 2, j * 2, (i + 1) * 2, (j + 1) * 2);
       }
       else if (i === c.x && j === c.z) {
         context.fillStyle = '#AA33FF';
-        context.fillRect(i * 7, j * 7, (i + 1) * 7, (j + 1) * 7);
+        context.fillRect(i * 2, j * 2, (i + 1) * 2, (j + 1) * 2);
         context.fillStyle = '#000000';
-        context.fillText('' + d, i * 7 + 8, j * 7 + 12);
+        context.fillText('' + d, i * 2 + 8, j * 2 + 12);
       }
       else if (d > 0 && d < 10) {
         context.fillStyle = '#FF0000';
-        context.fillRect(i * 7, j * 7, (i + 1) * 7, (j + 1) * 7);
+        context.fillRect(i * 2, j * 2, (i + 1) * 2, (j + 1) * 2);
         context.fillStyle = '#000000';
-        context.fillText('' + d, i * 7 + 8, j * 7 + 12);
+        context.fillText('' + d, i * 2 + 8, j * 2 + 12);
       }
       else if (map[i][j] > 0) {
         context.fillStyle = 'rgba(102, 102, 102, 1)';
-        context.fillRect(i * 7, j * 7, (i + 1) * 7, (j + 1) * 7);
+        context.fillRect(i * 2, j * 2, (i + 1) * 2, (j + 1) * 2);
       }
       else {
         context.fillStyle = '#CCCCCC';
-        context.fillRect(i * 7, j * 7, (i + 1) * 7, (j + 1) * 7);
+        context.fillRect(i * 2, j * 2, (i + 1) * 2, (j + 1) * 2);
       }
     }
   }
@@ -332,3 +332,5 @@ $(document).ready(() => {
     animate();
   });
 });
+
+// TODO: Handle resizing the browser window
