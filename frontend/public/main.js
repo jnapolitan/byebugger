@@ -47,6 +47,7 @@ for (let i = 0; i < map.length; i++) {
   }
 }
 var mapW = map.length;
+var mapH = map[0].length;
 
 
 ////// Set up the environment //////
@@ -123,8 +124,13 @@ const setupScene = () => {
   scene.add(allLight);
 }
 
-// Create and deploy a single AI object
+//Get a random integer between lo and hi, inclusive.
+//Assumes lo and hi are integers and lo is lower than hi.
+const getRandBetween = (lo, hi) => {
+  return parseInt(Math.floor(Math.random() * (hi - lo + 1)) + lo, 10);
+};
 
+// Create and deploy a single AI object
 function addAI() {
 
   const aiSpriteTextures = [
@@ -136,7 +142,7 @@ function addAI() {
   let x, z;
   const c = getMapSector(camera.position);
   const aiTexture = new t.TextureLoader().load(aiSpriteTextures[Math.floor(Math.random() * aiSpriteTextures.length)]);
-  aiAnimations.push(new TextureAnimator(aiTexture, 2, 1, 2, 1000));
+  aiAnimations.push(new TextureAnimator(aiTexture, 2, 1, 2));
   let aiMaterial = new t.SpriteMaterial({ /*color: 0xEE3333,*/
     map: aiTexture,
     fog: true
@@ -154,6 +160,7 @@ function addAI() {
   o.lastRandomX = Math.random();
   o.lastRandomZ = Math.random();
   o.lastShot = Date.now(); // Higher-fidelity timers aren't a big deal here.
+  o.health = 100;
 
   // create the PositionalAudio object (passing in the listener)
   const aiSound = new t.PositionalAudio(listener);
@@ -171,6 +178,40 @@ function addAI() {
   ai.push(o);
   scene.add(o);
   o.add(aiSound);
+}
+
+
+// Texture animator for AI utilizing sprites 
+// Sprite frames are animated during the update function using the specified duration
+function TextureAnimator(texture, horizTiles, numTiles) {
+  this.horizTiles = horizTiles;
+  this.numberOfTiles = numTiles;
+
+  // Assign a random animation display duration (less than a second) for each sprite
+  this.tileDisplayDuration = Math.floor(Math.random() * 900);
+
+  // Set texture wrapping and configure repeat
+  texture.wrapS = t.RepeatWrapping;
+  texture.repeat.set(1 / this.horizTiles);
+
+  // Set current tile display time and frame to zero
+  this.currentDisplayTime = 0;
+  this.currentTile = 0;
+
+  // Check every 100 ms to see if sprite tile should be updated
+  // and offset accordingly
+  // Reset currentTile after reaching last tile of sprite
+  this.updateSprite = function() {
+    this.currentDisplayTime += 100;
+    while (this.currentDisplayTime > this.tileDisplayDuration) {
+      this.currentDisplayTime -= this.tileDisplayDuration;
+      this.currentTile++;
+      if (this.currentTile == this.numberOfTiles)
+        this.currentTile = 0;
+      let currentColumn = this.currentTile % this.horizTiles;
+      texture.offset.x = currentColumn / this.horizTiles;
+    }
+  };
 }
 
 // Run addAI for each AI object
@@ -249,6 +290,9 @@ function init() {
 
   // Add objects to the world
   setupScene();
+
+  // Add AI buggers
+  setupAI();
 
   // Add the canvas to the document
   renderer.setClearColor('#D6F1FF'); // Sky color (if the sky was visible)
