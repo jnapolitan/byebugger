@@ -1,7 +1,5 @@
 # ByeBugger
 
-### ByeBugger
-
 Single-player 3D interactive educational game centered around software engineering concepts.
 
 - [Live Site]()
@@ -17,7 +15,7 @@ Single-player 3D interactive educational game centered around software engineeri
 
 ## Background and Overview
 
-ByeBugger is a single-player interactive 3D educational game that teaches players software engineering concepts through the act of cathing and solving bugs. Running into bugs and learning how to debug common coding problems are integral parts to the software development process. ByeBugger introduces its player to this process by having him/her run through a map to catch bugs. When caught, these bugs present themselves as real computer software bugs (in Ruby and Javascript), which the player needs to solve to gain points and move up the leader board. Will you catch 'em all and reign above all the other ByeBuggers out there?
+ByeBugger is a single-player interactive 3D educational game that teaches players software engineering concepts through the act of catching and solving bugs. Running into bugs and learning how to debug common coding problems are integral parts to the software development process. ByeBugger introduces its player to this process by having him/her run through a map to catch bugs. When caught, these bugs present themselves as real computer software bugs (in Ruby and Javascript), which the player needs to solve to gain points and move up the leader board. Will you catch 'em all and reign above all the other ByeBuggers out there?
 
 <!-- We will need to:
 - store user and info (time of when they played, their score) in database
@@ -80,20 +78,20 @@ Stats Model: user id, user handle, score
 * [Sue Park](https://github.com/spark1031)
     * Bug capture / solve components and logic
 * [Eric To](https://github.com/eric-to)
-    * Procedural generated dungeon, object collision
+    * Procedural environment generation, object collision, controls
     
 ## Weekly Project Plan
 
 ### Day 1
 
 - Refactor/integrate current bug AI into most recent environment - **Julian**
-- Refactor controls for collision and evolve environment aesthetic - **Eric**
+- Refactor FPS controls for collision and evolve environment aesthetic - **Eric**
 - Initial approach to bug capture/solve logic - **Sue**
 
 ### Day 2
 
 - Continue evolving / implementing bug AI with additional randomized / unique behavior - **Julian**
-- Research potential of binary space partitioning for dungeon generation - **Eric**
+- Refactor dungeon generation algorithm to implement binary space partioning for Roguelike-experience - **Eric**
 - Implement initial bug capture/solve logic into most recent environment - **Sue**
 
 ### Day 3
@@ -105,13 +103,13 @@ Stats Model: user id, user handle, score
 ### Day 4
 
 - Polish bug AI assets and optimize game playing experience (speed, regeneration) - **Julian**
-- Polish dynamic dungeon environment generation / finalize supporting elements (lighting, textures) - **Eric**
+- Polish dynamic dungeon environment generation / finalize supporting elements (lighting, sounds, textures) - **Eric**
 - Polish bug capture/solve logic and research solutions for housing questions in DB - **Sue**
 
 ### Day 5
 
 - Start work on bonus feature: Bugs deliberately avoid player - **Julian**
-- Start work on bonus feature: Second floor to map with stairs - **Eric**
+- Start work on bonus feature: A* pathing (heuristic: Manhattan distance) for AI, multiple floors & teleport - **Eric**
 - Start work on bous feature: User generated questions - **Sue**
 
 ### Day 6
