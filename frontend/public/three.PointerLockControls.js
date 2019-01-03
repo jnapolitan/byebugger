@@ -4,6 +4,8 @@
  */
 
 THREE.PointerLockControls = function ( camera, domElement ) {
+	this.object = camera;
+
 	var scope = this;
 
 	this.domElement = domElement || document.body;

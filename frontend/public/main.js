@@ -216,8 +216,14 @@ function animate() {
   direction.normalize(); // Ensures consistent movement in all directions
 
   // TODO: Update the camera position
-  if (moveForward || moveBackward) velocity.z -= direction.z * 1200.0 * delta;
-  if (moveLeft || moveRight) velocity.x -= direction.x * 1200.0 * delta;
+  if (moveForward || moveBackward) {
+    velocity.z -= direction.z * 1200.0 * delta;
+  }
+
+  if (moveLeft || moveRight) {
+    velocity.x -= direction.x * 1200.0 * delta;
+  }
+
   controls.getObject().translateX(velocity.x * delta);
   controls.getObject().translateY(velocity.y * delta);
   controls.getObject().translateZ(velocity.z * delta);
@@ -244,7 +250,7 @@ function getMapSector(v) {
 // TODO: Clean up this code however possible before deployment
 function drawMinimap() {
   var ai = [];
-  var c = getMapSector(camera.position)
+  var c = getMapSector(controls.getObject().position);
   var context = document.getElementById('radar').getContext('2d');
   context.font = '1px Georgia';
   for (var i = 0; i < mapW; i++) {
