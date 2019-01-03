@@ -20,6 +20,13 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 // Set up the scene (a world in Three.js terms). We'll add objects to the scene later.
 var scene = new t.Scene();
 
+// Initialize constanr for number of AI and global array variable to house AI objects
+const NUMAI = 10;
+const ai = [];
+
+// Initialize global array variable to house AI animations
+const aiAnimations = [];
+
 // Variables for FPS controls
 var direction = new t.Vector3();
 var moveBackward = false;
@@ -114,6 +121,63 @@ const setupScene = () => {
   // TODO: Remove temporary ambient lighting
   const allLight = new t.AmbientLight('purple');
   scene.add(allLight);
+}
+
+// Create and deploy a single AI object
+
+function addAI() {
+
+  const aiSpriteTextures = [
+    'https://s3-us-west-1.amazonaws.com/towndcloud-seed/buttergly-bugger-sprite.png',
+    'https://s3-us-west-1.amazonaws.com/towndcloud-seed/galaga-bug-sprite.png',
+    'https://s3-us-west-1.amazonaws.com/towndcloud-seed/winged-bug-sprite.png'
+  ];
+
+  let x, z;
+  const c = getMapSector(camera.position);
+  const aiTexture = new t.TextureLoader().load(aiSpriteTextures[Math.floor(Math.random() * aiSpriteTextures.length)]);
+  aiAnimations.push(new TextureAnimator(aiTexture, 2, 1, 2, 1000));
+  let aiMaterial = new t.SpriteMaterial({ /*color: 0xEE3333,*/
+    map: aiTexture,
+    fog: true
+  });
+  let o = new t.Sprite(aiMaterial);
+  o.scale.set(40, 40, 1);
+  do {
+    x = getRandBetween(0, mapW - 1);
+    z = getRandBetween(0, mapH - 1);
+  } while (map[x][z] > 0 || (x == c.x && z == c.z));
+  x = Math.floor(x - mapW / 2) * UNITSIZE;
+  z = Math.floor(z - mapW / 2) * UNITSIZE;
+  o.position.set(x, UNITSIZE * 0.15, z);
+  o.pathPos = 1;
+  o.lastRandomX = Math.random();
+  o.lastRandomZ = Math.random();
+  o.lastShot = Date.now(); // Higher-fidelity timers aren't a big deal here.
+
+  // create the PositionalAudio object (passing in the listener)
+  const aiSound = new t.PositionalAudio(listener);
+
+  // load AI sound and set it as the PositionalAudio object's buffer
+  const audioLoader = new t.AudioLoader();
+  audioLoader.load('https://s3-us-west-1.amazonaws.com/towndcloud-seed/bug-glitch-1.mp3', function (buffer) {
+    aiSound.setBuffer(buffer);
+    aiSound.setRefDistance(5);
+    aiSound.setLoop(true);
+    aiSound.setRolloffFactor(2);
+    aiSound.play();
+  });
+
+  ai.push(o);
+  scene.add(o);
+  o.add(aiSound);
+}
+
+// Run addAI for each AI object
+function setupAI() {
+  for (var i = 0; i < NUMAI; i++) {
+    addAI();
+  }
 }
 
 // Setup the game
