@@ -349,12 +349,13 @@ function animate() {
       aiObj.randomX = Math.random() * 2 - 1;
       aiObj.randomZ = Math.random() * 2 - 1;
     }
-    // Checks if bug is off the map...maybe unecessary 
-    // if (aiPos.x < -1 || aiPos.x > mapW || aiPos.z < -1 || aiPos.z > mapH) {
-    //   ai.splice(i, 1);
-    //   scene.remove(aiObj);
-    //   addAI();
-    // }
+
+    // Check if bug is off the map, and if true remove and add a new one
+    if (aiPos.x < -1 || aiPos.x > mapW || aiPos.z < -1 || aiPos.z > mapH) {
+      ai.splice(i, 1);
+      scene.remove(aiObj);
+      addAI();
+    }
   }
 
   // Deals with what portion of the scene the player sees
