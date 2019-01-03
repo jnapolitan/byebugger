@@ -139,9 +139,9 @@ function addAI() {
 
   // Array of three different sprite textures
   const aiSpriteTextures = [
-    'https://s3-us-west-1.amazonaws.com/towndcloud-seed/buttergly-bugger-sprite.png',
-    'https://s3-us-west-1.amazonaws.com/towndcloud-seed/galaga-bug-sprite.png',
-    'https://s3-us-west-1.amazonaws.com/towndcloud-seed/winged-bug-sprite.png'
+    '/assets/images/butterfly-sprite.png',
+    '/assets/images/galaga-sprite.png',
+    '/assets/images/winged-sprite.png'
   ];
 
   let x, z;
