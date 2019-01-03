@@ -182,18 +182,18 @@ function addAI() {
   const aiSound = new t.PositionalAudio(listener);
 
   // load AI sound and set it as the PositionalAudio object's buffer
-  const audioLoader = new t.AudioLoader();
-  audioLoader.load('https://s3-us-west-1.amazonaws.com/towndcloud-seed/bug-glitch-1.mp3', function (buffer) {
-    aiSound.setBuffer(buffer);
-    aiSound.setRefDistance(5);
-    aiSound.setLoop(true);
-    aiSound.setRolloffFactor(2);
-    aiSound.play();
-  });
+  // const audioLoader = new t.AudioLoader();
+  // audioLoader.load('https://s3-us-west-1.amazonaws.com/towndcloud-seed/bug-glitch-1.mp3', function (buffer) {
+  //   aiSound.setBuffer(buffer);
+  //   aiSound.setRefDistance(5);
+  //   aiSound.setLoop(true);
+  //   aiSound.setRolloffFactor(2);
+  //   aiSound.play();
+  // });
 
   ai.push(o);
   scene.add(o);
-  o.add(aiSound);
+  // o.add(aiSound);
 }
 
 // Run addAI for each AI object
