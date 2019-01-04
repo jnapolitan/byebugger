@@ -94,12 +94,12 @@ const setupScene = () => {
   var size = 10000;
   var divisions = 600;
 
-  var gridHelper = new THREE.GridHelper(size, divisions, '#00ccfd', '#00ccfd');
+  var gridHelper = new t.GridHelper(size, divisions, '#00ccfd', '#00ccfd');
   gridHelper.position.y = -10;
   gridHelper.position.x = Math.PI / -2;
   scene.add(gridHelper);
 
-  gridHelper2 = new THREE.GridHelper(size, divisions, '#00ccfd', '#00ccfd');
+  gridHelper2 = new t.GridHelper(size, divisions, '#00ccfd', '#00ccfd');
   gridHelper2.position.y = 100;
   gridHelper2.position.x = Math.PI / 2;
   scene.add(gridHelper2);
