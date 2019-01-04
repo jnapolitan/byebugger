@@ -18,6 +18,8 @@ var controls = new t.PointerLockControls(camera);
 var renderer = new t.WebGLRenderer({ antialias: false });
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = t.BasicShadowMap;
 // Set up the scene (a world in Three.js terms). We'll add objects to the scene later.
 var scene = new t.Scene();
 
@@ -42,7 +44,7 @@ var raycaster;
 var velocity = new t.Vector3();
 
 // Creates a 2D grid of 1s and 0s, which will be used to render the 3D world
-var map = new BSPTree().generateLevel(25, 25);
+var map = new BSPTree().generateLevel(100, 100);
 for (let i = 0; i < map.length; i++) {
   for (let j = 0; j < map[0].length; j++) {
     if (j === 0 || i === 0 || j === map[0].length - 1 || i === map.length - 1) {
@@ -52,7 +54,6 @@ for (let i = 0; i < map.length; i++) {
 }
 var mapW = map.length;
 var mapH = map[0].length;
-
 
 ////// Set up the environment //////
 const setupScene = () => {
@@ -70,7 +71,7 @@ const setupScene = () => {
   floorCeilMat.wrapS = t.RepeatWrapping;
   // PlaneBufferGeometry is a lower memory alternative to PlaneGeometry
   const floorCeilGeo = new t.PlaneBufferGeometry(10000, 10000);
-  let texture = new t.MeshLambertMaterial({
+  let texture = new t.MeshPhongMaterial({
     map: floorCeilMat
   });
 
@@ -87,16 +88,21 @@ const setupScene = () => {
 
   // Add the floor and ceiling to the world
   // scene.add(floor);
-  scene.add(ceiling);
+  // scene.add(ceiling);
 
   // NEW FLOOR
   var size = 10000;
-  var divisions = 1000;
+  var divisions = 600;
 
-  var gridHelper = new THREE.GridHelper(size, divisions, 'red', 'red');
+  var gridHelper = new THREE.GridHelper(size, divisions, '#00ccfd', '#00ccfd');
   gridHelper.position.y = -10;
   gridHelper.position.x = Math.PI / -2;
   scene.add(gridHelper);
+
+  gridHelper2 = new THREE.GridHelper(size, divisions, '#00ccfd', '#00ccfd');
+  gridHelper2.position.y = 100;
+  gridHelper2.position.x = Math.PI / 2;
+  scene.add(gridHelper2);
   ///////////////
 
   // Walls - note MeshLambertMaterial is affected by lighting
@@ -105,8 +111,8 @@ const setupScene = () => {
   wallMat.repeat.set(2, 2);
   wallMat.wrapT = t.RepeatWrapping;
   wallMat.wrapS = t.RepeatWrapping;
-  const block = new t.CubeGeometry(WALLHEIGHT, WALLHEIGHT, WALLHEIGHT);
-  let wallTexture = new t.MeshLambertMaterial({
+  const block = new t.CubeGeometry(WALLHEIGHT, WALLHEIGHT - 32, WALLHEIGHT);
+  let wallTexture = new t.MeshPhongMaterial({
     map: wallMat
   });
 
@@ -116,7 +122,7 @@ const setupScene = () => {
       if (map[i][j]) {
         let wall = new t.Mesh(block, wallTexture);
         wall.position.x = (i - units / 2) * UNITSIZE;
-        wall.position.y = WALLHEIGHT / 3;
+        wall.position.y = WALLHEIGHT / 3 + 10;
         wall.position.z = (j - units / 2) * UNITSIZE;
         scene.add(wall);
       }
@@ -134,8 +140,30 @@ const setupScene = () => {
   directionalLight2.position.set(-0.5, -1, -0.5);
   scene.add(directionalLight2);
   // TODO: Remove temporary ambient lighting
-  const allLight = new t.AmbientLight('purple');
+  const allLight = new t.AmbientLight(0xffffff, 0.2);
   scene.add(allLight);
+
+  let light = new t.PointLight(0xffffff, 0.8, 18);
+  light.position.set(-3, 6, -3);
+  light.castShadow = true;
+  light.shadow.camera.near = 0.1;
+  light.shadow.camera.far = 25;
+  scene.add(light);
+
+  // player weapon
+  var mtlLoader = new t.MTLLoader();
+  mtlLoader.load('./uziGold.mtl', function(materials) {
+    materials.preload();
+    var objLoader = new t.OBJLoader();
+    objLoader.setMaterials(materials);
+    objLoader.load('./uziGold.obj', function (object) {
+      console.log(object);
+      scene.add(object);
+      object.position.x = 20;
+      object.position.z = 20;
+      object.position.y = 10;
+    })
+  });
 }
 
 //Get a random integer between lo and hi, inclusive.
@@ -341,7 +369,7 @@ function init() {
   setupAI();
 
   // Add the canvas to the document
-  renderer.setClearColor('black'); // Sky color (if the sky was visible)
+  renderer.setClearColor('#111111'); // Sky color (if the sky was visible)
   document.body.appendChild(renderer.domElement);
 
   // Add the minimap
@@ -353,7 +381,7 @@ function animate() {
   requestAnimationFrame(animate);
 
   // TODO: Figure out best rotation
-  // ceiling.rotation.z += .0005;
+  gridHelper2.rotation.y += .0003;
 
   // TODO: Not important for now. Remove this if there's no good use for it.
   raycaster.ray.origin.copy(controls.getObject().position);
