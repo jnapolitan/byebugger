@@ -15,6 +15,7 @@ var canJump; // For later use when we handle the player's keyboard input
 // TODO: This class needs to update the camera's position (right now it doesn't)
 var controls = new t.PointerLockControls(camera);
 // What we'll be using to render the scene - set antialias to false for better performance
+const models = {};
 var renderer = new t.WebGLRenderer({ antialias: false });
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -164,38 +165,26 @@ const setupScene = () => {
   scene.add(light);
 
   // player weapon
+
+  let gun;
   var mtlLoader = new t.MTLLoader();
-  mtlLoader.load('./assets/models/uziGold.mtl', function(materials) {
+  mtlLoader.setPath("./assets/models/");
+  mtlLoader.load('shotgun.mtl', function (materials) {
+
     materials.preload();
+
     var objLoader = new t.OBJLoader();
     objLoader.setMaterials(materials);
-    objLoader.load('./assets/models/uziGold.obj', function (object) {
-      console.log(object);
-      scene.add(object);
-      object.position.y = -10;
-    })
-  });
+    objLoader.setPath("./assets/models/");
+    objLoader.load('shotgun.obj', function (object) {
 
-  // random example
-  var mesh = null;
-
-  var mtlLoader = new THREE.MTLLoader();
-  mtlLoader.setPath("https://threejs.org/examples/models/obj/walt/");
-  mtlLoader.load('WaltHead.mtl', function (materials) {
-
-    materials.preload();
-
-    var objLoader = new THREE.OBJLoader();
-    objLoader.setMaterials(materials);
-    objLoader.setPath("https://threejs.org/examples/models/obj/walt/");
-    objLoader.load('WaltHead.obj', function (object) {
-
-      mesh = object;
-      mesh.position.y = -10;
-      scene.add(object);
-
+      gun = object;
+      models['gun'] = gun.clone();
+      models['gun'].position.y = 18
+      models['gun'].scale.set(200, 200, 200);
+      models['gun'].rotation.set(0, 3.2, 0);
+      scene.add(models['gun']);
     });
-
   });
 }
 
@@ -472,6 +461,14 @@ function animate() {
   controls.getObject().translateX(velocity.x * delta);
   controls.getObject().translateY(velocity.y * delta);
   controls.getObject().translateZ(velocity.z * delta);
+
+  if (models['gun']) {
+    models['gun'].position.set(
+      controls.getObject().position.x + 9,
+      18,
+      controls.getObject().position.z - 10
+    );
+  }
 
   if (controls.getObject().position.y < 10) {
     velocity.y = 0;
