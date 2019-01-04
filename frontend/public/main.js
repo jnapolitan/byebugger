@@ -275,16 +275,25 @@ function setupAI() {
 
 //SUE: swingHammer logic
 function swingHammer() {
+  //NOTE: bug offset ~= 20 (from center)
+
   //determine direction of the swing 
   //  1) position of player 2) point of click => these two will determine direction of swing vector
   let playerPosition = controls.getObject.position;
   const vector = new t.Vector3();
   camera.getWorldDirection(vector);
-  console.log(vector);
+  // console.log(vector);
   // swing vector has a fixed length (equal to hammer length)
-  const hammerLength = 5;
-
+  const hammerLength = 30;
+  vector.setLength(hammerLength);
   //if bug is in direction of vector and hammerLength away - collision = true
+  ai.forEach(bug => {
+    if ((vector.x < bug.position.x + 20 || vector.x > bug.position.x - 20)
+      && (vector.z < bug.position.z + 20 || vector.z > bug.position.z - 20)) {
+      console.log("SPLAT");
+    }
+    // if vector.x < bug.position.x + 20, vector.x > bug.position.x - 20, vector.z < bug.position.z + 20
+  });
 
 }
 
