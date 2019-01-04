@@ -202,16 +202,71 @@ function setupAI() {
   }
 }
 
+//SUE: swingHammer logic
+function swingHammer() {
+  //determine direction of the swing 
+  //  1) position of player 2) point of click => these two will determine direction of swing vector
+  let playerPosition = controls.getObject.position;
+  const vector = new t.Vector3();
+  camera.getWorldDirection(vector);
+  console.log(vector);
+  // swing vector has a fixed length (equal to hammer length)
+  const hammerLength = 5;
+
+  //if bug is in direction of vector and hammerLength away - collision = true
+
+}
+
 // Setup the game
 function init() {
   scene.fog = new t.FogExp2('black', 0.0020);
   camera.position.y = UNITSIZE * .1; // Ensures the player is above the floor
+
+  //////////////////////////////////////////////////////////////////
+  //SUE: add crosshair for aiming hammer
+  const material = new t.LineBasicMaterial({
+    color: 0xffffff,
+    linewidth: 1
+  });
+
+  // crosshair size
+  let x = 10;
+  let y = 10;
+
+  const geometry = new t.Geometry();
+
+  // crosshair
+  geometry.vertices.push(new t.Vector3(0, y, 0));
+  geometry.vertices.push(new t.Vector3(0, -y, 0));
+  geometry.vertices.push(new t.Vector3(0, 0, 0));
+  geometry.vertices.push(new t.Vector3(x, 0, 0));
+  geometry.vertices.push(new t.Vector3(-x, 0, 0));
+
+  let crosshair = new t.Line(geometry, material);
+
+  // place it in the center
+  let crosshairPercentX = 50;
+  let crosshairPercentY = 50;
+  let crosshairPositionX = (crosshairPercentX / 100) * 2 - 1;
+  let crosshairPositionY = (crosshairPercentY / 100) * 2 - 1;
+
+  crosshair.position.x = crosshairPositionX * camera.aspect;
+  crosshair.position.y = crosshairPositionY;
+
+  crosshair.position.z = -0.3;
+
+  camera.add(crosshair);
+
   // It may not look like it, but this adds the camera to the scene
   scene.add(controls.getObject());
+  // scene.add(camera); 
+  //////////////////////////////////////////////////////////////////
 
   // TODO: Move the controls logic into another file if possible
   document.addEventListener('click', function () {
     controls.lock();
+    //SUE: invoke swingHammer function upon clicking
+    swingHammer();
   }, false);
 
   var onKeyDown = function (event) {
@@ -364,6 +419,10 @@ function animate() {
     }
   }
 
+  // SUE: detection of player attacking bug
+
+
+
   // Deals with what portion of the scene the player sees
   renderer.render(scene, camera);
 }
@@ -467,8 +526,8 @@ function TextureAnimator(texture, tilesHoriz, tilesVert, numTiles, tileDispDurat
 // Check for wall collision
 const checkWallCollision = (obj) => {
   let currentPos = getMapSector(obj);
-  if (map[currentPos.x][currentPos.z] > 0 || map[currentPos.x2][currentPos.z2] > 0 || 
-    map[currentPos.x][currentPos.z2] > 0 || map[currentPos.x2][currentPos.z] > 0) 
+  if (map[currentPos.x][currentPos.z] > 0 || map[currentPos.x2][currentPos.z2] > 0 ||
+    map[currentPos.x][currentPos.z2] > 0 || map[currentPos.x2][currentPos.z] > 0)
     return true;
 };
 
