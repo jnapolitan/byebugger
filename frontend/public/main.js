@@ -10,6 +10,7 @@ const t = THREE;
 
 // Set up the camera (the player's perspective)
 var camera = new t.PerspectiveCamera(75, ASPECT, 1, 10000); // FOV, aspect, near, far
+let mouse = new t.Vector2(); //SUE: declaring mouse for later use (to track mouse movement for raycasting)
 var canJump; // For later use when we handle the player's keyboard input
 // Set up controls (custom first-person controls)
 // TODO: This class needs to update the camera's position (right now it doesn't)
@@ -24,6 +25,7 @@ renderer.shadowMap.type = t.BasicShadowMap;
 var scene = new t.Scene();
 
 // Initialize constant for number of AI and global array variable to house AI objects
+//SUE: changed number of bugs (originally 100)
 const NUMAI = 100;
 const ai = [];
 
@@ -44,6 +46,7 @@ var raycaster;
 var velocity = new t.Vector3();
 
 // Creates a 2D grid of 1s and 0s, which will be used to render the 3D world
+//SUE: changed map size (originally 100, 100)
 var map = new BSPTree().generateLevel(100, 100);
 for (let i = 0; i < map.length; i++) {
   for (let j = 0; j < map[0].length; j++) {
@@ -117,7 +120,7 @@ const setupScene = () => {
   groundMirror.position.y = 0.5;
   groundMirror.rotateX(- Math.PI / 2);
   scene.add(groundMirror);
-  
+
   // Walls - note MeshLambertMaterial is affected by lighting
   // TODO: Replace texture
   const wallMat = new t.TextureLoader().load('https://pbs.twimg.com/media/DQG5kVSXkAAb03B.jpg');
@@ -165,7 +168,7 @@ const setupScene = () => {
 
   // player weapon
   var mtlLoader = new t.MTLLoader();
-  mtlLoader.load('./assets/models/uziGold.mtl', function(materials) {
+  mtlLoader.load('./uziGold.mtl', function (materials) {
     materials.preload();
     var objLoader = new t.OBJLoader();
     objLoader.setMaterials(materials);
@@ -279,22 +282,96 @@ function swingHammer() {
 
   //determine direction of the swing 
   //  1) position of player 2) point of click => these two will determine direction of swing vector
-  let playerPosition = controls.getObject.position;
+  let player = controls.getObject()
+  let playerPosition = player.position;
   const vector = new t.Vector3();
   camera.getWorldDirection(vector);
   // console.log(vector);
   // swing vector has a fixed length (equal to hammer length)
   const hammerLength = 30;
   vector.setLength(hammerLength);
-  //if bug is in direction of vector and hammerLength away - collision = true
-  ai.forEach(bug => {
-    if ((vector.x < bug.position.x + 20 || vector.x > bug.position.x - 20)
-      && (vector.z < bug.position.z + 20 || vector.z > bug.position.z - 20)) {
-      console.log("SPLAT");
-    }
-    // if vector.x < bug.position.x + 20, vector.x > bug.position.x - 20, vector.z < bug.position.z + 20
-  });
+  // console.log("clicked");
 
+  // console.log(ai);
+  // 1) Using Raycaster
+  raycaster.setFromCamera(mouse, camera); // casting a ray from the camera position to the mouse position
+  const intersectedBugs = raycaster.intersectObjects(ai, false); //bugs that intersect with this ray (ordered from closest to farthest)
+  // if there are bugs that are hit, take the closest bug and kill it
+  console.log(intersectedBugs);
+  if (intersectedBugs.length > 0) {
+    console.log("SPLAT");
+    console.log(intersectedBugs[0]);
+    // controls.hasCaughtBug = true;
+  }
+
+
+  // console.log(vector);
+  //if bug is in direction of vector and hammerLength away - collision = true
+  // ai.forEach(bug => {
+  //   ///// 2) Using mapped vectors//////
+  //   // console.log(getMapSector(bug.position));
+  //   // console.log(getMapSector(vector));
+  //   // const lowerBoundX = getMapSector(bug.position).x2;
+  //   // const upperBoundX = getMapSector(bug.position).x;
+  //   // const lowerBoundZ = getMapSector(bug.position).z2;
+  //   // const upperBoundZ = getMapSector(bug.position).z;
+  //   // const hammerVectorOnMap = getMapSector(vector);
+  //   // const playerVectorOnMap = getMapSector(playerPosition);
+  //   // console.log(playerVectorOnMap);
+  //   // console.log(hammerVectorOnMap);
+  //   // const hammerVectorOnMapX = (hammerVectorOnMap.x + hammerVectorOnMap.x2) / 2;
+  //   // const hammerVectorOnMapZ = (hammerVectorOnMap.z + hammerVectorOnMap.z2) / 2;
+  //   // console.log('lower bound x below');
+  //   // console.log(lowerBoundX);
+  //   // console.log('upper bound x below');
+  //   // console.log(upperBoundX);
+  //   // console.log('player x below');
+  //   // console.log(hammerVectorOnMapX);
+  //   // console.log('lower bound z below');
+  //   // console.log(lowerBoundZ);
+  //   // console.log('upper bound z below');
+  //   // console.log(upperBoundZ);
+  //   // console.log('player z below');
+  //   // console.log(hammerVectorOnMapZ);
+  //   // if ((hammerVectorOnMapX >= lowerBoundX && hammerVectorOnMapX <= upperBoundX) &&
+  //   //   (hammerVectorOnMapZ >= lowerBoundZ && hammerVectorOnMapZ <= upperBoundZ)) {
+  //   //   console.log("SPLAT");
+  //   // }
+
+  //   ///// 3) Using actual vectors//////
+  //   const lowerBoundX = bug.position.x - 20;
+  //   const upperBoundX = bug.position.x + 20;
+  //   const lowerBoundZ = bug.position.z - 20;
+  //   const upperBoundZ = bug.position.z + 20;
+  //   const hammerVectorX = vector.x;
+  //   const hammerVectorZ = vector.z;
+  //   console.log('lower bound x below');
+  //   console.log(lowerBoundX);
+  //   console.log('upper bound x below');
+  //   console.log(upperBoundX);
+  //   console.log('player x below');
+  //   console.log(hammerVectorX);
+  //   console.log('lower bound z below');
+  //   console.log(lowerBoundZ);
+  //   console.log('upper bound z below');
+  //   console.log(upperBoundZ);
+  //   console.log('player z below');
+  //   console.log(hammerVectorZ);
+  //   if ((hammerVectorX < upperBoundX && hammerVectorX > lowerBoundX)
+  //     && (hammerVectorZ < upperBoundZ && hammerVectorZ > lowerBoundZ)) {
+  //     console.log("SPLAT");
+  //   }
+  // });
+  // console.log(ai[0].position.x);
+  // const bug = ai[0];
+  // console.log(bug.position.x);
+}
+
+//SUE: Used in conjunction with Raycaster - helper function to track mouse movement (used in init)
+function onDocumentMouseMove(e) {
+  e.preventDefault();
+  mouse.x = (e.clientX / WIDTH) * 2 - 1;
+  mouse.y = - (e.clientY / HEIGHT) * 2 + 1;
 }
 
 function setSpawn() {
@@ -360,6 +437,8 @@ function init() {
   // scene.add(camera); 
   //////////////////////////////////////////////////////////////////
 
+  //SUE: Used in conjunction w Raycaster - tracks mouse position (set mouse.x and mouse.y to pointer coordinates) so we know where to shoot
+  document.addEventListener('mousemove', onDocumentMouseMove, false);
   // TODO: Move the controls logic into another file if possible
   document.addEventListener('click', function () {
     controls.lock();
