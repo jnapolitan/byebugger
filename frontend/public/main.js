@@ -105,6 +105,19 @@ const setupScene = () => {
   scene.add(gridHelper2);
   ///////////////
 
+  // reflectors/mirrors
+  var geometry = new t.PlaneBufferGeometry(10000, 10000);
+  var groundMirror = new t.Reflector(geometry, {
+    clipBias: 0.003,
+    textureWidth: WIDTH * window.devicePixelRatio,
+    textureHeight: HEIGHT * window.devicePixelRatio,
+    color: 0x111111,
+    recursion: 1
+  });
+  groundMirror.position.y = 0.5;
+  groundMirror.rotateX(- Math.PI / 2);
+  scene.add(groundMirror);
+  
   // Walls - note MeshLambertMaterial is affected by lighting
   // TODO: Replace texture
   const wallMat = new t.TextureLoader().load('https://pbs.twimg.com/media/DQG5kVSXkAAb03B.jpg');
@@ -152,17 +165,37 @@ const setupScene = () => {
 
   // player weapon
   var mtlLoader = new t.MTLLoader();
-  mtlLoader.load('./uziGold.mtl', function(materials) {
+  mtlLoader.load('./assets/models/uziGold.mtl', function(materials) {
     materials.preload();
     var objLoader = new t.OBJLoader();
     objLoader.setMaterials(materials);
-    objLoader.load('./uziGold.obj', function (object) {
+    objLoader.load('./assets/models/uziGold.obj', function (object) {
       console.log(object);
       scene.add(object);
-      object.position.x = 20;
-      object.position.z = 20;
-      object.position.y = 10;
+      object.position.y = -10;
     })
+  });
+
+  // random example
+  var mesh = null;
+
+  var mtlLoader = new THREE.MTLLoader();
+  mtlLoader.setPath("https://threejs.org/examples/models/obj/walt/");
+  mtlLoader.load('WaltHead.mtl', function (materials) {
+
+    materials.preload();
+
+    var objLoader = new THREE.OBJLoader();
+    objLoader.setMaterials(materials);
+    objLoader.setPath("https://threejs.org/examples/models/obj/walt/");
+    objLoader.load('WaltHead.obj', function (object) {
+
+      mesh = object;
+      mesh.position.y = -10;
+      scene.add(object);
+
+    });
+
   });
 }
 
@@ -255,10 +288,28 @@ function swingHammer() {
 
 }
 
+function setSpawn() {
+  // let newX = velocity.x * delta;
+  // let newZ = velocity.z * delta;
+  // let pos = { x: newX, z: newZ };
+  // let x = Math.floor(((newX - 20) + UNITSIZE / 2) / UNITSIZE + mapW / 2);
+  // let z = Math.floor(((newZ - 20) + UNITSIZE / 2) / UNITSIZE + mapW / 2);
+  // console.log(map[x][z]);
+  // if (map[x][z] !== 1) {
+  //   controls.getObject().translateX(velocity.x * delta);
+  //   controls.getObject().translateY(velocity.y * delta);
+  //   controls.getObject().translateZ(velocity.z * delta);
+  // }
+  if (map[50][50] === 1) {
+    console.log('WE R IN A WALL');
+  }
+}
+
 // Setup the game
 function init() {
   scene.fog = new t.FogExp2('black', 0.0020);
   camera.position.y = UNITSIZE * .1; // Ensures the player is above the floor
+  setSpawn();
 
   //////////////////////////////////////////////////////////////////
   //SUE: add crosshair for aiming hammer
@@ -494,7 +545,6 @@ const getMapSector = (v) => {
 // Creates the minimap
 // TODO: Clean up this code however possible before deployment
 function drawMinimap() {
-  var ai = [];
   var c = getMapSector(controls.getObject().position);
   var context = document.getElementById('radar').getContext('2d');
   context.font = '1px Georgia';
