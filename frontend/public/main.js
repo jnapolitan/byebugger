@@ -86,8 +86,18 @@ const setupScene = () => {
   ceiling.rotation.x = Math.PI / 2;
 
   // Add the floor and ceiling to the world
-  scene.add(floor);
+  // scene.add(floor);
   scene.add(ceiling);
+
+  // NEW FLOOR
+  var size = 10000;
+  var divisions = 1000;
+
+  var gridHelper = new THREE.GridHelper(size, divisions, 'red', 'red');
+  gridHelper.position.y = -10;
+  gridHelper.position.x = Math.PI / -2;
+  scene.add(gridHelper);
+  ///////////////
 
   // Walls - note MeshLambertMaterial is affected by lighting
   // TODO: Replace texture
@@ -331,7 +341,7 @@ function init() {
   setupAI();
 
   // Add the canvas to the document
-  renderer.setClearColor('#D6F1FF'); // Sky color (if the sky was visible)
+  renderer.setClearColor('black'); // Sky color (if the sky was visible)
   document.body.appendChild(renderer.domElement);
 
   // Add the minimap
@@ -367,6 +377,18 @@ function animate() {
   if (moveLeft || moveRight) {
     velocity.x -= direction.x * 1200.0 * delta;
   }
+
+  // let newX = velocity.x * delta;
+  // let newZ = velocity.z * delta;
+  // let pos = { x: newX, z: newZ };
+  // let x = Math.floor(((newX - 20) + UNITSIZE / 2) / UNITSIZE + mapW / 2);
+  // let z = Math.floor(((newZ - 20) + UNITSIZE / 2) / UNITSIZE + mapW / 2);
+  // console.log(map[x][z]);
+  // if (map[x][z] !== 1) {
+  //   controls.getObject().translateX(velocity.x * delta);
+  //   controls.getObject().translateY(velocity.y * delta);
+  //   controls.getObject().translateZ(velocity.z * delta);
+  // }
 
   controls.getObject().translateX(velocity.x * delta);
   controls.getObject().translateY(velocity.y * delta);
