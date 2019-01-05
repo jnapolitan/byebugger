@@ -25,7 +25,7 @@ renderer.shadowMap.type = t.BasicShadowMap;
 var scene = new t.Scene();
 
 // Initialize constant for number of AI and global array variable to house AI objects
-const NUMAI = 1;
+const NUMAI = 100;
 const ai = [];
 
 // Initialize global array variable to house AI animations
@@ -45,7 +45,7 @@ var raycaster;
 var velocity = new t.Vector3();
 
 // Creates a 2D grid of 1s and 0s, which will be used to render the 3D world
-var map = new BSPTree().generateLevel(30, 30);
+var map = new BSPTree().generateLevel(100, 100);
 for (let i = 0; i < map.length; i++) {
   for (let j = 0; j < map[0].length; j++) {
     if (j === 0 || i === 0 || j === map[0].length - 1 || i === map.length - 1) {
@@ -95,7 +95,7 @@ const setupScene = () => {
   wallMat.wrapT = t.RepeatWrapping;
   wallMat.wrapS = t.RepeatWrapping;
   const block = new t.CubeGeometry(WALLHEIGHT, WALLHEIGHT - 32, WALLHEIGHT);
-  let wallTexture = new t.MeshPhongMaterial({
+  let wallTexture = new t.MeshToonMaterial({
     map: wallMat
   });
 
@@ -154,6 +154,19 @@ const setupScene = () => {
       scene.add(models['gun']);
     });
   });
+
+  // Hammer
+  // var loader = new t.GLTFLoader();
+  // loader.load("./assets/models/td.gltf", function(gltf) {
+  //   models['hammer'] = gltf.scene;
+  //   models['hammer'].position.y = 18;
+  //   models['hammer'].scale.set(200, 200, 200);
+  //   models['hammer'].rotation.set(0, 3.2, 0);
+  //   models['hammer'].position.x = controls.getObject().position.x;
+  //   models['hammer'].position.z = controls.getObject().position.z;
+  //   scene.add(gltf.scene);
+
+  // });
 }
 
 //Get a random integer between lo and hi, inclusive.
@@ -248,26 +261,23 @@ const checkSpawn = () => {
   if (startingSpot) {
     let currentSpot;
     let currentCoords = {};
-    for (let i = 0; i < map.length; i++) {
-      for (let j = 0; j < map[0].length; j++) {
-        currentCoords['x'] = i;
-        currentCoords['z'] = j;
-        currentSpot = map[i][j];
-        if (currentSpot === 0) {
-          let calcX = (currentCoords.x - map.length / 2) * UNITSIZE;
-          let calcZ = (currentCoords.z - map.length / 2) * UNITSIZE;
-
-          controls.getObject().position.x = calcX;
-          controls.getObject().position.z = calcZ;
-        }
-      }
+    let x = Math.floor(Math.random() * map.length);
+    let z = Math.floor(Math.random() * map.length);
+    while (map[x][z]) {
+      x = Math.floor(Math.random() * map.length);
+      z = Math.floor(Math.random() * map.length);
     }
+    let calcX = (x - map.length / 2) * UNITSIZE;
+    let calcZ = (z - map.length / 2) * UNITSIZE;
+
+    controls.getObject().position.x = calcX - 20;
+    controls.getObject().position.z = calcZ - 20;
   }
 }
 
 // Setup the game
 function init() {
-  scene.fog = new t.FogExp2('black', 0.0020);
+  scene.fog = new t.FogExp2('black', 0.0015);
   camera.position.y = UNITSIZE * .1; // Ensures the player is above the floor
   checkSpawn();
 
@@ -379,7 +389,7 @@ function init() {
   setupAI();
 
   // Add the canvas to the document
-  renderer.setClearColor('#111111'); // Sky color (if the sky was visible)
+  renderer.setClearColor('white'); // Sky color (if the sky was visible)
   document.body.appendChild(renderer.domElement);
 
   // Add the minimap
@@ -414,6 +424,8 @@ function animate() {
   if (moveForward || moveBackward) {
     velocity.z -= direction.z * 1200.0 * delta;
     if (checkWallCollision(camPos)) {
+      let audio = new Audio('./assets/sounds/oof.mp3');
+      audio.play();
       velocity.z -= velocity.z * 4;
     }
   }
@@ -421,6 +433,8 @@ function animate() {
   if (moveLeft || moveRight) {
     velocity.x -= direction.x * 1200.0 * delta;
     if (checkWallCollision(camPos)) {
+      let audio = new Audio('./assets/sounds/oof.mp3');
+      audio.play();
       velocity.x -= velocity.x * 4;
     }
   }
@@ -432,10 +446,20 @@ function animate() {
 
   if (models['gun']) {
     models['gun'].position.set(
-      controls.getObject().position.x + 9,
+      controls.getObject().position.x - Math.sin(controls.getObject().rotation.y + Math.PI / 6) * 0.75,
       18,
-      controls.getObject().position.z - 10
+      controls.getObject().position.z + Math.cos(controls.getObject().rotation.y + Math.PI / 6) * 0.75
     );
+    models['gun'].rotation.set(
+      controls.getObject().rotation.x,
+      controls.getObject().rotation.y - Math.PI,
+      controls.getObject().rotation.z
+    );
+    // models['gun'].position.set(
+    //   controls.getObject().position.x - Math.sin(controls.getObject().rotation.y),
+    //   18,
+    //   controls.getObject().position.z + Math.cos(controls.getObject().rotation.y)
+    // )
   }
 
   if (controls.getObject().position.y < 10) {
@@ -492,20 +516,6 @@ function animate() {
   renderer.render(scene, camera);
 }
 
-////// Helper function(s) //////
-const getMapSector = (v) => {
-  let x = Math.floor(((v.x + 20) + UNITSIZE / 2) / UNITSIZE + mapW / 2);
-  let z = Math.floor(((v.z + 20) + UNITSIZE / 2) / UNITSIZE + mapW / 2);
-  let x2 = Math.floor(((v.x - 20) + UNITSIZE / 2) / UNITSIZE + mapW / 2);
-  let z2 = Math.floor(((v.z - 20) + UNITSIZE / 2) / UNITSIZE + mapW / 2);
-  return {
-    x: x,
-    z: z,
-    x2: x2,
-    z2: z2
-  };
-};
-
 // Creates the minimap
 // TODO: Clean up this code however possible before deployment
 function drawMinimap() {
@@ -547,44 +557,6 @@ function drawMinimap() {
       }
     }
   }
-}
-
-// Texture animator for AI utilizing sprites 
-// Sprite frames are animated during the update function using the specified duration
-function TextureAnimator(texture, tilesHoriz, tilesVert, numTiles, tileDispDuration) {
-  // note: texture passed by reference, will be updated by the update function.
-
-  this.tilesHorizontal = tilesHoriz;
-  this.tilesVertical = tilesVert;
-  // how many images does this spritesheet contain?
-  //  usually equals tilesHoriz * tilesVert, but not necessarily,
-  //  if there at blank tiles at the bottom of the spritesheet. 
-  this.numberOfTiles = numTiles;
-  texture.wrapS = texture.wrapT = t.RepeatWrapping;
-  texture.repeat.set(1 / this.tilesHorizontal, 1 / this.tilesVertical);
-
-  // how long should each image be displayed?
-  this.tileDisplayDuration = tileDispDuration;
-
-  // how long has the current image been displayed?
-  this.currentDisplayTime = 0;
-
-  // which image is currently being displayed?
-  this.currentTile = 0;
-
-  this.update = function (milliSec) {
-    this.currentDisplayTime += milliSec;
-    while (this.currentDisplayTime > this.tileDisplayDuration) {
-      this.currentDisplayTime -= this.tileDisplayDuration;
-      this.currentTile++;
-      if (this.currentTile == this.numberOfTiles)
-        this.currentTile = 0;
-      var currentColumn = this.currentTile % this.tilesHorizontal;
-      texture.offset.x = currentColumn / this.tilesHorizontal;
-      var currentRow = Math.floor(this.currentTile / this.tilesHorizontal);
-      texture.offset.y = currentRow / this.tilesVertical;
-    }
-  };
 }
 
 // Check for wall collision
