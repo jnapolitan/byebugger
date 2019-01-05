@@ -380,49 +380,6 @@ function animate() {
   renderer.render(scene, camera);
 }
 
-// Creates the minimap
-// TODO: Clean up this code however possible before deployment
-function drawMinimap() {
-  var c = getMapSector(controls.getObject().position);
-  var context = document.getElementById('radar').getContext('2d');
-  context.font = '1px Georgia';
-  for (var i = 0; i < mapW; i++) {
-    for (var j = 0, m = map[i].length; j < m; j++) {
-      var d = 0;
-      for (var k = 0, n = ai.length; k < n; k++) {
-        var e = getMapSector(ai[k].position);
-        if (i === e.x && j === e.z) {
-          d++;
-        }
-      }
-      if (i === c.x && j === c.z && d === 0) {
-        context.fillStyle = 'rgba(170, 51, 255, 1)';
-        context.fillRect(i * 2, j * 2, (i + 1) * 2, (j + 1) * 2);
-      }
-      else if (i === c.x && j === c.z) {
-        context.fillStyle = '#AA33FF';
-        context.fillRect(i * 2, j * 2, (i + 1) * 2, (j + 1) * 2);
-        context.fillStyle = '#000000';
-        context.fillText('' + d, i * 2 + 8, j * 2 + 12);
-      }
-      else if (d > 0 && d < 10) {
-        context.fillStyle = '#FF0000';
-        context.fillRect(i * 2, j * 2, (i + 1) * 2, (j + 1) * 2);
-        context.fillStyle = '#000000';
-        context.fillText('' + d, i * 2 + 8, j * 2 + 12);
-      }
-      else if (map[i][j] > 0) {
-        context.fillStyle = 'rgba(102, 102, 102, 1)';
-        context.fillRect(i * 2, j * 2, (i + 1) * 2, (j + 1) * 2);
-      }
-      else {
-        context.fillStyle = '#CCCCCC';
-        context.fillRect(i * 2, j * 2, (i + 1) * 2, (j + 1) * 2);
-      }
-    }
-  }
-}
-
 // Check for wall collision
 const checkWallCollision = (obj) => {
   let currentPos = getMapSector(obj);
@@ -448,7 +405,7 @@ $(document).ready(() => {
     setInterval(() => {
       $('.floor-title').fadeOut(3000);
     }, 1000);
-    setInterval(drawMinimap, 1000);
+    setInterval(drawMinimap(controls.getObject(), map, ai), 1000);
     animate();
   });
 });
