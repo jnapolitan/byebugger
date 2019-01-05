@@ -409,7 +409,7 @@ function animate() {
   if (moveLeft || moveRight) {
     velocity.x -= direction.x * 1200.0 * delta;
     if (checkWallCollision(camPos)) {
-      velocity.x -= velocity.x * 4;
+      velocity.x -= velocity.x * 3;
     }
   }
 
