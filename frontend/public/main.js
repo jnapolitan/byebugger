@@ -67,7 +67,7 @@ const setupScene = () => {
   const floorCeilMat = new t.TextureLoader().load('https://pbs.twimg.com/media/DQG5kVSXkAAb03B.jpg');
   // It's possible to use max anisotropy, but performance might suffer
   floorCeilMat.anisotropy = 32;
-  floorCeilMat.repeat.set(100, 100);
+  floorCeilMat.repeat.set(64, 64);
   floorCeilMat.wrapT = t.RepeatWrapping;
   floorCeilMat.wrapS = t.RepeatWrapping;
   // PlaneBufferGeometry is a lower memory alternative to PlaneGeometry
@@ -289,8 +289,25 @@ function setSpawn() {
   //   controls.getObject().translateY(velocity.y * delta);
   //   controls.getObject().translateZ(velocity.z * delta);
   // }
-  if (map[50][50] === 1) {
-    console.log('WE R IN A WALL');
+  let startingSpot = map[map.length / 2][map.length / 2];
+  if (startingSpot) {
+    console.log("I'm in a wall");
+    let currentSpot;
+    let currentCoords = {};
+    for (let i = 0; i < map.length; i++) {
+      for (let j = 0; j < map[0].length; j++) {
+        currentCoords['x'] = i;
+        currentCoords['z'] = j;
+        currentSpot = map[i][j];
+        if (currentSpot === 0) {
+          let calcX = (currentCoords.x - map.length / 2) * UNITSIZE;
+          let calcZ = (currentCoords.z - map.length / 2) * UNITSIZE;
+
+          controls.getObject().position.x = calcX;
+          controls.getObject().position.z = calcZ;
+        }
+      }
+    }
   }
 }
 
@@ -468,6 +485,7 @@ function animate() {
       18,
       controls.getObject().position.z - 10
     );
+    models['gun'].lookAt(controls.getObject());
   }
 
   if (controls.getObject().position.y < 10) {
