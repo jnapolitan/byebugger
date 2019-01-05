@@ -151,27 +151,11 @@ function swingHammer() {
 
 }
 
-const checkSpawn = () => {
-  let startingSpot = map[map.length / 2][map.length / 2];
-  if (startingSpot) {
-    let x = Math.floor(Math.random() * map.length);
-    let z = Math.floor(Math.random() * map.length);
-    while (map[x][z]) {
-      x = Math.floor(Math.random() * map.length);
-      z = Math.floor(Math.random() * map.length);
-    }
-    let calcX = (x - map.length / 2) * UNITSIZE;
-    let calcZ = (z - map.length / 2) * UNITSIZE;
-    controls.getObject().position.x = calcX - 20;
-    controls.getObject().position.z = calcZ - 20;
-  }
-}
-
 // Setup the game
 function init() {
   scene.fog = new t.FogExp2('black', 0.0015);
   camera.position.y = UNITSIZE * .1; // Ensures the player is above the floor
-  checkSpawn();
+  checkSpawn(map, controls.getObject());
 
   //////////////////////////////////////////////////////////////////
   //SUE: add crosshair for aiming hammer

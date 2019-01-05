@@ -1,3 +1,20 @@
+const checkSpawn = (map, cam) => {
+  let startingSpot = map[map.length / 2][map.length / 2];
+  if (startingSpot) {
+    console.log('rip')
+    let x = Math.floor(Math.random() * map.length);
+    let z = Math.floor(Math.random() * map.length);
+    while (map[x][z]) {
+      x = Math.floor(Math.random() * map.length);
+      z = Math.floor(Math.random() * map.length);
+    }
+    let calcX = (x - map.length / 2) * UNITSIZE;
+    let calcZ = (z - map.length / 2) * UNITSIZE;
+    cam.position.x = calcX - 20;
+    cam.position.z = calcZ - 20;
+  }
+}
+
 const getMapSector = (v) => {
   let UNITSIZE = 128;
   let x = Math.floor(((v.x + 20) + UNITSIZE / 2) / UNITSIZE + mapW / 2);
