@@ -95,24 +95,43 @@ function swingHammer() {
   // swing vector has a fixed length (equal to hammer length)
   const hammerLength = 30;
   vector.setLength(hammerLength);
-  // console.log("clicked");
-
-  // console.log(ai);
-  // 1) Using Raycaster
-  // raycaster.setFromCamera(mouse, camera); // casting a ray from the camera position to the mouse position
-  // const intersectedBugs = raycaster.intersectObjects(ai, false); //bugs that intersect with this ray (ordered from closest to farthest)
-  // // if there are bugs that are hit, take the closest bug and kill it
-  // console.log(intersectedBugs);
-  // if (intersectedBugs.length > 0) {
-  //   console.log("SPLAT");
-  //   console.log(intersectedBugs[0]);
-  //   // controls.hasCaughtBug = true;
-  // }
+  // set camera-direction vector's origin to player's position
+  const playerPositionX = playerPosition.x;
+  const playerPositionZ = playerPosition.z;
+  const vectorX = vector.x;
+  const vectorZ = vector.z;
+  const hammerVectorX = playerPositionX + vectorX;
+  const hammerVectorZ = playerPositionZ + vectorZ;
 
 
-  console.log(vector);
+  // console.log(vector);
   // if bug is in direction of vector and hammerLength away - collision = true
   ai.forEach(bug => {
+    ///// 3) Using actual vectors//////
+    const lowerBoundX = bug.position.x - 20;
+    const upperBoundX = bug.position.x + 20;
+    const lowerBoundZ = bug.position.z - 20;
+    const upperBoundZ = bug.position.z + 20;
+
+    if ((hammerVectorX < upperBoundX && hammerVectorX > lowerBoundX)
+      && (hammerVectorZ < upperBoundZ && hammerVectorZ > lowerBoundZ)) {
+      console.log('lower bound x below');
+      console.log(lowerBoundX);
+      console.log('upper bound x below');
+      console.log(upperBoundX);
+      console.log('player x below');
+      console.log(hammerVectorX);
+      console.log('lower bound z below');
+      console.log(lowerBoundZ);
+      console.log('upper bound z below');
+      console.log(upperBoundZ);
+      console.log('player z below');
+      console.log(hammerVectorZ);
+      console.log("SPLAT");
+    }
+
+
+
     ///// 2) Using mapped vectors//////
     // console.log(getMapSector(bug.position));
     // console.log(getMapSector(vector));
@@ -142,34 +161,23 @@ function swingHammer() {
     //   (hammerVectorOnMapZ >= lowerBoundZ && hammerVectorOnMapZ <= upperBoundZ)) {
     //   console.log("SPLAT");
     // }
-
-    ///// 3) Using actual vectors//////
-    const lowerBoundX = bug.position.x - 20;
-    const upperBoundX = bug.position.x + 20;
-    const lowerBoundZ = bug.position.z - 20;
-    const upperBoundZ = bug.position.z + 20;
-    const hammerVectorX = vector.x;
-    const hammerVectorZ = vector.z;
-    console.log('lower bound x below');
-    console.log(lowerBoundX);
-    console.log('upper bound x below');
-    console.log(upperBoundX);
-    console.log('player x below');
-    console.log(hammerVectorX);
-    console.log('lower bound z below');
-    console.log(lowerBoundZ);
-    console.log('upper bound z below');
-    console.log(upperBoundZ);
-    console.log('player z below');
-    console.log(hammerVectorZ);
-    if ((hammerVectorX < upperBoundX && hammerVectorX > lowerBoundX)
-      && (hammerVectorZ < upperBoundZ && hammerVectorZ > lowerBoundZ)) {
-      console.log("SPLAT");
-    }
   });
-  console.log(ai[0].position.x);
-  const bug = ai[0];
-  console.log(bug.position.x);
+
+  // console.log(ai);
+  // 1) Using Raycaster
+  // raycaster.setFromCamera(mouse, camera); // casting a ray from the camera position to the mouse position
+  // const intersectedBugs = raycaster.intersectObjects(ai, false); //bugs that intersect with this ray (ordered from closest to farthest)
+  // // if there are bugs that are hit, take the closest bug and kill it
+  // console.log(intersectedBugs);
+  // if (intersectedBugs.length > 0) {
+  //   console.log("SPLAT");
+  //   console.log(intersectedBugs[0]);
+  //   // controls.hasCaughtBug = true;
+  // }
+
+  // console.log(ai[0].position.x);
+  // const bug = ai[0];
+  // console.log(bug.position.x);
 }
 
 //SUE: Used in conjunction with Raycaster - helper function to track mouse movement (used in init)
