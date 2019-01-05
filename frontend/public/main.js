@@ -82,6 +82,62 @@ function setupAI() {
   }
 }
 
+//SUE: function to check if two line segments intersect (called in checkIfBugHit)
+//    returns a boolean (returns true iff the line from (a,b)->(c,d) intersects with (p,q)->(r,s))
+// line1start (player's position), line1end (hammer's end position)
+// line2start (vertex1 of rectangle), line2end (vertex2 of rectangle)
+function checkLineIntersection(line1start, line1end, line2start, line2end) {
+  let det, gamma, lambda;
+  const a = line1start.x;
+  const b = line1start.z;
+  const c = line1end.x;
+  const d = line1end.z;
+  const p = line2start.x;
+  const q = line2start.z;
+  const r = line2end.x;
+  const s = line2end.z;
+  det = (c - a) * (s - q) - (r - p) * (d - b);
+  if (det === 0) {
+    return false;
+  } else {
+    lambda = ((s - q) * (r - a) + (p - r) * (s - b)) / det;
+    gamma = ((b - d) * (r - a) + (c - a) * (s - b)) / det;
+    return (0 < lambda && lambda < 1) && (0 < gamma && gamma < 1);
+  }
+}
+
+//SUE: function called in swingHammer that checks if player's hammer (line segment) intersects with bug (rectangle)
+//    returns a boolean
+function checkIfBugHit(playerPosition, hammerEnd, bugCenterPosition) {
+  //find coordinates for vertices of bug from bug's center (numbering done in clockwise direction from bottom left corner)
+  const vertex1 = {
+    x: bugCenterPosition.x - 20,
+    z: bugCenterPosition.z - 20
+  };
+  const vertex2 = {
+    x: bugCenterPosition.x + 20,
+    z: bugCenterPosition.z - 20
+  };
+  const vertex3 = {
+    x: bugCenterPosition.x + 20,
+    z: bugCenterPosition.z + 20
+  };
+  const vertex4 = {
+    x: bugCenterPosition.x - 20,
+    z: bugCenterPosition.z + 20
+  };
+
+  //check if any of the rectangle's sides intersect with line from player's position to hammer's end
+  if (checkLineIntersection(playerPosition, hammerEnd, vertex1, vertex2)
+    || checkLineIntersection(playerPosition, hammerEnd, vertex2, vertex3)
+    || checkLineIntersection(playerPosition, hammerEnd, vertex3, vertex4)
+    || checkLineIntersection(playerPosition, hammerEnd, vertex4, vertex1)) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
 //SUE: swingHammer logic
 function swingHammer() {
   //NOTE: bug offset ~= 20 (from center)
@@ -93,7 +149,7 @@ function swingHammer() {
   const vector = new t.Vector3();
   camera.getWorldDirection(vector);
   // swing vector has a fixed length (equal to hammer length)
-  const hammerLength = 30;
+  const hammerLength = 150;
   vector.setLength(hammerLength);
   // set camera-direction vector's origin to player's position
   const playerPositionX = playerPosition.x;
@@ -102,83 +158,43 @@ function swingHammer() {
   const vectorZ = vector.z;
   const hammerVectorX = playerPositionX + vectorX;
   const hammerVectorZ = playerPositionZ + vectorZ;
+  const hammerHeadPosition = {
+    x: hammerVectorX,
+    z: hammerVectorZ
+  };
 
 
   // console.log(vector);
   // if bug is in direction of vector and hammerLength away - collision = true
   ai.forEach(bug => {
-    ///// 3) Using actual vectors//////
-    const lowerBoundX = bug.position.x - 20;
-    const upperBoundX = bug.position.x + 20;
-    const lowerBoundZ = bug.position.z - 20;
-    const upperBoundZ = bug.position.z + 20;
-
-    if ((hammerVectorX < upperBoundX && hammerVectorX > lowerBoundX)
-      && (hammerVectorZ < upperBoundZ && hammerVectorZ > lowerBoundZ)) {
-      console.log('lower bound x below');
-      console.log(lowerBoundX);
-      console.log('upper bound x below');
-      console.log(upperBoundX);
-      console.log('player x below');
-      console.log(hammerVectorX);
-      console.log('lower bound z below');
-      console.log(lowerBoundZ);
-      console.log('upper bound z below');
-      console.log(upperBoundZ);
-      console.log('player z below');
-      console.log(hammerVectorZ);
+    if (checkIfBugHit(playerPosition, hammerHeadPosition, bug.position)) {
       console.log("SPLAT");
     }
+    ///// 3) Using actual vectors//////
+    //   const lowerBoundX = bug.position.x - 20;
+    //   const upperBoundX = bug.position.x + 20;
+    //   const lowerBoundZ = bug.position.z - 20;
+    //   const upperBoundZ = bug.position.z + 20;
 
-
-
-    ///// 2) Using mapped vectors//////
-    // console.log(getMapSector(bug.position));
-    // console.log(getMapSector(vector));
-    // const lowerBoundX = getMapSector(bug.position).x2;
-    // const upperBoundX = getMapSector(bug.position).x;
-    // const lowerBoundZ = getMapSector(bug.position).z2;
-    // const upperBoundZ = getMapSector(bug.position).z;
-    // const hammerVectorOnMap = getMapSector(vector);
-    // const playerVectorOnMap = getMapSector(playerPosition);
-    // console.log(playerVectorOnMap);
-    // console.log(hammerVectorOnMap);
-    // const hammerVectorOnMapX = (hammerVectorOnMap.x + hammerVectorOnMap.x2) / 2;
-    // const hammerVectorOnMapZ = (hammerVectorOnMap.z + hammerVectorOnMap.z2) / 2;
-    // console.log('lower bound x below');
-    // console.log(lowerBoundX);
-    // console.log('upper bound x below');
-    // console.log(upperBoundX);
-    // console.log('player x below');
-    // console.log(hammerVectorOnMapX);
-    // console.log('lower bound z below');
-    // console.log(lowerBoundZ);
-    // console.log('upper bound z below');
-    // console.log(upperBoundZ);
-    // console.log('player z below');
-    // console.log(hammerVectorOnMapZ);
-    // if ((hammerVectorOnMapX >= lowerBoundX && hammerVectorOnMapX <= upperBoundX) &&
-    //   (hammerVectorOnMapZ >= lowerBoundZ && hammerVectorOnMapZ <= upperBoundZ)) {
-    //   console.log("SPLAT");
-    // }
+    //   if ((hammerVectorX < upperBoundX && hammerVectorX > lowerBoundX)
+    //     && (hammerVectorZ < upperBoundZ && hammerVectorZ > lowerBoundZ)) {
+    //     console.log('lower bound x below');
+    //     console.log(lowerBoundX);
+    //     console.log('upper bound x below');
+    //     console.log(upperBoundX);
+    //     console.log('player x below');
+    //     console.log(hammerVectorX);
+    //     console.log('lower bound z below');
+    //     console.log(lowerBoundZ);
+    //     console.log('upper bound z below');
+    //     console.log(upperBoundZ);
+    //     console.log('player z below');
+    //     console.log(hammerVectorZ);
+    //     console.log("SPLAT");
+    //   }
   });
-
-  // console.log(ai);
-  // 1) Using Raycaster
-  // raycaster.setFromCamera(mouse, camera); // casting a ray from the camera position to the mouse position
-  // const intersectedBugs = raycaster.intersectObjects(ai, false); //bugs that intersect with this ray (ordered from closest to farthest)
-  // // if there are bugs that are hit, take the closest bug and kill it
-  // console.log(intersectedBugs);
-  // if (intersectedBugs.length > 0) {
-  //   console.log("SPLAT");
-  //   console.log(intersectedBugs[0]);
-  //   // controls.hasCaughtBug = true;
-  // }
-
-  // console.log(ai[0].position.x);
-  // const bug = ai[0];
-  // console.log(bug.position.x);
 }
+
 
 //SUE: Used in conjunction with Raycaster - helper function to track mouse movement (used in init)
 function onDocumentMouseMove(e) {
