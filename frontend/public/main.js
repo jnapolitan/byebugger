@@ -72,68 +72,10 @@ const setupScene = () => {
   });
 }
 
-// Create and deploy a single AI object
-function addAI() {
-
-  // Array of three different sprite textures
-  const aiSpriteTextures = [
-    '/assets/images/butterfly-sprite.png',
-    '/assets/images/galaga-sprite.png',
-    '/assets/images/winged-sprite.png'
-  ];
-
-  // Get camera position to avoid spawning on top of player
-  const camPos = getMapSector(controls.getObject().position);
-
-  // Sample from aiSpriteTextures array to create a random bugger
-  const aiTexture = new t.TextureLoader().load(aiSpriteTextures[Math.floor(Math.random() * aiSpriteTextures.length)]);
-
-  // Add texture, create sprite using material and set scale
-  let aiMaterial = new t.SpriteMaterial({ /*color: 0xEE3333,*/
-    map: aiTexture,
-    fog: true
-  });
-  let o = new t.Sprite(aiMaterial);
-  o.scale.set(40, 40, 1);
-
-  // Generate random coords within the map until bugger is not on the player or in a wall
-  do {
-    x = getRandBetween(0, mapW - 1);
-    z = getRandBetween(0, mapH - 1);
-  } while (map[x][z] > 0 || (x == camPos.x && z == camPos.z));
-
-  // Format coords, set position, and random directions (X and Z) to be used for animating direction
-  x = (x - map.length / 2) * UNITSIZE;
-  z = (z - map.length / 2) * UNITSIZE;
-  o.position.set(x, UNITSIZE * 0.15, z);
-  o.randomX = Math.random();
-  o.randomZ = Math.random();
-
-  // Add TextureAnimator to animations array to be iterated through and processed in animation function
-  aiAnimations.push(new TextureAnimator(aiTexture, 2, 1, 2, 1000));
-
-  // create the PositionalAudio object (passing in the listener)
-  // const aiSound = new t.PositionalAudio(listener);
-
-  // load AI sound and set it as the PositionalAudio object's buffer
-  // const audioLoader = new t.AudioLoader();
-  // audioLoader.load('https://s3-us-west-1.amazonaws.com/towndcloud-seed/bug-glitch-1.mp3', function (buffer) {
-  //   aiSound.setBuffer(buffer);
-  //   aiSound.setRefDistance(5);
-  //   aiSound.setLoop(true);
-  //   aiSound.setRolloffFactor(2);
-  //   aiSound.play();
-  // });
-
-  ai.push(o);
-  scene.add(o);
-  // o.add(aiSound);
-}
-
 // Run addAI for each AI object
 function setupAI() {
   for (var i = 0; i < NUMAI; i++) {
-    addAI();
+    addAI(controls.getObject(), map, scene, ai, aiAnimations);
   }
 }
 
@@ -320,11 +262,6 @@ function animate() {
       controls.getObject().rotation.y - Math.PI,
       controls.getObject().rotation.z
     );
-    // models['gun'].position.set(
-    //   controls.getObject().position.x - Math.sin(controls.getObject().rotation.y),
-    //   18,
-    //   controls.getObject().position.z + Math.cos(controls.getObject().rotation.y)
-    // )
   }
 
   if (controls.getObject().position.y < 10) {

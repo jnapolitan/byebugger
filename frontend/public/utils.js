@@ -1,3 +1,58 @@
+// Create and deploy a single AI object
+function addAI(camPos, map, scene, ai, aiAnimations) {
+  // Array of three different sprite textures
+  const aiSpriteTextures = [
+    '/assets/images/butterfly-sprite.png',
+    '/assets/images/galaga-sprite.png',
+    '/assets/images/winged-sprite.png'
+  ];
+
+  // Sample from aiSpriteTextures array to create a random bugger
+  const aiTexture = new t.TextureLoader().load(aiSpriteTextures[Math.floor(Math.random() * aiSpriteTextures.length)]);
+
+  // Add texture, create sprite using material and set scale
+  let aiMaterial = new t.SpriteMaterial({ /*color: 0xEE3333,*/
+    map: aiTexture,
+    fog: true
+  });
+  let o = new t.Sprite(aiMaterial);
+  o.scale.set(40, 40, 1);
+
+  // Generate random coords within the map until bugger is not on the player or in a wall
+  let x;
+  let z;
+  do {
+    x = getRandBetween(0, map.length - 1);
+    z = getRandBetween(0, map.length - 1);
+  } while (map[x][z] > 0 || (x === camPos.x && z === camPos.z));
+
+  // Format coords, set position, and random directions (X and Z) to be used for animating direction
+  x = (x - map.length / 2) * 128;
+  z = (z - map.length / 2) * 128;
+  o.position.set(x, 128 * 0.15, z);
+  o.randomX = Math.random();
+  o.randomZ = Math.random();
+
+  // Add TextureAnimator to animations array to be iterated through and processed in animation function
+  aiAnimations.push(new TextureAnimator(aiTexture, 2, 1, 2, 1000));
+  ai.push(o);
+
+  // create the PositionalAudio object (passing in the listener)
+  // const aiSound = new t.PositionalAudio(listener);
+
+  // load AI sound and set it as the PositionalAudio object's buffer
+  // const audioLoader = new t.AudioLoader();
+  // audioLoader.load('https://s3-us-west-1.amazonaws.com/towndcloud-seed/bug-glitch-1.mp3', function (buffer) {
+  //   aiSound.setBuffer(buffer);
+  //   aiSound.setRefDistance(5);
+  //   aiSound.setLoop(true);
+  //   aiSound.setRolloffFactor(2);
+  //   aiSound.play();
+  // });
+  scene.add(o);
+  // o.add(aiSound);
+}
+
 const checkSpawn = (map, cam) => {
   let startingSpot = map[map.length / 2][map.length / 2];
   if (startingSpot) {
