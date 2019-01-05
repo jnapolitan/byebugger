@@ -68,6 +68,13 @@ class BSPTree {
     var that = this;
     rootLeaf.createRooms(that);
 
+    for (let i = 0; i < this.level.length; i++) {
+      for (let j = 0; j < this.level[0].length; j++) {
+        if (j === 0 || i === 0 || j === this.level[0].length - 1 || i === this.level.length - 1) {
+          this.level[i][j] = 1;
+        }
+      }
+    }
     return this.level;
   }
 

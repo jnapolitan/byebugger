@@ -2,27 +2,26 @@ const WIDTH = window.innerWidth;
 const HEIGHT = window.innerHeight;
 const ASPECT = WIDTH / HEIGHT;
 const UNITSIZE = 128; // In pixels
-const WALLHEIGHT = UNITSIZE;
 const AIMOVESPEED = 100;
 
 // TODO: Remove this reference when we use the node module Three
 const t = THREE;
 
 // Set up the camera (the player's perspective)
-var camera = new t.PerspectiveCamera(75, ASPECT, 1, 10000); // FOV, aspect, near, far
+const camera = new t.PerspectiveCamera(75, ASPECT, 1, 10000); // FOV, aspect, near, far
 let mouse = new t.Vector2(); //SUE: declaring mouse for later use (to track mouse movement for raycasting)
-var canJump; // For later use when we handle the player's keyboard input
+let canJump; // For later use when we handle the player's keyboard input
 // Set up controls (custom first-person controls)
-// TODO: This class needs to update the camera's position (right now it doesn't)
-var controls = new t.PointerLockControls(camera);
+const controls = new t.PointerLockControls(camera);
 // What we'll be using to render the scene - set antialias to false for better performance
-var renderer = new t.WebGLRenderer({ antialias: false });
+const models = {};
+const renderer = new t.WebGLRenderer({ antialias: false });
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = t.BasicShadowMap;
 // Set up the scene (a world in Three.js terms). We'll add objects to the scene later.
-var scene = new t.Scene();
+const scene = new t.Scene();
 
 // Initialize constant for number of AI and global array variable to house AI objects
 //SUE: changed number of bugs (originally 100)
@@ -42,237 +41,44 @@ var moveForward = false;
 var moveLeft = false;
 var moveRight = false;
 var prevTime = performance.now();
-var raycaster;
 var velocity = new t.Vector3();
 
 // Creates a 2D grid of 1s and 0s, which will be used to render the 3D world
 //SUE: changed map size (originally 100, 100)
 var map = new BSPTree().generateLevel(100, 100);
-for (let i = 0; i < map.length; i++) {
-  for (let j = 0; j < map[0].length; j++) {
-    if (j === 0 || i === 0 || j === map[0].length - 1 || i === map.length - 1) {
-      map[i][j] = 1;
-    }
-  }
-}
 var mapW = map.length;
 var mapH = map[0].length;
 
-////// Set up the environment //////
+// SETTING UP THE WORLD
 const setupScene = () => {
-  const units = mapW;
-
-  // Floor and ceiling
-  // TODO: Readjust plane sizing and replace all textures
-  // Look for vaporwave grids:
-  // https://res.cloudinary.com/teepublic/image/private/s--tQSSo6bK--/t_Preview/b_rgb:191919,c_limit,f_jpg,h_630,q_90,w_630/v1506824583/production/designs/1941165_0.jpg
-  const floorCeilMat = new t.TextureLoader().load('https://pbs.twimg.com/media/DQG5kVSXkAAb03B.jpg');
-  // It's possible to use max anisotropy, but performance might suffer
-  floorCeilMat.anisotropy = 32;
-  floorCeilMat.repeat.set(100, 100);
-  floorCeilMat.wrapT = t.RepeatWrapping;
-  floorCeilMat.wrapS = t.RepeatWrapping;
-  // PlaneBufferGeometry is a lower memory alternative to PlaneGeometry
-  const floorCeilGeo = new t.PlaneBufferGeometry(10000, 10000);
-  let texture = new t.MeshPhongMaterial({
-    map: floorCeilMat
-  });
-
-  // Three.Mesh takes in 1. geometry and 2. material/texture
-  const floor = new t.Mesh(floorCeilGeo, texture);
-  ceiling = new t.Mesh(floorCeilGeo, texture);
-
-  floor.position.y = -10;
-  floor.rotation.x = Math.PI / -2;
-
-  // Rotation makes it so that the ceiling mirrors the floor on the opposite side
-  ceiling.position.y = 100;
-  ceiling.rotation.x = Math.PI / 2;
-
-  // Add the floor and ceiling to the world
-  // scene.add(floor);
-  // scene.add(ceiling);
-
-  // NEW FLOOR
-  var size = 10000;
-  var divisions = 600;
-
-  var gridHelper = new t.GridHelper(size, divisions, '#00ccfd', '#00ccfd');
-  gridHelper.position.y = -10;
-  gridHelper.position.x = Math.PI / -2;
-  scene.add(gridHelper);
-
-  gridHelper2 = new t.GridHelper(size, divisions, '#00ccfd', '#00ccfd');
-  gridHelper2.position.y = 100;
-  gridHelper2.position.x = Math.PI / 2;
-  scene.add(gridHelper2);
-  ///////////////
-
-  // reflectors/mirrors
-  var geometry = new t.PlaneBufferGeometry(10000, 10000);
-  var groundMirror = new t.Reflector(geometry, {
-    clipBias: 0.003,
-    textureWidth: WIDTH * window.devicePixelRatio,
-    textureHeight: HEIGHT * window.devicePixelRatio,
-    color: 0x111111,
-    recursion: 1
-  });
-  groundMirror.position.y = 0.5;
-  groundMirror.rotateX(- Math.PI / 2);
-  scene.add(groundMirror);
-
-  // Walls - note MeshLambertMaterial is affected by lighting
-  // TODO: Replace texture
-  const wallMat = new t.TextureLoader().load('https://pbs.twimg.com/media/DQG5kVSXkAAb03B.jpg');
-  wallMat.repeat.set(2, 2);
-  wallMat.wrapT = t.RepeatWrapping;
-  wallMat.wrapS = t.RepeatWrapping;
-  const block = new t.CubeGeometry(WALLHEIGHT, WALLHEIGHT - 32, WALLHEIGHT);
-  let wallTexture = new t.MeshPhongMaterial({
-    map: wallMat
-  });
-
-  // Iterate through the 2D map I computed above and place the walls where needed
-  for (let i = 0; i < mapW; i++) {
-    for (let j = 0, m = map[i].length; j < m; j++) {
-      if (map[i][j]) {
-        let wall = new t.Mesh(block, wallTexture);
-        wall.position.x = (i - units / 2) * UNITSIZE;
-        wall.position.y = WALLHEIGHT / 3 + 10;
-        wall.position.z = (j - units / 2) * UNITSIZE;
-        scene.add(wall);
-      }
-    }
-  }
-
-  // Lighting
-  // Note that light1 and light2 are required. Both lights
-  // face away from each other - without one, one side of
-  // the wall will be pitch black from the player's perspective
-  const directionalLight1 = new t.DirectionalLight(0xF7EFBE, 0.7);
-  directionalLight1.position.set(0.5, 1, 0.5);
-  scene.add(directionalLight1);
-  const directionalLight2 = new t.DirectionalLight(0xF7EFBE, 0.5);
-  directionalLight2.position.set(-0.5, -1, -0.5);
-  scene.add(directionalLight2);
-  // TODO: Remove temporary ambient lighting
-  const allLight = new t.AmbientLight(0xffffff, 0.2);
-  scene.add(allLight);
-
-  let light = new t.PointLight(0xffffff, 0.8, 18);
-  light.position.set(-3, 6, -3);
-  light.castShadow = true;
-  light.shadow.camera.near = 0.1;
-  light.shadow.camera.far = 25;
-  scene.add(light);
+  sceneSetup(scene, map);
 
   // player weapon
+  let gun;
   var mtlLoader = new t.MTLLoader();
-  mtlLoader.load('./uziGold.mtl', function (materials) {
+  mtlLoader.setPath("./assets/models/");
+  mtlLoader.load('shotgun.mtl', function (materials) {
     materials.preload();
+
     var objLoader = new t.OBJLoader();
     objLoader.setMaterials(materials);
-    objLoader.load('./assets/models/uziGold.obj', function (object) {
-      console.log(object);
-      scene.add(object);
-      object.position.y = -10;
-    })
-  });
+    objLoader.setPath("./assets/models/");
+    objLoader.load('shotgun.obj', function (object) {
 
-  // random example
-  var mesh = null;
-
-  var mtlLoader = new THREE.MTLLoader();
-  mtlLoader.setPath("https://threejs.org/examples/models/obj/walt/");
-  mtlLoader.load('WaltHead.mtl', function (materials) {
-
-    materials.preload();
-
-    var objLoader = new THREE.OBJLoader();
-    objLoader.setMaterials(materials);
-    objLoader.setPath("https://threejs.org/examples/models/obj/walt/");
-    objLoader.load('WaltHead.obj', function (object) {
-
-      mesh = object;
-      mesh.position.y = -10;
-      scene.add(object);
-
+      gun = object;
+      models['gun'] = gun.clone();
+      models['gun'].position.y = 18
+      models['gun'].scale.set(200, 200, 200);
+      models['gun'].rotation.set(0, 3.2, 0);
+      scene.add(models['gun']);
     });
-
   });
-}
-
-//Get a random integer between lo and hi, inclusive.
-//Assumes lo and hi are integers and lo is lower than hi.
-const getRandBetween = (lo, hi) => {
-  return parseInt(Math.floor(Math.random() * (hi - lo + 1)) + lo, 10);
-};
-
-// Create and deploy a single AI object
-function addAI() {
-
-  // Array of three different sprite textures
-  const aiSpriteTextures = [
-    '/assets/images/butterfly-sprite.png',
-    '/assets/images/galaga-sprite.png',
-    '/assets/images/winged-sprite.png'
-  ];
-
-  let x, z;
-
-  // Get camera position to avoid spawning on top of player
-  const c = getMapSector(camera.position);
-
-  // Sample from aiSpriteTextures array to create a random bugger
-  const aiTexture = new t.TextureLoader().load(aiSpriteTextures[Math.floor(Math.random() * aiSpriteTextures.length)]);
-
-  // Add texture, create sprite using material and set scale
-  let aiMaterial = new t.SpriteMaterial({ /*color: 0xEE3333,*/
-    map: aiTexture,
-    fog: true
-  });
-  let o = new t.Sprite(aiMaterial);
-  o.scale.set(40, 40, 1);
-
-  // Generate random coords within the map until bugger is not on the player or in a wall
-  do {
-    x = getRandBetween(0, mapW - 1);
-    z = getRandBetween(0, mapH - 1);
-  } while (map[x][z] > 0 || (x == c.x && z == c.z));
-
-  // Format coords, set position, and random directions (X and Z) to be used for animating direction
-  x = Math.floor(x - mapW / 2) * UNITSIZE;
-  z = Math.floor(z - mapW / 2) * UNITSIZE;
-  o.position.set(x, UNITSIZE * 0.15, z);
-  o.pathPos = 1;
-  o.randomX = Math.random();
-  o.randomZ = Math.random();
-
-  // Add TextureAnimator to animations array to be iterated through and processed in animation function
-  aiAnimations.push(new TextureAnimator(aiTexture, 2, 1, 2, 1000));
-
-  // create the PositionalAudio object (passing in the listener)
-  // const aiSound = new t.PositionalAudio(listener);
-
-  // load AI sound and set it as the PositionalAudio object's buffer
-  // const audioLoader = new t.AudioLoader();
-  // audioLoader.load('https://s3-us-west-1.amazonaws.com/towndcloud-seed/bug-glitch-1.mp3', function (buffer) {
-  //   aiSound.setBuffer(buffer);
-  //   aiSound.setRefDistance(5);
-  //   aiSound.setLoop(true);
-  //   aiSound.setRolloffFactor(2);
-  //   aiSound.play();
-  // });
-
-  ai.push(o);
-  scene.add(o);
-  // o.add(aiSound);
 }
 
 // Run addAI for each AI object
 function setupAI() {
   for (var i = 0; i < NUMAI; i++) {
-    addAI();
+    addAI(controls.getObject(), map, scene, ai, aiAnimations);
   }
 }
 
@@ -286,7 +92,6 @@ function swingHammer() {
   let playerPosition = player.position;
   const vector = new t.Vector3();
   camera.getWorldDirection(vector);
-  // console.log(vector);
   // swing vector has a fixed length (equal to hammer length)
   const hammerLength = 30;
   vector.setLength(hammerLength);
@@ -294,77 +99,77 @@ function swingHammer() {
 
   // console.log(ai);
   // 1) Using Raycaster
-  raycaster.setFromCamera(mouse, camera); // casting a ray from the camera position to the mouse position
-  const intersectedBugs = raycaster.intersectObjects(ai, false); //bugs that intersect with this ray (ordered from closest to farthest)
-  // if there are bugs that are hit, take the closest bug and kill it
-  console.log(intersectedBugs);
-  if (intersectedBugs.length > 0) {
-    console.log("SPLAT");
-    console.log(intersectedBugs[0]);
-    // controls.hasCaughtBug = true;
-  }
+  // raycaster.setFromCamera(mouse, camera); // casting a ray from the camera position to the mouse position
+  // const intersectedBugs = raycaster.intersectObjects(ai, false); //bugs that intersect with this ray (ordered from closest to farthest)
+  // // if there are bugs that are hit, take the closest bug and kill it
+  // console.log(intersectedBugs);
+  // if (intersectedBugs.length > 0) {
+  //   console.log("SPLAT");
+  //   console.log(intersectedBugs[0]);
+  //   // controls.hasCaughtBug = true;
+  // }
 
 
-  // console.log(vector);
-  //if bug is in direction of vector and hammerLength away - collision = true
-  // ai.forEach(bug => {
-  //   ///// 2) Using mapped vectors//////
-  //   // console.log(getMapSector(bug.position));
-  //   // console.log(getMapSector(vector));
-  //   // const lowerBoundX = getMapSector(bug.position).x2;
-  //   // const upperBoundX = getMapSector(bug.position).x;
-  //   // const lowerBoundZ = getMapSector(bug.position).z2;
-  //   // const upperBoundZ = getMapSector(bug.position).z;
-  //   // const hammerVectorOnMap = getMapSector(vector);
-  //   // const playerVectorOnMap = getMapSector(playerPosition);
-  //   // console.log(playerVectorOnMap);
-  //   // console.log(hammerVectorOnMap);
-  //   // const hammerVectorOnMapX = (hammerVectorOnMap.x + hammerVectorOnMap.x2) / 2;
-  //   // const hammerVectorOnMapZ = (hammerVectorOnMap.z + hammerVectorOnMap.z2) / 2;
-  //   // console.log('lower bound x below');
-  //   // console.log(lowerBoundX);
-  //   // console.log('upper bound x below');
-  //   // console.log(upperBoundX);
-  //   // console.log('player x below');
-  //   // console.log(hammerVectorOnMapX);
-  //   // console.log('lower bound z below');
-  //   // console.log(lowerBoundZ);
-  //   // console.log('upper bound z below');
-  //   // console.log(upperBoundZ);
-  //   // console.log('player z below');
-  //   // console.log(hammerVectorOnMapZ);
-  //   // if ((hammerVectorOnMapX >= lowerBoundX && hammerVectorOnMapX <= upperBoundX) &&
-  //   //   (hammerVectorOnMapZ >= lowerBoundZ && hammerVectorOnMapZ <= upperBoundZ)) {
-  //   //   console.log("SPLAT");
-  //   // }
+  console.log(vector);
+  // if bug is in direction of vector and hammerLength away - collision = true
+  ai.forEach(bug => {
+    ///// 2) Using mapped vectors//////
+    // console.log(getMapSector(bug.position));
+    // console.log(getMapSector(vector));
+    // const lowerBoundX = getMapSector(bug.position).x2;
+    // const upperBoundX = getMapSector(bug.position).x;
+    // const lowerBoundZ = getMapSector(bug.position).z2;
+    // const upperBoundZ = getMapSector(bug.position).z;
+    // const hammerVectorOnMap = getMapSector(vector);
+    // const playerVectorOnMap = getMapSector(playerPosition);
+    // console.log(playerVectorOnMap);
+    // console.log(hammerVectorOnMap);
+    // const hammerVectorOnMapX = (hammerVectorOnMap.x + hammerVectorOnMap.x2) / 2;
+    // const hammerVectorOnMapZ = (hammerVectorOnMap.z + hammerVectorOnMap.z2) / 2;
+    // console.log('lower bound x below');
+    // console.log(lowerBoundX);
+    // console.log('upper bound x below');
+    // console.log(upperBoundX);
+    // console.log('player x below');
+    // console.log(hammerVectorOnMapX);
+    // console.log('lower bound z below');
+    // console.log(lowerBoundZ);
+    // console.log('upper bound z below');
+    // console.log(upperBoundZ);
+    // console.log('player z below');
+    // console.log(hammerVectorOnMapZ);
+    // if ((hammerVectorOnMapX >= lowerBoundX && hammerVectorOnMapX <= upperBoundX) &&
+    //   (hammerVectorOnMapZ >= lowerBoundZ && hammerVectorOnMapZ <= upperBoundZ)) {
+    //   console.log("SPLAT");
+    // }
 
-  //   ///// 3) Using actual vectors//////
-  //   const lowerBoundX = bug.position.x - 20;
-  //   const upperBoundX = bug.position.x + 20;
-  //   const lowerBoundZ = bug.position.z - 20;
-  //   const upperBoundZ = bug.position.z + 20;
-  //   const hammerVectorX = vector.x;
-  //   const hammerVectorZ = vector.z;
-  //   console.log('lower bound x below');
-  //   console.log(lowerBoundX);
-  //   console.log('upper bound x below');
-  //   console.log(upperBoundX);
-  //   console.log('player x below');
-  //   console.log(hammerVectorX);
-  //   console.log('lower bound z below');
-  //   console.log(lowerBoundZ);
-  //   console.log('upper bound z below');
-  //   console.log(upperBoundZ);
-  //   console.log('player z below');
-  //   console.log(hammerVectorZ);
-  //   if ((hammerVectorX < upperBoundX && hammerVectorX > lowerBoundX)
-  //     && (hammerVectorZ < upperBoundZ && hammerVectorZ > lowerBoundZ)) {
-  //     console.log("SPLAT");
-  //   }
-  // });
-  // console.log(ai[0].position.x);
-  // const bug = ai[0];
-  // console.log(bug.position.x);
+    ///// 3) Using actual vectors//////
+    const lowerBoundX = bug.position.x - 20;
+    const upperBoundX = bug.position.x + 20;
+    const lowerBoundZ = bug.position.z - 20;
+    const upperBoundZ = bug.position.z + 20;
+    const hammerVectorX = vector.x;
+    const hammerVectorZ = vector.z;
+    console.log('lower bound x below');
+    console.log(lowerBoundX);
+    console.log('upper bound x below');
+    console.log(upperBoundX);
+    console.log('player x below');
+    console.log(hammerVectorX);
+    console.log('lower bound z below');
+    console.log(lowerBoundZ);
+    console.log('upper bound z below');
+    console.log(upperBoundZ);
+    console.log('player z below');
+    console.log(hammerVectorZ);
+    if ((hammerVectorX < upperBoundX && hammerVectorX > lowerBoundX)
+      && (hammerVectorZ < upperBoundZ && hammerVectorZ > lowerBoundZ)) {
+      console.log("SPLAT");
+    }
+  });
+  console.log(ai[0].position.x);
+  const bug = ai[0];
+  console.log(bug.position.x);
 }
 
 //SUE: Used in conjunction with Raycaster - helper function to track mouse movement (used in init)
@@ -374,28 +179,11 @@ function onDocumentMouseMove(e) {
   mouse.y = - (e.clientY / HEIGHT) * 2 + 1;
 }
 
-function setSpawn() {
-  // let newX = velocity.x * delta;
-  // let newZ = velocity.z * delta;
-  // let pos = { x: newX, z: newZ };
-  // let x = Math.floor(((newX - 20) + UNITSIZE / 2) / UNITSIZE + mapW / 2);
-  // let z = Math.floor(((newZ - 20) + UNITSIZE / 2) / UNITSIZE + mapW / 2);
-  // console.log(map[x][z]);
-  // if (map[x][z] !== 1) {
-  //   controls.getObject().translateX(velocity.x * delta);
-  //   controls.getObject().translateY(velocity.y * delta);
-  //   controls.getObject().translateZ(velocity.z * delta);
-  // }
-  if (map[50][50] === 1) {
-    console.log('WE R IN A WALL');
-  }
-}
-
 // Setup the game
 function init() {
-  scene.fog = new t.FogExp2('black', 0.0020);
+  scene.fog = new t.FogExp2('black', 0.0015);
   camera.position.y = UNITSIZE * .1; // Ensures the player is above the floor
-  setSpawn();
+  checkSpawn(map, controls.getObject());
 
   //////////////////////////////////////////////////////////////////
   //SUE: add crosshair for aiming hammer
@@ -434,7 +222,6 @@ function init() {
 
   // It may not look like it, but this adds the camera to the scene
   scene.add(controls.getObject());
-  // scene.add(camera); 
   //////////////////////////////////////////////////////////////////
 
   //SUE: Used in conjunction w Raycaster - tracks mouse position (set mouse.x and mouse.y to pointer coordinates) so we know where to shoot
@@ -498,17 +285,14 @@ function init() {
 
   document.addEventListener('keydown', onKeyDown, false);
   document.addEventListener('keyup', onKeyUp, false);
-  // TODO: Remove raycaster if there's no good use for it
-  raycaster = new t.Raycaster(new t.Vector3(), new t.Vector3(0, - 1, 0), 0, 10);
 
   // Add objects to the world
   setupScene();
-
-  // Add AI buggers
+  // Add buggers
   setupAI();
 
   // Add the canvas to the document
-  renderer.setClearColor('#111111'); // Sky color (if the sky was visible)
+  renderer.setClearColor('white'); // Sky color (if the sky was visible)
   document.body.appendChild(renderer.domElement);
 
   // Add the minimap
@@ -519,12 +303,8 @@ function init() {
 function animate() {
   requestAnimationFrame(animate);
 
-  // TODO: Figure out best rotation
-  gridHelper2.rotation.y += .0003;
-
-  // TODO: Not important for now. Remove this if there's no good use for it.
-  raycaster.ray.origin.copy(controls.getObject().position);
-  raycaster.ray.origin.y -= 10;
+  // TODO: Try to access ceiling a different way
+  ceiling.rotation.y += .0001;
 
   // Controls/movement related logic
   var time = performance.now();
@@ -536,30 +316,41 @@ function animate() {
   direction.x = Number(moveLeft) - Number(moveRight);
   direction.normalize(); // Ensures consistent movement in all directions
 
-  // TODO: Update the camera position
+  let camPos = controls.getObject().position;
   if (moveForward || moveBackward) {
     velocity.z -= direction.z * 1200.0 * delta;
+    if (checkWallCollision(camPos)) {
+      let audio = new Audio('./assets/sounds/oof.mp3');
+      audio.play();
+      velocity.z -= velocity.z * 4;
+    }
   }
 
   if (moveLeft || moveRight) {
     velocity.x -= direction.x * 1200.0 * delta;
+    if (checkWallCollision(camPos)) {
+      let audio = new Audio('./assets/sounds/oof.mp3');
+      audio.play();
+      velocity.x -= velocity.x * 4;
+    }
   }
-
-  // let newX = velocity.x * delta;
-  // let newZ = velocity.z * delta;
-  // let pos = { x: newX, z: newZ };
-  // let x = Math.floor(((newX - 20) + UNITSIZE / 2) / UNITSIZE + mapW / 2);
-  // let z = Math.floor(((newZ - 20) + UNITSIZE / 2) / UNITSIZE + mapW / 2);
-  // console.log(map[x][z]);
-  // if (map[x][z] !== 1) {
-  //   controls.getObject().translateX(velocity.x * delta);
-  //   controls.getObject().translateY(velocity.y * delta);
-  //   controls.getObject().translateZ(velocity.z * delta);
-  // }
 
   controls.getObject().translateX(velocity.x * delta);
   controls.getObject().translateY(velocity.y * delta);
   controls.getObject().translateZ(velocity.z * delta);
+
+  if (models['gun']) {
+    models['gun'].position.set(
+      controls.getObject().position.x - Math.sin(controls.getObject().rotation.y + Math.PI / 6) * 0.75,
+      18,
+      controls.getObject().position.z + Math.cos(controls.getObject().rotation.y + Math.PI / 6) * 0.75
+    );
+    models['gun'].rotation.set(
+      controls.getObject().rotation.x,
+      controls.getObject().rotation.y - Math.PI,
+      controls.getObject().rotation.z
+    );
+  }
 
   if (controls.getObject().position.y < 10) {
     velocity.y = 0;
@@ -589,11 +380,11 @@ function animate() {
     aiObj.translateX(aispeed * aiObj.randomX);
     aiObj.translateZ(aispeed * aiObj.randomZ);
 
-
     // Check if trajectory is leading off the map or hitting a wall
     // Reverse trajectory if true
     let aiPos = getMapSector(aiObj.position);
-    if (aiPos.x < 0 || aiPos.x >= mapW || checkWallCollision(aiObj.position)) {
+
+    if (map[aiPos.x][aiPos.z] || aiPos.x < 0 || aiPos.x >= mapW || checkWallCollision(aiObj.position)) {
       aiObj.translateX(-2 * aispeed * aiObj.randomX);
       aiObj.translateZ(-2 * aispeed * aiObj.randomZ);
       aiObj.randomX = Math.random() * 2 - 1;
@@ -610,113 +401,19 @@ function animate() {
 
   // SUE: detection of player attacking bug
 
-
-
   // Deals with what portion of the scene the player sees
   renderer.render(scene, camera);
-}
-
-////// Helper function(s) //////
-const getMapSector = (v) => {
-  let x = Math.floor(((v.x + 20) + UNITSIZE / 2) / UNITSIZE + mapW / 2);
-  let z = Math.floor(((v.z + 20) + UNITSIZE / 2) / UNITSIZE + mapW / 2);
-  let x2 = Math.floor(((v.x - 20) + UNITSIZE / 2) / UNITSIZE + mapW / 2);
-  let z2 = Math.floor(((v.z - 20) + UNITSIZE / 2) / UNITSIZE + mapW / 2);
-  return {
-    x: x,
-    z: z,
-    x2: x2,
-    z2: z2
-  };
-};
-
-// Creates the minimap
-// TODO: Clean up this code however possible before deployment
-function drawMinimap() {
-  var c = getMapSector(controls.getObject().position);
-  var context = document.getElementById('radar').getContext('2d');
-  context.font = '1px Georgia';
-  for (var i = 0; i < mapW; i++) {
-    for (var j = 0, m = map[i].length; j < m; j++) {
-      var d = 0;
-      for (var k = 0, n = ai.length; k < n; k++) {
-        var e = getMapSector(ai[k].position);
-        if (i === e.x && j === e.z) {
-          d++;
-        }
-      }
-      if (i === c.x && j === c.z && d === 0) {
-        context.fillStyle = 'rgba(170, 51, 255, 1)';
-        context.fillRect(i * 2, j * 2, (i + 1) * 2, (j + 1) * 2);
-      }
-      else if (i === c.x && j === c.z) {
-        context.fillStyle = '#AA33FF';
-        context.fillRect(i * 2, j * 2, (i + 1) * 2, (j + 1) * 2);
-        context.fillStyle = '#000000';
-        context.fillText('' + d, i * 2 + 8, j * 2 + 12);
-      }
-      else if (d > 0 && d < 10) {
-        context.fillStyle = '#FF0000';
-        context.fillRect(i * 2, j * 2, (i + 1) * 2, (j + 1) * 2);
-        context.fillStyle = '#000000';
-        context.fillText('' + d, i * 2 + 8, j * 2 + 12);
-      }
-      else if (map[i][j] > 0) {
-        context.fillStyle = 'rgba(102, 102, 102, 1)';
-        context.fillRect(i * 2, j * 2, (i + 1) * 2, (j + 1) * 2);
-      }
-      else {
-        context.fillStyle = '#CCCCCC';
-        context.fillRect(i * 2, j * 2, (i + 1) * 2, (j + 1) * 2);
-      }
-    }
-  }
-}
-
-// Texture animator for AI utilizing sprites 
-// Sprite frames are animated during the update function using the specified duration
-function TextureAnimator(texture, tilesHoriz, tilesVert, numTiles, tileDispDuration) {
-  // note: texture passed by reference, will be updated by the update function.
-
-  this.tilesHorizontal = tilesHoriz;
-  this.tilesVertical = tilesVert;
-  // how many images does this spritesheet contain?
-  //  usually equals tilesHoriz * tilesVert, but not necessarily,
-  //  if there at blank tiles at the bottom of the spritesheet. 
-  this.numberOfTiles = numTiles;
-  texture.wrapS = texture.wrapT = t.RepeatWrapping;
-  texture.repeat.set(1 / this.tilesHorizontal, 1 / this.tilesVertical);
-
-  // how long should each image be displayed?
-  this.tileDisplayDuration = tileDispDuration;
-
-  // how long has the current image been displayed?
-  this.currentDisplayTime = 0;
-
-  // which image is currently being displayed?
-  this.currentTile = 0;
-
-  this.update = function (milliSec) {
-    this.currentDisplayTime += milliSec;
-    while (this.currentDisplayTime > this.tileDisplayDuration) {
-      this.currentDisplayTime -= this.tileDisplayDuration;
-      this.currentTile++;
-      if (this.currentTile == this.numberOfTiles)
-        this.currentTile = 0;
-      var currentColumn = this.currentTile % this.tilesHorizontal;
-      texture.offset.x = currentColumn / this.tilesHorizontal;
-      var currentRow = Math.floor(this.currentTile / this.tilesHorizontal);
-      texture.offset.y = currentRow / this.tilesVertical;
-    }
-  };
 }
 
 // Check for wall collision
 const checkWallCollision = (obj) => {
   let currentPos = getMapSector(obj);
   if (map[currentPos.x][currentPos.z] > 0 || map[currentPos.x2][currentPos.z2] > 0 ||
-    map[currentPos.x][currentPos.z2] > 0 || map[currentPos.x2][currentPos.z] > 0)
+    map[currentPos.x][currentPos.z2] > 0 || map[currentPos.x2][currentPos.z] > 0) {
     return true;
+  } else {
+    return false;
+  }
 };
 
 // Creates start screen
@@ -733,7 +430,7 @@ $(document).ready(() => {
     setInterval(() => {
       $('.floor-title').fadeOut(3000);
     }, 1000);
-    setInterval(drawMinimap, 1000);
+    setInterval(drawMinimap(controls.getObject(), map, ai), 1000);
     animate();
   });
 });
