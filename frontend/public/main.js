@@ -134,7 +134,6 @@ const setupScene = () => {
   scene.add(light);
 
   // player weapon
-
   let gun;
   var mtlLoader = new t.MTLLoader();
   mtlLoader.setPath("./assets/models/");
@@ -160,7 +159,7 @@ const setupScene = () => {
 //Get a random integer between lo and hi, inclusive.
 //Assumes lo and hi are integers and lo is lower than hi.
 const getRandBetween = (lo, hi) => {
-  return parseInt(Math.floor(Math.random() * (hi - lo + 1)) + lo, 10);
+  return Math.floor(Math.random() * (hi - lo + 1)) + lo;
 };
 
 // Create and deploy a single AI object
@@ -173,7 +172,7 @@ function addAI() {
     '/assets/images/winged-sprite.png'
   ];
 
-  let x, z;
+  // let x, z;
 
   // Get camera position to avoid spawning on top of player
   const camPos = getMapSector(controls.getObject().position);
@@ -196,10 +195,9 @@ function addAI() {
   } while (map[x][z] > 0 || (x == camPos.x && z == camPos.z));
 
   // Format coords, set position, and random directions (X and Z) to be used for animating direction
-  x = Math.floor(x - mapW / 2) * UNITSIZE;
-  z = Math.floor(z - mapW / 2) * UNITSIZE;
+  x = (x - map.length / 2) * UNITSIZE;
+  z = (z - map.length / 2) * UNITSIZE;
   o.position.set(x, UNITSIZE * 0.15, z);
-  o.pathPos = 1;
   o.randomX = Math.random();
   o.randomZ = Math.random();
 
@@ -392,7 +390,7 @@ function init() {
 function animate() {
   requestAnimationFrame(animate);
 
-  // TODO: Figure out best rotation
+  // TODO: Rotation for the ceiling/sky
   gridHelper2.rotation.y += .0001;
 
   // TODO: Not important for now. Remove this if there's no good use for it.
@@ -472,7 +470,8 @@ function animate() {
     // Check if trajectory is leading off the map or hitting a wall
     // Reverse trajectory if true
     let aiPos = getMapSector(aiObj.position);
-    if (aiPos.x < 0 || aiPos.x >= mapW || checkWallCollision(aiObj.position)) {
+  
+    if (map[aiPos.x][aiPos.z] || aiPos.x < 0 || aiPos.x >= mapW || checkWallCollision(aiObj.position)) {
       aiObj.translateX(-2 * aispeed * aiObj.randomX);
       aiObj.translateZ(-2 * aispeed * aiObj.randomZ);
       aiObj.randomX = Math.random() * 2 - 1;
