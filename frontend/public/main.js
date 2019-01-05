@@ -2,27 +2,25 @@ const WIDTH = window.innerWidth;
 const HEIGHT = window.innerHeight;
 const ASPECT = WIDTH / HEIGHT;
 const UNITSIZE = 128; // In pixels
-const WALLHEIGHT = UNITSIZE;
 const AIMOVESPEED = 100;
 
 // TODO: Remove this reference when we use the node module Three
 const t = THREE;
 
 // Set up the camera (the player's perspective)
-var camera = new t.PerspectiveCamera(75, ASPECT, 1, 10000); // FOV, aspect, near, far
-var canJump; // For later use when we handle the player's keyboard input
+const camera = new t.PerspectiveCamera(75, ASPECT, 1, 10000); // FOV, aspect, near, far
+let canJump; // For later use when we handle the player's keyboard input
 // Set up controls (custom first-person controls)
-// TODO: This class needs to update the camera's position (right now it doesn't)
-var controls = new t.PointerLockControls(camera);
+const controls = new t.PointerLockControls(camera);
 // What we'll be using to render the scene - set antialias to false for better performance
 const models = {};
-var renderer = new t.WebGLRenderer({ antialias: false });
+const renderer = new t.WebGLRenderer({ antialias: false });
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = t.BasicShadowMap;
 // Set up the scene (a world in Three.js terms). We'll add objects to the scene later.
-var scene = new t.Scene();
+const scene = new t.Scene();
 
 // Initialize constant for number of AI and global array variable to house AI objects
 const NUMAI = 100;
@@ -41,104 +39,22 @@ var moveForward = false;
 var moveLeft = false;
 var moveRight = false;
 var prevTime = performance.now();
-var raycaster;
 var velocity = new t.Vector3();
 
 // Creates a 2D grid of 1s and 0s, which will be used to render the 3D world
 var map = new BSPTree().generateLevel(100, 100);
-for (let i = 0; i < map.length; i++) {
-  for (let j = 0; j < map[0].length; j++) {
-    if (j === 0 || i === 0 || j === map[0].length - 1 || i === map.length - 1) {
-      map[i][j] = 1;
-    }
-  }
-}
 var mapW = map.length;
 var mapH = map[0].length;
 
-////// Set up the environment //////
+// SETTING UP THE WORLD
 const setupScene = () => {
-  const units = mapW;
-
-  // NEW FLOOR
-  var size = 20000;
-  var divisions = 600;
-
-  var gridHelper = new t.GridHelper(size, divisions, '#00ccfd', '#00ccfd');
-  gridHelper.position.y = -10;
-  gridHelper.position.x = Math.PI / -2;
-  scene.add(gridHelper);
-
-  gridHelper2 = new t.GridHelper(size, divisions, '#00ccfd', '#00ccfd');
-  gridHelper2.position.y = 100;
-  gridHelper2.position.x = Math.PI / 2;
-  scene.add(gridHelper2);
-  ///////////////
-
-  // reflectors/mirrors
-  var geometry = new t.PlaneBufferGeometry(20000, 20000);
-  var groundMirror = new t.Reflector(geometry, {
-    clipBias: 0.003,
-    textureWidth: WIDTH * window.devicePixelRatio,
-    textureHeight: HEIGHT * window.devicePixelRatio,
-    color: 0x111111,
-    recursion: 1
-  });
-  groundMirror.position.y = 0.5;
-  groundMirror.rotateX(- Math.PI / 2);
-  scene.add(groundMirror);
-  
-  // Walls - note MeshLambertMaterial is affected by lighting
-  // TODO: Replace texture
-  const wallMat = new t.TextureLoader().load('https://pbs.twimg.com/media/DQG5kVSXkAAb03B.jpg');
-  wallMat.repeat.set(2, 2);
-  wallMat.wrapT = t.RepeatWrapping;
-  wallMat.wrapS = t.RepeatWrapping;
-  const block = new t.CubeGeometry(WALLHEIGHT, WALLHEIGHT - 32, WALLHEIGHT);
-  let wallTexture = new t.MeshToonMaterial({
-    map: wallMat
-  });
-
-  // Iterate through the 2D map I computed above and place the walls where needed
-  for (let i = 0; i < mapW; i++) {
-    for (let j = 0, m = map[i].length; j < m; j++) {
-      if (map[i][j]) {
-        let wall = new t.Mesh(block, wallTexture);
-        wall.position.x = (i - units / 2) * UNITSIZE;
-        wall.position.y = WALLHEIGHT / 3 + 10;
-        wall.position.z = (j - units / 2) * UNITSIZE;
-        scene.add(wall);
-      }
-    }
-  }
-
-  // Lighting
-  // Note that light1 and light2 are required. Both lights
-  // face away from each other - without one, one side of
-  // the wall will be pitch black from the player's perspective
-  const directionalLight1 = new t.DirectionalLight(0xF7EFBE, 0.7);
-  directionalLight1.position.set(0.5, 1, 0.5);
-  scene.add(directionalLight1);
-  const directionalLight2 = new t.DirectionalLight(0xF7EFBE, 0.5);
-  directionalLight2.position.set(-0.5, -1, -0.5);
-  scene.add(directionalLight2);
-  // TODO: Remove temporary ambient lighting
-  const allLight = new t.AmbientLight(0xffffff, 0.2);
-  scene.add(allLight);
-
-  let light = new t.PointLight(0xffffff, 0.8, 18);
-  light.position.set(-3, 6, -3);
-  light.castShadow = true;
-  light.shadow.camera.near = 0.1;
-  light.shadow.camera.far = 25;
-  scene.add(light);
+  sceneSetup(scene, map);
 
   // player weapon
   let gun;
   var mtlLoader = new t.MTLLoader();
   mtlLoader.setPath("./assets/models/");
   mtlLoader.load('shotgun.mtl', function (materials) {
-
     materials.preload();
 
     var objLoader = new t.OBJLoader();
@@ -154,26 +70,7 @@ const setupScene = () => {
       scene.add(models['gun']);
     });
   });
-
-  // Hammer
-  // var loader = new t.GLTFLoader();
-  // loader.load("./assets/models/td.gltf", function(gltf) {
-  //   models['hammer'] = gltf.scene;
-  //   models['hammer'].position.y = 18;
-  //   models['hammer'].scale.set(200, 200, 200);
-  //   models['hammer'].rotation.set(0, 3.2, 0);
-  //   models['hammer'].position.x = controls.getObject().position.x;
-  //   models['hammer'].position.z = controls.getObject().position.z;
-  //   scene.add(gltf.scene);
-
-  // });
 }
-
-//Get a random integer between lo and hi, inclusive.
-//Assumes lo and hi are integers and lo is lower than hi.
-const getRandBetween = (lo, hi) => {
-  return Math.floor(Math.random() * (hi - lo + 1)) + lo;
-};
 
 // Create and deploy a single AI object
 function addAI() {
@@ -184,8 +81,6 @@ function addAI() {
     '/assets/images/galaga-sprite.png',
     '/assets/images/winged-sprite.png'
   ];
-
-  // let x, z;
 
   // Get camera position to avoid spawning on top of player
   const camPos = getMapSector(controls.getObject().position);
@@ -259,8 +154,6 @@ function swingHammer() {
 const checkSpawn = () => {
   let startingSpot = map[map.length / 2][map.length / 2];
   if (startingSpot) {
-    let currentSpot;
-    let currentCoords = {};
     let x = Math.floor(Math.random() * map.length);
     let z = Math.floor(Math.random() * map.length);
     while (map[x][z]) {
@@ -269,7 +162,6 @@ const checkSpawn = () => {
     }
     let calcX = (x - map.length / 2) * UNITSIZE;
     let calcZ = (z - map.length / 2) * UNITSIZE;
-
     controls.getObject().position.x = calcX - 20;
     controls.getObject().position.z = calcZ - 20;
   }
@@ -318,7 +210,6 @@ function init() {
 
   // It may not look like it, but this adds the camera to the scene
   scene.add(controls.getObject());
-  // scene.add(camera); 
   //////////////////////////////////////////////////////////////////
 
   // TODO: Move the controls logic into another file if possible
@@ -380,8 +271,6 @@ function init() {
 
   document.addEventListener('keydown', onKeyDown, false);
   document.addEventListener('keyup', onKeyUp, false);
-  // TODO: Remove raycaster if there's no good use for it
-  raycaster = new t.Raycaster(new t.Vector3(), new t.Vector3(0, - 1, 0), 0, 10);
 
   // Add objects to the world
   setupScene();
@@ -400,12 +289,8 @@ function init() {
 function animate() {
   requestAnimationFrame(animate);
 
-  // TODO: Rotation for the ceiling/sky
-  gridHelper2.rotation.y += .0001;
-
-  // TODO: Not important for now. Remove this if there's no good use for it.
-  raycaster.ray.origin.copy(controls.getObject().position);
-  raycaster.ray.origin.y -= 10;
+  // TODO: Try to access ceiling a different way
+  ceiling.rotation.y += .0001;
 
   // Controls/movement related logic
   var time = performance.now();
@@ -417,10 +302,7 @@ function animate() {
   direction.x = Number(moveLeft) - Number(moveRight);
   direction.normalize(); // Ensures consistent movement in all directions
 
-  // TODO: Update the camera position
-
   let camPos = controls.getObject().position;
-
   if (moveForward || moveBackward) {
     velocity.z -= direction.z * 1200.0 * delta;
     if (checkWallCollision(camPos)) {
@@ -438,7 +320,6 @@ function animate() {
       velocity.x -= velocity.x * 4;
     }
   }
-
 
   controls.getObject().translateX(velocity.x * delta);
   controls.getObject().translateY(velocity.y * delta);
@@ -489,7 +370,6 @@ function animate() {
     // Attempt moving bugger across the axis at aispeed
     aiObj.translateX(aispeed * aiObj.randomX);
     aiObj.translateZ(aispeed * aiObj.randomZ);
-
 
     // Check if trajectory is leading off the map or hitting a wall
     // Reverse trajectory if true
@@ -568,7 +448,6 @@ const checkWallCollision = (obj) => {
     } else {
       return false;
     }
-   
 };
 
 // Creates start screen
