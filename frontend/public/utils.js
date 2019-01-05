@@ -157,7 +157,7 @@ const sceneSetup = (scene, map) => {
   wallMat.wrapT = t.RepeatWrapping;
   wallMat.wrapS = t.RepeatWrapping;
   const block = new t.CubeGeometry(128, 128 - 32, 128);
-  let wallTexture = new t.MeshToonMaterial({
+  let wallTexture = new t.MeshBasicMaterial({
     map: wallMat
   });
 
@@ -167,7 +167,7 @@ const sceneSetup = (scene, map) => {
       if (map[i][j]) {
         let wall = new t.Mesh(block, wallTexture);
         wall.position.x = (i - map.length / 2) * 128;
-        wall.position.y = 128 / 3 + 10;
+        wall.position.y = 128 / 3 + 5;
         wall.position.z = (j - map.length / 2) * 128;
         scene.add(wall);
       }

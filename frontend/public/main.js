@@ -204,7 +204,7 @@ function init() {
   setupAI();
 
   // Add the canvas to the document
-  renderer.setClearColor('white'); // Sky color (if the sky was visible)
+  renderer.setClearColor('#111111'); // Sky color (if the sky was visible)
   document.body.appendChild(renderer.domElement);
 
   // Add the minimap
