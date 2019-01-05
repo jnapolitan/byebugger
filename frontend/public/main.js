@@ -60,39 +60,8 @@ var mapH = map[0].length;
 const setupScene = () => {
   const units = mapW;
 
-  // Floor and ceiling
-  // TODO: Readjust plane sizing and replace all textures
-  // Look for vaporwave grids:
-  // https://res.cloudinary.com/teepublic/image/private/s--tQSSo6bK--/t_Preview/b_rgb:191919,c_limit,f_jpg,h_630,q_90,w_630/v1506824583/production/designs/1941165_0.jpg
-  const floorCeilMat = new t.TextureLoader().load('https://pbs.twimg.com/media/DQG5kVSXkAAb03B.jpg');
-  // It's possible to use max anisotropy, but performance might suffer
-  floorCeilMat.anisotropy = 32;
-  floorCeilMat.repeat.set(64, 64);
-  floorCeilMat.wrapT = t.RepeatWrapping;
-  floorCeilMat.wrapS = t.RepeatWrapping;
-  // PlaneBufferGeometry is a lower memory alternative to PlaneGeometry
-  const floorCeilGeo = new t.PlaneBufferGeometry(10000, 10000);
-  let texture = new t.MeshPhongMaterial({
-    map: floorCeilMat
-  });
-
-  // Three.Mesh takes in 1. geometry and 2. material/texture
-  const floor = new t.Mesh(floorCeilGeo, texture);
-  ceiling = new t.Mesh(floorCeilGeo, texture);
-
-  floor.position.y = -10;
-  floor.rotation.x = Math.PI / -2;
-
-  // Rotation makes it so that the ceiling mirrors the floor on the opposite side
-  ceiling.position.y = 100;
-  ceiling.rotation.x = Math.PI / 2;
-
-  // Add the floor and ceiling to the world
-  // scene.add(floor);
-  // scene.add(ceiling);
-
   // NEW FLOOR
-  var size = 10000;
+  var size = 20000;
   var divisions = 600;
 
   var gridHelper = new t.GridHelper(size, divisions, '#00ccfd', '#00ccfd');
@@ -107,7 +76,7 @@ const setupScene = () => {
   ///////////////
 
   // reflectors/mirrors
-  var geometry = new t.PlaneBufferGeometry(10000, 10000);
+  var geometry = new t.PlaneBufferGeometry(20000, 20000);
   var groundMirror = new t.Reflector(geometry, {
     clipBias: 0.003,
     textureWidth: WIDTH * window.devicePixelRatio,
@@ -277,21 +246,9 @@ function swingHammer() {
 
 }
 
-function setSpawn() {
-  // let newX = velocity.x * delta;
-  // let newZ = velocity.z * delta;
-  // let pos = { x: newX, z: newZ };
-  // let x = Math.floor(((newX - 20) + UNITSIZE / 2) / UNITSIZE + mapW / 2);
-  // let z = Math.floor(((newZ - 20) + UNITSIZE / 2) / UNITSIZE + mapW / 2);
-  // console.log(map[x][z]);
-  // if (map[x][z] !== 1) {
-  //   controls.getObject().translateX(velocity.x * delta);
-  //   controls.getObject().translateY(velocity.y * delta);
-  //   controls.getObject().translateZ(velocity.z * delta);
-  // }
+const checkSpawn = () => {
   let startingSpot = map[map.length / 2][map.length / 2];
   if (startingSpot) {
-    console.log("I'm in a wall");
     let currentSpot;
     let currentCoords = {};
     for (let i = 0; i < map.length; i++) {
@@ -315,7 +272,7 @@ function setSpawn() {
 function init() {
   scene.fog = new t.FogExp2('black', 0.0020);
   camera.position.y = UNITSIZE * .1; // Ensures the player is above the floor
-  setSpawn();
+  checkSpawn();
 
   //////////////////////////////////////////////////////////////////
   //SUE: add crosshair for aiming hammer
@@ -421,8 +378,7 @@ function init() {
 
   // Add objects to the world
   setupScene();
-
-  // Add AI buggers
+  // Add buggers
   setupAI();
 
   // Add the canvas to the document
@@ -438,7 +394,7 @@ function animate() {
   requestAnimationFrame(animate);
 
   // TODO: Figure out best rotation
-  gridHelper2.rotation.y += .0003;
+  gridHelper2.rotation.y += .0001;
 
   // TODO: Not important for now. Remove this if there's no good use for it.
   raycaster.ray.origin.copy(controls.getObject().position);
@@ -463,17 +419,6 @@ function animate() {
     velocity.x -= direction.x * 1200.0 * delta;
   }
 
-  // let newX = velocity.x * delta;
-  // let newZ = velocity.z * delta;
-  // let pos = { x: newX, z: newZ };
-  // let x = Math.floor(((newX - 20) + UNITSIZE / 2) / UNITSIZE + mapW / 2);
-  // let z = Math.floor(((newZ - 20) + UNITSIZE / 2) / UNITSIZE + mapW / 2);
-  // console.log(map[x][z]);
-  // if (map[x][z] !== 1) {
-  //   controls.getObject().translateX(velocity.x * delta);
-  //   controls.getObject().translateY(velocity.y * delta);
-  //   controls.getObject().translateZ(velocity.z * delta);
-  // }
 
   controls.getObject().translateX(velocity.x * delta);
   controls.getObject().translateY(velocity.y * delta);
@@ -485,7 +430,6 @@ function animate() {
       18,
       controls.getObject().position.z - 10
     );
-    models['gun'].lookAt(controls.getObject());
   }
 
   if (controls.getObject().position.y < 10) {
@@ -536,8 +480,6 @@ function animate() {
   }
 
   // SUE: detection of player attacking bug
-
-
 
   // Deals with what portion of the scene the player sees
   renderer.render(scene, camera);
