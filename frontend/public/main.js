@@ -25,7 +25,7 @@ renderer.shadowMap.type = t.BasicShadowMap;
 var scene = new t.Scene();
 
 // Initialize constant for number of AI and global array variable to house AI objects
-const NUMAI = 100;
+const NUMAI = 1;
 const ai = [];
 
 // Initialize global array variable to house AI animations
@@ -45,7 +45,7 @@ var raycaster;
 var velocity = new t.Vector3();
 
 // Creates a 2D grid of 1s and 0s, which will be used to render the 3D world
-var map = new BSPTree().generateLevel(100, 100);
+var map = new BSPTree().generateLevel(30, 30);
 for (let i = 0; i < map.length; i++) {
   for (let j = 0; j < map[0].length; j++) {
     if (j === 0 || i === 0 || j === map[0].length - 1 || i === map.length - 1) {
@@ -176,7 +176,7 @@ function addAI() {
   let x, z;
 
   // Get camera position to avoid spawning on top of player
-  const c = getMapSector(camera.position);
+  const camPos = getMapSector(controls.getObject().position);
 
   // Sample from aiSpriteTextures array to create a random bugger
   const aiTexture = new t.TextureLoader().load(aiSpriteTextures[Math.floor(Math.random() * aiSpriteTextures.length)]);
@@ -193,7 +193,7 @@ function addAI() {
   do {
     x = getRandBetween(0, mapW - 1);
     z = getRandBetween(0, mapH - 1);
-  } while (map[x][z] > 0 || (x == c.x && z == c.z));
+  } while (map[x][z] > 0 || (x == camPos.x && z == camPos.z));
 
   // Format coords, set position, and random directions (X and Z) to be used for animating direction
   x = Math.floor(x - mapW / 2) * UNITSIZE;
@@ -238,7 +238,6 @@ function swingHammer() {
   let playerPosition = controls.getObject.position;
   const vector = new t.Vector3();
   camera.getWorldDirection(vector);
-  console.log(vector);
   // swing vector has a fixed length (equal to hammer length)
   const hammerLength = 5;
 
@@ -411,12 +410,21 @@ function animate() {
   direction.normalize(); // Ensures consistent movement in all directions
 
   // TODO: Update the camera position
+
+  let camPos = controls.getObject().position;
+
   if (moveForward || moveBackward) {
     velocity.z -= direction.z * 1200.0 * delta;
+    if (checkWallCollision(camPos)) {
+      velocity.z -= velocity.z * 4;
+    }
   }
 
   if (moveLeft || moveRight) {
     velocity.x -= direction.x * 1200.0 * delta;
+    if (checkWallCollision(camPos)) {
+      velocity.x -= velocity.x * 4;
+    }
   }
 
 
@@ -584,8 +592,12 @@ function TextureAnimator(texture, tilesHoriz, tilesVert, numTiles, tileDispDurat
 const checkWallCollision = (obj) => {
   let currentPos = getMapSector(obj);
   if (map[currentPos.x][currentPos.z] > 0 || map[currentPos.x2][currentPos.z2] > 0 ||
-    map[currentPos.x][currentPos.z2] > 0 || map[currentPos.x2][currentPos.z] > 0)
-    return true;
+    map[currentPos.x][currentPos.z2] > 0 || map[currentPos.x2][currentPos.z] > 0) {
+       return true;
+    } else {
+      return false;
+    }
+   
 };
 
 // Creates start screen
