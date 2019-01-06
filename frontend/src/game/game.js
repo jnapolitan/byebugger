@@ -9,9 +9,15 @@ import drawMinimap from './minimap';
 import MTLLoader from './external_sources/MTLLoader';
 import OBJLoader from './external_sources/OBJLoader';
 import PointerLockControls from './PointerLockControls';
+import Stats from 'stats-js';
 
 export default class Game {
   constructor() {
+    // TODO: Remove before production
+    this.stats = new Stats();
+    this.stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
+    document.body.appendChild(this.stats.dom);
+
     this.WIDTH = window.innerWidth;
     this.HEIGHT = window.innerHeight;
     this.ASPECT = this.WIDTH / this.HEIGHT;
@@ -123,14 +129,15 @@ export default class Game {
     // TODO: Is there a cleaner way to do this?
     const minimap = document.createElement('canvas');
     minimap.setAttribute('id', 'minimap')
-    minimap.setAttribute('width', 180);
-    minimap.setAttribute('height', 180);
+    minimap.setAttribute('width', 240);
+    minimap.setAttribute('height', 240);
     document.body.appendChild(minimap);
   }
 
   animate() {
     requestAnimationFrame(this.animate);
 
+    this.stats.begin(); // TODO: Remove before production
     // Controls/movement related logic
     const time = performance.now();
     const delta = (time - this.prevTime) / 1000;
@@ -231,5 +238,6 @@ export default class Game {
 
     // Deals with what portion of the scene the player sees
     this.renderer.render(this.scene, this.camera);
+    this.stats.end(); // TODO: Remove before production
   }
 }

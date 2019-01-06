@@ -24,22 +24,22 @@ const drawMinimap = (cam, map, ai, UNITSIZE) => {
         if (x === mapCoords.x && y === mapCoords.z) {
           // Player square is blue
           context.fillStyle = '#2011a2';
-          context.fillRect(x * 2, y * 2, (x + 1) * 2, (y + 1) * 2);
+          context.fillRect(x * 4, y * 4, (x + 1) * 4, (y + 1) * 4);
 
         } else if (isBug) {
           // Bug squares are pink
           context.fillStyle = '#ff34b3';
-          context.fillRect(x * 2, y * 2, (x + 1) * 2, (y + 1) * 2);
+          context.fillRect(x * 4, y * 4, (x + 1) * 4, (y + 1) * 4);
 
         } else if (map[x][y]) {
           // Wall squares are black
           context.fillStyle = '#111111';
-          context.fillRect(x * 2, y * 2, (x + 1) * 2, (y + 1) * 2);
+          context.fillRect(x * 4, y * 4, (x + 1) * 4, (y + 1) * 4);
 
         } else {
           // Empty squares/spaces are white
           context.fillStyle = '#ffffff';
-          context.fillRect(x * 2, y * 2, (x + 1) * 2, (y + 1) * 2);
+          context.fillRect(x * 4, y * 4, (x + 1) * 4, (y + 1) * 4);
         }
       }
     }
