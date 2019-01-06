@@ -75,45 +75,6 @@ export const checkSpawn = (map, cam, UNITSIZE) => {
   }
 };
 
-export function drawMinimap(cam, map, ai, UNITSIZE) {
-  return () => {
-    var c = getMapSector(cam.position, map, UNITSIZE);
-    var context = document.getElementById('radar').getContext('2d');
-    context.font = '1px Georgia';
-    for (var i = 0; i < map.length; i++) {
-      for (var j = 0, m = map[i].length; j < m; j++) {
-        var d = 0;
-        for (var k = 0, n = ai.length; k < n; k++) {
-          var e = getMapSector(ai[k].position, map, UNITSIZE);
-          if (i === e.x && j === e.z) {
-            d++;
-          }
-        }
-        if (i === c.x && j === c.z && d === 0) {
-          context.fillStyle = 'rgba(170, 51, 255, 1)';
-          context.fillRect(i * 2, j * 2, (i + 1) * 2, (j + 1) * 2);
-        } else if (i === c.x && j === c.z) {
-          context.fillStyle = '#AA33FF';
-          context.fillRect(i * 2, j * 2, (i + 1) * 2, (j + 1) * 2);
-          context.fillStyle = '#000000';
-          context.fillText('' + d, i * 2 + 8, j * 2 + 12);
-        } else if (d > 0 && d < 10) {
-          context.fillStyle = '#FF0000';
-          context.fillRect(i * 2, j * 2, (i + 1) * 2, (j + 1) * 2);
-          context.fillStyle = '#000000';
-          context.fillText('' + d, i * 2 + 8, j * 2 + 12);
-        } else if (map[i][j] > 0) {
-          context.fillStyle = 'rgba(102, 102, 102, 1)';
-          context.fillRect(i * 2, j * 2, (i + 1) * 2, (j + 1) * 2);
-        } else {
-          context.fillStyle = '#CCCCCC';
-          context.fillRect(i * 2, j * 2, (i + 1) * 2, (j + 1) * 2);
-        }
-      }
-    }
-  }
-};
-
 export const getMapSector = (v, map, UNITSIZE) => {
   let x = Math.floor(((v.x + 20) + UNITSIZE / 2) / UNITSIZE + map.length / 2);
   let z = Math.floor(((v.z + 20) + UNITSIZE / 2) / UNITSIZE + map.length / 2);
@@ -129,11 +90,13 @@ export const getMapSector = (v, map, UNITSIZE) => {
 
 export const checkWallCollision = (obj, map, UNITSIZE) => {
   let currentPos = getMapSector(obj, map, UNITSIZE);
-  if (map[currentPos.x][currentPos.z] > 0 || map[currentPos.x2][currentPos.z2] > 0 ||
-    map[currentPos.x][currentPos.z2] > 0 || map[currentPos.x2][currentPos.z] > 0) {
-    return true;
-  } else {
-    return false;
+  if (map[currentPos.x] || map[currentPos.x2]) {
+    if (map[currentPos.x][currentPos.z] > 0 || map[currentPos.x2][currentPos.z2] > 0 ||
+      map[currentPos.x][currentPos.z2] > 0 || map[currentPos.x2][currentPos.z] > 0) {
+      return true;
+    } else {
+      return false;
+    }
   }
 };
 
@@ -146,7 +109,7 @@ export const getRandBetween = (lo, hi) => {
 // TODO: Export ceiling
 export const sceneSetup = (scene, map) => {
   const ceiling = new t.GridHelper(20000, 600, '#00ccfd', '#00ccfd'); // size, divisions
-  ceiling.position.y = 100;
+  ceiling.position.y = 120;
   ceiling.position.x = Math.PI / 2;
   scene.add(ceiling);
 

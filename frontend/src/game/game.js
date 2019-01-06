@@ -5,6 +5,7 @@ import * as KeypressHandler from './keypressHandler';
 
 import BSPTree from './mapGenerator';
 import createCrosshairs from './crosshairs';
+import drawMinimap from './minimap';
 import MTLLoader from './external_sources/MTLLoader';
 import OBJLoader from './external_sources/OBJLoader';
 import PointerLockControls from './PointerLockControls';
@@ -84,6 +85,11 @@ export default class Game {
   }
 
   init() {
+    let cam = this.controls.getObject();
+    let map = this.map;
+    let ai = this.ai;
+    setInterval(drawMinimap(cam, map, ai, 128), 1000);
+
     this.scene.fog = new t.FogExp2('black', 0.0015);
     this.camera.position.y = this.UNITSIZE * 0.1; // Ensures the player is above the floor
     GameUtil.checkSpawn(this.map, this.controls.getObject(), this.UNITSIZE);
@@ -114,9 +120,12 @@ export default class Game {
     // Add the canvas to the document
     this.renderer.setClearColor('#111111', 1); // Sky color (if the sky was visible)
     document.body.appendChild(this.renderer.domElement);
-
-    // Add the minimap
-    // document.body.appendChild('<canvas id="radar" width="180" height="180"></canvas>');
+    // TODO: Is there a cleaner way to do this?
+    const minimap = document.createElement('canvas');
+    minimap.setAttribute('id', 'radar')
+    minimap.setAttribute('width', 180);
+    minimap.setAttribute('height', 180);
+    document.body.appendChild(minimap);
   }
 
   animate() {
