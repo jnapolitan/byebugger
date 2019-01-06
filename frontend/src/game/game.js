@@ -39,6 +39,11 @@ export default class Game {
     this.ai = [];
     this.aiAnimations = []; // Bug animations are stored here
 
+    // JULIAN: Set initial player stats
+    this.health = this.TRIES;
+    this.score = 0;
+    this.gameOver = false;
+
     this.setupAI = this.setupAI.bind(this);
     this.setupScene = this.setupScene.bind(this);
     this.init = this.init.bind(this);
