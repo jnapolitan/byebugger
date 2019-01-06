@@ -62,3 +62,7 @@ body {
   top: 30%;
   z-index: 10;
 }
+
+.hidden {
+  display: none;
+}
