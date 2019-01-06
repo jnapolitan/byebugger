@@ -206,7 +206,7 @@ export default class Game {
     this.setupAI();
 
     // Add the canvas to the document
-    this.renderer.setClearColor('#'); // Sky color (if the sky was visible)
+    this.renderer.setClearColor('#111111', 1); // Sky color (if the sky was visible)
     document.body.appendChild(this.renderer.domElement);
 
     // Add the minimap
@@ -298,12 +298,15 @@ export default class Game {
       // Reverse trajectory if true
       let aiPos = GameUtil.getMapSector(aiObj.position, this.map, this.UNITSIZE);
 
-      if (this.map[aiPos.x][aiPos.z] || aiPos.x < 0
-        || aiPos.x >= this.map.length || GameUtil.checkWallCollision(aiObj.position, this.map, this.UNITSIZE)) {
-        aiObj.translateX(-2 * aispeed * aiObj.randomX);
-        aiObj.translateZ(-2 * aispeed * aiObj.randomZ);
-        aiObj.randomX = Math.random() * 2 - 1;
-        aiObj.randomZ = Math.random() * 2 - 1;
+      // TODO: This is a potential fix for undefined errors
+      if (this.map[aiPos.x]) {
+        if (this.map[aiPos.x][aiPos.z] || aiPos.x < 0
+          || aiPos.x >= this.map.length || GameUtil.checkWallCollision(aiObj.position, this.map, this.UNITSIZE)) {
+          aiObj.translateX(-2 * aispeed * aiObj.randomX);
+          aiObj.translateZ(-2 * aispeed * aiObj.randomZ);
+          aiObj.randomX = Math.random() * 2 - 1;
+          aiObj.randomZ = Math.random() * 2 - 1;
+        }
       }
 
       // Check if bug is off the map, and if true remove and add a new one
