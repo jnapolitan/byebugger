@@ -67,8 +67,8 @@ export const swingHammer = (ai, cam) => {
   // set camera-direction vector's origin to player's position
   const playerPositionX = playerPosition.x;
   const playerPositionZ = playerPosition.z;
-  const vectorX = vector.x;
-  const vectorZ = vector.z;
+  const vectorX = vector.x * -1;
+  const vectorZ = vector.z * -1;
   const hammerVectorX = playerPositionX + vectorX;
   const hammerVectorZ = playerPositionZ + vectorZ;
   const hammerHeadPosition = {

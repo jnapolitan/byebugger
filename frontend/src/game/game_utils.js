@@ -59,6 +59,7 @@ export function addAI(camPos, map, scene, ai, aiAnimations) {
 export const checkSpawn = (map, cam, UNITSIZE) => {
   let startingSpot = map[map.length / 2][map.length / 2];
   if (startingSpot) {
+    console.log("we're in a wall");
     let x = Math.floor(Math.random() * map.length);
     let z = Math.floor(Math.random() * map.length);
     while (map[x][z]) {

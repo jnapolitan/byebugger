@@ -58,7 +58,7 @@ export default class Game {
 
     // Creates a 2D grid of 1s and 0s, which will be used to render the 3D world
     //SUE: changed map size (originally 100, 100)
-    this.map = new BSPTree().generateLevel(100, 100);
+    this.map = new BSPTree().generateLevel(64, 64);
     this.mapW = this.map.length;
     this.mapH = this.map[0].length;
   }
@@ -97,7 +97,7 @@ export default class Game {
   init() {
     this.scene.fog = new t.FogExp2('black', 0.0015);
     this.camera.position.y = this.UNITSIZE * 0.1; // Ensures the player is above the floor
-    GameUtil.checkSpawn(this.map, this.controls.getObject());
+    GameUtil.checkSpawn(this.map, this.controls.getObject(), this.UNITSIZE);
 
     //////////////////////////////////////////////////////////////////
     //SUE: add crosshair for aiming hammer
@@ -147,7 +147,7 @@ export default class Game {
       BugCaptureUtil.swingHammer(this.ai, this.controls.getObject());
     }, false);
 
-    var onKeyDown = function (event) {
+    var onKeyDown = (event) => {
       switch (event.keyCode) {
         case 38: // up
         case 87: // w
@@ -174,7 +174,7 @@ export default class Game {
       }
     };
 
-    var onKeyUp = function (event) {
+    var onKeyUp = (event) => {
       switch (event.keyCode) {
         case 38: // up
         case 87: // w
@@ -298,7 +298,7 @@ export default class Game {
       // Reverse trajectory if true
       let aiPos = GameUtil.getMapSector(aiObj.position, this.map, this.UNITSIZE);
 
-      if (this.map[aiPos.x][aiPos.z] || aiPos.x < 0 
+      if (this.map[aiPos.x][aiPos.z] || aiPos.x < 0
         || aiPos.x >= this.map.length || GameUtil.checkWallCollision(aiObj.position, this.map, this.UNITSIZE)) {
         aiObj.translateX(-2 * aispeed * aiObj.randomX);
         aiObj.translateZ(-2 * aispeed * aiObj.randomZ);
