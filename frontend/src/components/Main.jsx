@@ -6,11 +6,11 @@ export default class Main extends React.Component {
   initiateGame(e) {
     e.preventDefault();
     const splash = document.getElementById('splash');
-    splash.classList.add('hidden');
+    // splash.classList.add('hidden');
 
     const game = new Game();
-    // game.init()
-    // game.animate()
+    game.init();
+    game.animate();
   }
 
   render() {

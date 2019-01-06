@@ -72,16 +72,16 @@ export const checkSpawn = (map, cam, UNITSIZE) => {
   }
 }
 
-export function drawMinimap(cam, map, ai) {
+export function drawMinimap(cam, map, ai, UNITSIZE) {
   return () => {
-    var c = getMapSector(cam.position);
+    var c = getMapSector(cam.position, map, UNITSIZE);
     var context = document.getElementById('radar').getContext('2d');
     context.font = '1px Georgia';
     for (var i = 0; i < map.length; i++) {
       for (var j = 0, m = map[i].length; j < m; j++) {
         var d = 0;
         for (var k = 0, n = ai.length; k < n; k++) {
-          var e = getMapSector(ai[k].position);
+          var e = getMapSector(ai[k].position, map, UNITSIZE);
           if (i === e.x && j === e.z) {
             d++;
           }
@@ -122,6 +122,16 @@ export const getMapSector = (v, map, UNITSIZE) => {
     x2: x2,
     z2: z2
   };
+};
+
+export const checkWallCollision = (obj, map, UNITSIZE) => {
+  let currentPos = getMapSector(obj, map, UNITSIZE);
+  if (map[currentPos.x][currentPos.z] > 0 || map[currentPos.x2][currentPos.z2] > 0 ||
+    map[currentPos.x][currentPos.z2] > 0 || map[currentPos.x2][currentPos.z] > 0) {
+    return true;
+  } else {
+    return false;
+  }
 };
 
 //Get a random integer between lo and hi, inclusive.
