@@ -61,7 +61,6 @@ export default class Game {
     this.map = new BSPTree().generateLevel(100, 100);
     this.mapW = this.map.length;
     this.mapH = this.map[0].length;
-    console.log('we made it to the game');
   }
 
   setupScene() {
@@ -207,7 +206,7 @@ export default class Game {
     this.setupAI();
 
     // Add the canvas to the document
-    this.renderer.setClearColor('#111111'); // Sky color (if the sky was visible)
+    this.renderer.setClearColor('#FFFFFF'); // Sky color (if the sky was visible)
     document.body.appendChild(this.renderer.domElement);
 
     // Add the minimap
