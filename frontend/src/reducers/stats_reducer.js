@@ -3,7 +3,7 @@ import {
     RECEIVE_NEW_STAT
 } from '../actions/stat_actions';
 
-const statsReducer = (state = { all: {}, player: {} }, action) => {
+const statsReducer = (state = { topTenScores: {}, currentPlayerScore: 0 }, action) => {
     Object.freeze(state);
     let newState = Object.assign({}, state);
 
