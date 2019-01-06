@@ -206,7 +206,7 @@ export default class Game {
     this.setupAI();
 
     // Add the canvas to the document
-    this.renderer.setClearColor('#FFFFFF'); // Sky color (if the sky was visible)
+    this.renderer.setClearColor('#'); // Sky color (if the sky was visible)
     document.body.appendChild(this.renderer.domElement);
 
     // Add the minimap

@@ -3,7 +3,7 @@ html, body {
 }
 
 body {
-  background-image: url("https://media.giphy.com/media/7n1LUw0jmnPkk/giphy.gif");
+  background-image: url("https://mir-s3-cdn-cf.behance.net/project_modules/max_1200/5d96d646847841.586690decaada.gif");
   background-position: center;
   background-size: cover;
   display: flex;
@@ -29,16 +29,17 @@ body {
 
 .start-button {
   background:	#55e7ff;
-  border: 1px solid #201148;
+  border: 2px solid #201148;
   border-radius: 4px;
   color: #ff34b3;
   cursor: pointer;
-  font-family: "Georgia";
+  font-family: "Arial";
   font-size: 20px;
   font-weight: 900;
-  height: 40px;
+  height: 55px;
   letter-spacing: 2px;
   margin-top: 10px;
+  text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
   width: 110px;
 }
 
