@@ -1,4 +1,5 @@
 import * as t from 'three';
+
 import Reflector from '../external_sources/Reflector';
 
 // Create and deploy a single AI object
@@ -52,9 +53,10 @@ export function addAI(camPos, map, scene, ai, aiAnimations) {
   //   aiSound.setRolloffFactor(2);
   //   aiSound.play();
   // });
-  scene.add(o);
+
   // o.add(aiSound);
-}
+  scene.add(o);
+};
 
 export const checkSpawn = (map, cam, UNITSIZE) => {
   let startingSpot = map[map.length / 2][map.length / 2];
@@ -71,7 +73,7 @@ export const checkSpawn = (map, cam, UNITSIZE) => {
     cam.position.x = calcX - 20;
     cam.position.z = calcZ - 20;
   }
-}
+};
 
 export function drawMinimap(cam, map, ai, UNITSIZE) {
   return () => {
@@ -110,7 +112,7 @@ export function drawMinimap(cam, map, ai, UNITSIZE) {
       }
     }
   }
-}
+};
 
 export const getMapSector = (v, map, UNITSIZE) => {
   let x = Math.floor(((v.x + 20) + UNITSIZE / 2) / UNITSIZE + map.length / 2);
@@ -141,7 +143,7 @@ export const getRandBetween = (lo, hi) => {
   return Math.floor(Math.random() * (hi - lo + 1)) + lo;
 };
 
-// ERIC export ceiling 
+// TODO: Export ceiling
 export const sceneSetup = (scene, map) => {
   const ceiling = new t.GridHelper(20000, 600, '#00ccfd', '#00ccfd'); // size, divisions
   ceiling.position.y = 100;

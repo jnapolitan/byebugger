@@ -1,14 +1,15 @@
 import * as t from 'three';
-import PointerLockControls from './PointerLockControls';
+import * as BugCaptureUtil from './utilities/bug_capture_utils';
+import * as GameUtil from './utilities/game_utils';
+import * as KeypressHandler from './keypressHandler';
+
 import BSPTree from './mapGenerator';
 import MTLLoader from './external_sources/MTLLoader';
 import OBJLoader from './external_sources/OBJLoader';
-import * as GameUtil from './utilities/game_utils';
-import * as BugCaptureUtil from './utilities/bug_capture_utils';
+import PointerLockControls from './PointerLockControls';
 
 export default class Game {
   constructor() {
-    // this.player = player;
     this.WIDTH = window.innerWidth;
     this.HEIGHT = window.innerHeight;
     this.ASPECT = this.WIDTH / this.HEIGHT;
@@ -48,42 +49,33 @@ export default class Game {
     // this.listener = new t.AudioListener();
 
     this.direction = new t.Vector3();
-    this.moveBackward = false;
-    this.moveForward = false;
-    this.moveLeft = false;
-    this.moveRight = false;
-    this.canJump = true;
+    this.keypresses = { forward: false, backward: false, left: false, right: false, canJump: true };
     this.prevTime = performance.now();
     this.velocity = new t.Vector3();
 
     // Creates a 2D grid of 1s and 0s, which will be used to render the 3D world
-    //SUE: changed map size (originally 100, 100)
     this.map = new BSPTree().generateMap(64, 64);
-    this.mapW = this.map.length;
-    this.mapH = this.map[0].length;
   }
 
   setupScene() {
     GameUtil.sceneSetup(this.scene, this.map);
-
-    // player weapon
-    let gun;
-    var mtlLoader = new MTLLoader();
+  
+    // Loads and sets up player weapon
+    const mtlLoader = new MTLLoader();
     mtlLoader.setPath("./assets/models/");
+
     mtlLoader.load('shotgun.mtl', (materials) => {
       materials.preload();
 
-      var objLoader = new OBJLoader();
+      const objLoader = new OBJLoader();
       objLoader.setMaterials(materials);
       objLoader.setPath("./assets/models/");
       objLoader.load('shotgun.obj', (object) => {
-
-        gun = object;
-        this.models.gun = gun.clone();
-        this.models.gun.position.y = 18
-        this.models.gun.scale.set(200, 200, 200);
-        this.models.gun.rotation.set(0, 3.2, 0);
-        this.scene.add(this.models.gun);
+        this.models.weapon = object.clone();
+        this.models.weapon.position.y = 18
+        this.models.weapon.scale.set(200, 200, 200);
+        this.models.weapon.rotation.set(0, 3.2, 0);
+        this.scene.add(this.models.weapon);
       });
     });
   }
@@ -147,58 +139,8 @@ export default class Game {
       BugCaptureUtil.swingHammer(this.ai, this.controls.getObject());
     }, false);
 
-    var onKeyDown = (event) => {
-      switch (event.keyCode) {
-        case 38: // up
-        case 87: // w
-          this.moveForward = true;
-          break;
-        case 37: // left
-        case 65: // a
-          this.moveLeft = true;
-          break;
-        case 40: // down
-        case 83: // s
-          this.moveBackward = true;
-          break;
-        case 39: // right
-        case 68: // d
-          this.moveRight = true;
-          break;
-        case 32: // space
-          if (this.canJump === true) this.velocity.y += 350;
-          this.canJump = false;
-          break;
-        default:
-          break;
-      }
-    };
-
-    var onKeyUp = (event) => {
-      switch (event.keyCode) {
-        case 38: // up
-        case 87: // w
-          this.moveForward = false;
-          break;
-        case 37: // left
-        case 65: // a
-          this.moveLeft = false;
-          break;
-        case 40: // down
-        case 83: // s
-          this.moveBackward = false;
-          break;
-        case 39: // right
-        case 68: // d
-          this.moveRight = false;
-          break;
-        default:
-          break;
-      }
-    };
-
-    document.addEventListener('keydown', onKeyDown, false);
-    document.addEventListener('keyup', onKeyUp, false);
+    document.addEventListener('keydown', (e) => KeypressHandler.onKeyDown(e, this.keypresses, this.velocity), false);
+    document.addEventListener('keyup', (e) => KeypressHandler.onKeyUp(e, this.keypresses), false);
 
     // Add objects to the world
     this.setupScene();
@@ -216,32 +158,29 @@ export default class Game {
   animate() {
     requestAnimationFrame(this.animate);
 
-    // TODO: Try to access ceiling a different way
-    // ceiling.rotation.y += .0001;
-
     // Controls/movement related logic
     const time = performance.now();
     const delta = (time - this.prevTime) / 1000;
     this.velocity.x -= this.velocity.x * 10.0 * delta;
     this.velocity.z -= this.velocity.z * 10.0 * delta;
     this.velocity.y -= 9.8 * 100.0 * delta; // 100.0 = mass
-    this.direction.z = Number(this.moveForward) - Number(this.moveBackward);
-    this.direction.x = Number(this.moveLeft) - Number(this.moveRight);
+    this.direction.z = Number(this.keypresses.forward) - Number(this.keypresses.backward);
+    this.direction.x = Number(this.keypresses.left) - Number(this.keypresses.right);
     this.direction.normalize(); // Ensures consistent movement in all directions
 
     const camPos = this.controls.getObject().position;
-    // TODO move audio to local assets
-    // const audio = new Audio('./assets/sounds/oof.mp3');
 
-    if (this.moveForward || this.moveBackward) {
+    const audio = new Audio('./assets/sounds/oof.mp3');
+
+    if (this.keypresses.forward || this.keypresses.backward) {
       this.velocity.z -= this.direction.z * 1200.0 * delta;
       if (GameUtil.checkWallCollision(camPos, this.map, this.UNITSIZE)) {
-        // audio.play();
+        audio.play();
         this.velocity.z -= this.velocity.z * 4;
       }
     }
 
-    if (this.moveLeft || this.moveRight) {
+    if (this.keypresses.left || this.keypresses.right) {
       this.velocity.x -= this.direction.x * 1200.0 * delta;
       if (GameUtil.checkWallCollision(camPos, this.map, this.UNITSIZE)) {
         // audio.play();
@@ -253,13 +192,13 @@ export default class Game {
     this.controls.getObject().translateY(this.velocity.y * delta);
     this.controls.getObject().translateZ(this.velocity.z * delta);
 
-    if (this.models.gun) {
-      this.models.gun.position.set(
+    if (this.models.weapon) {
+      this.models.weapon.position.set(
         this.controls.getObject().position.x - Math.sin(this.controls.getObject().rotation.y + Math.PI / 6) * 0.75,
         18,
         this.controls.getObject().position.z + Math.cos(this.controls.getObject().rotation.y + Math.PI / 6) * 0.75
       );
-      this.models.gun.rotation.set(
+      this.models.weapon.rotation.set(
         this.controls.getObject().rotation.x,
         this.controls.getObject().rotation.y - Math.PI,
         this.controls.getObject().rotation.z
@@ -269,7 +208,7 @@ export default class Game {
     if (this.controls.getObject().position.y < 10) {
       this.velocity.y = 0;
       this.controls.getObject().position.y = 10;
-      this.canJump = true;
+      this.keypresses.canJump = true;
     }
     this.prevTime = time;
 
@@ -316,8 +255,6 @@ export default class Game {
         GameUtil.addAI(camPos, this.map, this.scene, this.ai, this.aiAnimations);
       }
     }
-
-    // SUE: detection of player attacking bug
 
     // Deals with what portion of the scene the player sees
     this.renderer.render(this.scene, this.camera);

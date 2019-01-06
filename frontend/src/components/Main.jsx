@@ -22,7 +22,7 @@ export default class Main extends React.Component {
     // By Eric Matyas @ https://soundimage.org/
     let musicURL = "http://soundimage.org/wp-content/uploads/2016/07/Puzzle-Game_Looping.mp3";
     let audio = new Audio(musicURL);
-    // audio.play();
+    audio.play();
 
     return (
       <div id="splash" className="splash-container">
