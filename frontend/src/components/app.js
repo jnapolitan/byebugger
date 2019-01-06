@@ -1,6 +1,6 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
-import { AuthRoute, ProtectedRoute } from '../util/route_util';
+import { AuthRoute } from '../util/route_util';
 import { Switch } from 'react-router-dom';
 
 import Main from './Main';
