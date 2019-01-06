@@ -105,7 +105,7 @@ export default class Game {
     // TODO: Move the controls logic into another file if possible
     document.addEventListener('click', () => {
       this.controls.lock();
-      //SUE: invoke swingHammer function upon clicking
+      // SUE: invoke swingHammer function upon clicking
       BugCaptureUtil.swingHammer(this.ai, this.controls.getObject());
     }, false);
 
@@ -122,7 +122,7 @@ export default class Game {
     document.body.appendChild(this.renderer.domElement);
     // TODO: Is there a cleaner way to do this?
     const minimap = document.createElement('canvas');
-    minimap.setAttribute('id', 'radar')
+    minimap.setAttribute('id', 'minimap')
     minimap.setAttribute('width', 180);
     minimap.setAttribute('height', 180);
     document.body.appendChild(minimap);
@@ -156,7 +156,7 @@ export default class Game {
     if (this.keypresses.left || this.keypresses.right) {
       this.velocity.x -= this.direction.x * 1200.0 * delta;
       if (GameUtil.checkWallCollision(camPos, this.map, this.UNITSIZE)) {
-        // audio.play();
+        audio.play();
         this.velocity.x -= this.velocity.x * 4;
       }
     }

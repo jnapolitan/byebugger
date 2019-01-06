@@ -3,7 +3,7 @@ import { getMapSector } from './utilities/game_utils';
 const drawMinimap = (cam, map, ai, UNITSIZE) => {
   return () => {
     var c = getMapSector(cam.position, map, UNITSIZE);
-    var context = document.getElementById('radar').getContext('2d');
+    var context = document.getElementById('minimap').getContext('2d');
     context.font = '2px Georgia';
     for (var i = 0; i < map.length; i++) {
       for (var j = 0, m = map[i].length; j < m; j++) {
