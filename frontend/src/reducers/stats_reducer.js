@@ -1,10 +1,9 @@
 import {
     RECEIVE_STATS,
-    RECEIVE_USER_STATS,
     RECEIVE_NEW_STAT
 } from '../actions/stat_actions';
 
-const statsReducer = (state = { all: {}, user: {}, new: undefined }, action) => {
+const statsReducer = (state = { all: {}, player: {} }, action) => {
     Object.freeze(state);
     let newState = Object.assign({}, state);
 
@@ -12,11 +11,8 @@ const statsReducer = (state = { all: {}, user: {}, new: undefined }, action) => 
         case RECEIVE_STATS:
             newState.all = action.stats.data;
             return newState;
-        case RECEIVE_USER_STATS:
-            newState.user = action.stats.data;
-            return newState;
         case RECEIVE_NEW_STAT:
-            newState.new = action.stat.data;
+            newState.player = action.stat.data;
             return newState;
         default:
             return state;

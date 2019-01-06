@@ -3,6 +3,7 @@ import React from "react";
 import Game from "../game/game";
 
 export default class Main extends React.Component {
+
   // e is pulled in as the "event" being handled
   initiateGame(e) {
     // Don't reload the page upon clicking the start game button
