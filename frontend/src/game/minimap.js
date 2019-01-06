@@ -1,42 +1,50 @@
 import { getMapSector } from './utilities/game_utils';
 
+// This is a callback fn used to redraw the minimap every 1 second
 const drawMinimap = (cam, map, ai, UNITSIZE) => {
   return () => {
-    var c = getMapSector(cam.position, map, UNITSIZE);
+    const mapCoords = getMapSector(cam.position, map, UNITSIZE);
     var context = document.getElementById('minimap').getContext('2d');
-    context.font = '2px Georgia';
-    for (var i = 0; i < map.length; i++) {
-      for (var j = 0, m = map[i].length; j < m; j++) {
-        var d = 0;
-        for (var k = 0, n = ai.length; k < n; k++) {
-          var e = getMapSector(ai[k].position, map, UNITSIZE);
-          if (i === e.x && j === e.z) {
-            d++;
+
+    // Iterate through the 2D representation of the world
+    // check for player, bugs, walls, and empty spaces
+    for (let x = 0; x < map.length; x++) {
+      for (let y = 0; y < map.length; y++) {
+
+        let isBug = false;
+        for (let n = 0; n < ai.length; n++) {
+          let bugCoords = getMapSector(ai[n].position, map, UNITSIZE);
+          if (x === bugCoords.x && y === bugCoords.z) {
+            isBug = true;
+            break;
           }
         }
-        if (i === c.x && j === c.z && d === 0) {
-          context.fillStyle = 'rgba(170, 51, 255, 1)';
-          context.fillRect(i * 2, j * 2, (i + 1) * 2, (j + 1) * 2);
-        } else if (i === c.x && j === c.z) {
-          context.fillStyle = '#AA33FF';
-          context.fillRect(i * 2, j * 2, (i + 1) * 2, (j + 1) * 2);
-          context.fillStyle = '#000000';
-          context.fillText('' + d, i * 2 + 8, j * 2 + 12);
-        } else if (d > 0 && d < 10) {
-          context.fillStyle = '#FF0000';
-          context.fillRect(i * 2, j * 2, (i + 1) * 2, (j + 1) * 2);
-          context.fillStyle = '#000000';
-          context.fillText('' + d, i * 2 + 8, j * 2 + 12);
-        } else if (map[i][j] > 0) {
-          context.fillStyle = 'rgba(102, 102, 102, 1)';
-          context.fillRect(i * 2, j * 2, (i + 1) * 2, (j + 1) * 2);
+
+        // Colors every square on the minimap based on what the object is
+        if (x === mapCoords.x && y === mapCoords.z) {
+          // Player square is blue
+          context.fillStyle = '#2011a2';
+          context.fillRect(x * 2, y * 2, (x + 1) * 2, (y + 1) * 2);
+
+        } else if (isBug) {
+          // Bug squares are pink
+          context.fillStyle = '#ff34b3';
+          context.fillRect(x * 2, y * 2, (x + 1) * 2, (y + 1) * 2);
+
+        } else if (map[x][y]) {
+          // Wall squares are black
+          context.fillStyle = '#111111';
+          context.fillRect(x * 2, y * 2, (x + 1) * 2, (y + 1) * 2);
+
         } else {
-          context.fillStyle = '#CCCCCC';
-          context.fillRect(i * 2, j * 2, (i + 1) * 2, (j + 1) * 2);
+          // Empty squares/spaces are white
+          context.fillStyle = '#ffffff';
+          context.fillRect(x * 2, y * 2, (x + 1) * 2, (y + 1) * 2);
         }
       }
     }
   }
+
 };
 
 export default drawMinimap;

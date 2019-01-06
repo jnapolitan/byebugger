@@ -35,7 +35,7 @@ export default class Game {
     this.scene = new t.Scene();
 
     // JULIAN: Sets number of bugs on the map
-    this.NUMAI = 100;
+    this.NUMAI = 30;
     this.ai = [];
     this.aiAnimations = []; // Bug animations are stored here
 
