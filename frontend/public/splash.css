@@ -11,7 +11,7 @@ body {
   align-items: center;
 }
 
-.start-screen-container {
+.splash-container {
   animation: Float 1s linear infinite;
   display: flex;
   flex-direction: column;
