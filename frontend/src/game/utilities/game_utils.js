@@ -136,18 +136,21 @@ export const sceneSetup = (scene, map) => {
     map: wallMat
   });
 
+  const geom = new t.Geometry();
   // Create walls according to 2D map array
   for (let i = 0; i < map.length; i++) {
     for (let j = 0, m = map[i].length; j < m; j++) {
       if (map[i][j]) {
-        let wall = new t.Mesh(block, wallTexture);
+        let wall = new t.Mesh(block);
         wall.position.x = (i - map.length / 2) * 128;
         wall.position.y = 128 / 3 + 5;
         wall.position.z = (j - map.length / 2) * 128;
-        scene.add(wall);
+        geom.mergeMesh(wall);
       }
     }
   }
+  // Merge meshes for increased performance (hopefully)
+  scene.add(new t.Mesh(geom, wallTexture));
 
   // Lighting
   const directionalLight1 = new t.DirectionalLight(0xF7EFBE, 0.7);
