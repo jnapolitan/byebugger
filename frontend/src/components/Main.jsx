@@ -20,8 +20,8 @@ export default class Main extends React.Component {
   render() {
     // TODO: Intro music - this is a semi-functional placeholder
     // By Eric Matyas @ https://soundimage.org/
-    // let musicURL = "http://soundimage.org/wp-content/uploads/2016/07/Puzzle-Game_Looping.mp3";
-    // let audio = new Audio(musicURL);
+    let musicURL = "http://soundimage.org/wp-content/uploads/2016/07/Puzzle-Game_Looping.mp3";
+    let audio = new Audio(musicURL);
     // audio.play();
 
     return (

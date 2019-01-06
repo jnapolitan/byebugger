@@ -1,43 +1,24 @@
-class Rect {
-
-  constructor(x, y, width, height) {
-    this.x1 = x;
-    this.y1 = y;
-    this.x2 = x + width;
-    this.y2 = y + height;
-  }
-
-  center() {
-    return (
-      [Math.floor((this.x1 + this.x2) / 2),
-        Math.floor((this.y1 + this.y2) / 2)
-      ]
-    );
-  }
-
-}
-
 export default class BSPTree {
-
   constructor() {
-    this.level = [];
+    this.map = [];
     this.room = null;
+
     this.MAX_LEAF_SIZE = 24;
     this.ROOM_MAX_SIZE = 15;
     this.ROOM_MIN_SIZE = 6;
 
-    this.generateLevel = this.generateLevel.bind(this);
+    this.generateMap = this.generateMap.bind(this);
     this.createRoom = this.createRoom.bind(this);
     this.createHall = this.createHall.bind(this);
     this.createHorTunnel = this.createHorTunnel.bind(this);
     this.createVerTunnel = this.createVerTunnel.bind(this);
   }
 
-  generateLevel(mapWidth, mapHeight) {
+  generateMap(mapWidth, mapHeight) {
     for (let i = 0; i < mapWidth; i++) {
-      this.level.push([]);
+      this.map.push([]);
       for (let j = 0; j < mapHeight; j++) {
-        this.level[i].push(1);
+        this.map[i].push(1);
       }
     }
 
@@ -69,20 +50,20 @@ export default class BSPTree {
     var that = this;
     rootLeaf.createRooms(that);
 
-    for (let i = 0; i < this.level.length; i++) {
-      for (let j = 0; j < this.level[0].length; j++) {
-        if (j === 0 || i === 0 || j === this.level[0].length - 1 || i === this.level.length - 1) {
-          this.level[i][j] = 1;
+    for (let i = 0; i < this.map.length; i++) {
+      for (let j = 0; j < this.map[0].length; j++) {
+        if (j === 0 || i === 0 || j === this.map[0].length - 1 || i === this.map.length - 1) {
+          this.map[i][j] = 1;
         }
       }
     }
-    return this.level;
+    return this.map;
   }
 
   createRoom(room) {
     for (let x = room.x1 + 1; x < room.x2; x++) {
       for (let y = room.y1 + 1; y < room.y2; y++) {
-        this.level[x][y] = 0;
+        this.map[x][y] = 0;
       }
     }
   }
@@ -107,7 +88,7 @@ export default class BSPTree {
     let lowerBound = Math.min(x1, x2);
     let upperBound = Math.max(x1, x2) + 1;
     for (let x = lowerBound; x < upperBound; x++) {
-      this.level[x][y] = 0;
+      this.map[x][y] = 0;
     }
   }
 
@@ -115,14 +96,13 @@ export default class BSPTree {
     let lowerBound = Math.min(y1, y2);
     let upperBound = Math.max(y1, y2) + 1;
     for (let y = lowerBound; y < upperBound; y++) {
-      this.level[x][y] = 0;
+      this.map[x][y] = 0;
     }
   }
 
 }
 
 class Leaf {
-
   constructor(x, y, width, height) {
     this.x = x;
     this.y = y;
@@ -194,7 +174,7 @@ class Leaf {
       let h = Math.floor(Math.random() * ((Math.min(bspTree.ROOM_MAX_SIZE, this.height - 1)) - bspTree.ROOM_MIN_SIZE)) + bspTree.ROOM_MIN_SIZE;
       let x = Math.floor(Math.random() * (((this.width - 1) - w) - this.x)) + this.x;
       let y = Math.floor(Math.random() * (((this.height - 1) - h) - this.y)) + this.y;
-      this.room = new Rect(x, y, w, h);
+      this.room = new Rectangle(x, y, w, h);
       bspTree.createRoom(this.room);
     }
 
@@ -227,5 +207,23 @@ class Leaf {
 
     }
   }
+}
 
+class Rectangle {
+  // Creates a room with fixed width and height to be added to the
+  // dungeon map
+  constructor(x, y, width, height) {
+    this.x1 = x;
+    this.y1 = y;
+    this.x2 = x + width;
+    this.y2 = y + height;
+  }
+
+  center() {
+    return (
+      [Math.floor((this.x1 + this.x2) / 2),
+       Math.floor((this.y1 + this.y2) / 2)
+      ]
+    );
+  }
 }

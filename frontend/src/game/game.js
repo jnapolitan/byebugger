@@ -1,10 +1,10 @@
 import * as t from 'three';
 import PointerLockControls from './PointerLockControls';
-import BSPTree from './BSPTree';
-import MTLLoader from './MTLLoader';
-import OBJLoader from './OBJLoader';
-import * as GameUtil from './game_utils';
-import * as BugCaptureUtil from './bug_capture_utils';
+import BSPTree from './mapGenerator';
+import MTLLoader from './external_sources/MTLLoader';
+import OBJLoader from './external_sources/OBJLoader';
+import * as GameUtil from './utilities/game_utils';
+import * as BugCaptureUtil from './utilities/bug_capture_utils';
 
 export default class Game {
   constructor() {
@@ -58,7 +58,7 @@ export default class Game {
 
     // Creates a 2D grid of 1s and 0s, which will be used to render the 3D world
     //SUE: changed map size (originally 100, 100)
-    this.map = new BSPTree().generateLevel(64, 64);
+    this.map = new BSPTree().generateMap(64, 64);
     this.mapW = this.map.length;
     this.mapH = this.map[0].length;
   }
