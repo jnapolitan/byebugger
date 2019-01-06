@@ -4,6 +4,7 @@ import * as GameUtil from './utilities/game_utils';
 import * as KeypressHandler from './keypressHandler';
 
 import BSPTree from './mapGenerator';
+import createCrosshairs from './crosshairs';
 import MTLLoader from './external_sources/MTLLoader';
 import OBJLoader from './external_sources/OBJLoader';
 import PointerLockControls from './PointerLockControls';
@@ -13,41 +14,38 @@ export default class Game {
     this.WIDTH = window.innerWidth;
     this.HEIGHT = window.innerHeight;
     this.ASPECT = this.WIDTH / this.HEIGHT;
-    this.UNITSIZE = 128; // In pixels
+    this.UNITSIZE = 128; // Pixels
+    // SUE: For bug-catching
     this.AIMOVESPEED = 100;
 
-    this.camera = new t.PerspectiveCamera(75, this.ASPECT, 1, 10000);
-    this.controls = new PointerLockControls(this.camera);
-
-    this.models = {}; // To house weapon objects
-
+    this.camera = new t.PerspectiveCamera(75, this.ASPECT, 1, 10000); // Player view
+    this.controls = new PointerLockControls(this.camera); // First person controls
     this.renderer = new t.WebGLRenderer({
-      antialias: false
+      antialias: false // Less work for the graphic loader = better performance
     });
+
     this.renderer.setPixelRatio(window.devicePixelRatio);
     this.renderer.setSize(this.WIDTH, this.HEIGHT);
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = t.BasicShadowMap;
 
+    this.models = {}; // To house weapon objects
+
     this.scene = new t.Scene();
 
-    // Initialize constant for number of AI and 
-    // global array variable to house AI objects JULIAN
+    // JULIAN: Sets number of bugs on the map
     this.NUMAI = 100;
     this.ai = [];
+    this.aiAnimations = []; // Bug animations are stored here
 
-    // Initialize global array variable to house AI animations JULIAN
-    this.aiAnimations = [];
-
-    // TODO Move AI logic
     this.setupAI = this.setupAI.bind(this);
     this.setupScene = this.setupScene.bind(this);
     this.init = this.init.bind(this);
     this.animate = this.animate.bind(this);
-
     // Set up camera listener for AI audio JULIAN
     // this.listener = new t.AudioListener();
 
+    // ERIC: For controls
     this.direction = new t.Vector3();
     this.keypresses = { forward: false, backward: false, left: false, right: false, canJump: true };
     this.prevTime = performance.now();
@@ -58,12 +56,11 @@ export default class Game {
   }
 
   setupScene() {
-    GameUtil.sceneSetup(this.scene, this.map);
-  
+    GameUtil.sceneSetup(this.scene, this.map); // Sets up the game environment
     // Loads and sets up player weapon
     const mtlLoader = new MTLLoader();
-    mtlLoader.setPath("./assets/models/");
 
+    mtlLoader.setPath("./assets/models/");
     mtlLoader.load('shotgun.mtl', (materials) => {
       materials.preload();
 
@@ -91,46 +88,13 @@ export default class Game {
     this.camera.position.y = this.UNITSIZE * 0.1; // Ensures the player is above the floor
     GameUtil.checkSpawn(this.map, this.controls.getObject(), this.UNITSIZE);
 
-    //////////////////////////////////////////////////////////////////
-    //SUE: add crosshair for aiming hammer
-    const material = new t.LineBasicMaterial({
-      color: 0xffffff,
-      linewidth: 1
-    });
-
-    // crosshair size
-    let x = 10;
-    let y = 10;
-
-    const geometry = new t.Geometry();
-
-    // crosshair
-    geometry.vertices.push(new t.Vector3(0, y, 0));
-    geometry.vertices.push(new t.Vector3(0, -y, 0));
-    geometry.vertices.push(new t.Vector3(0, 0, 0));
-    geometry.vertices.push(new t.Vector3(x, 0, 0));
-    geometry.vertices.push(new t.Vector3(-x, 0, 0));
-
-    let crosshair = new t.Line(geometry, material);
-
-    // place it in the center
-    let crosshairPercentX = 50;
-    let crosshairPercentY = 50;
-    let crosshairPositionX = (crosshairPercentX / 100) * 2 - 1;
-    let crosshairPositionY = (crosshairPercentY / 100) * 2 - 1;
-
-    crosshair.position.x = crosshairPositionX * this.camera.aspect;
-    crosshair.position.y = crosshairPositionY;
-
-    crosshair.position.z = -0.3;
-
-    this.camera.add(crosshair);
-
     // It may not look like it, but this adds the camera to the scene
     this.scene.add(this.controls.getObject());
-    //////////////////////////////////////////////////////////////////
 
-    //SUE: Used in conjunction w Raycaster - tracks mouse position (set mouse.x and mouse.y to pointer coordinates) so we know where to shoot
+    // SUE: Add crosshair for weapon
+    createCrosshairs(this.camera);
+
+    // SUE: Used in conjunction w Raycaster - tracks mouse position (set mouse.x and mouse.y to pointer coordinates) so we know where to shoot
     // document.addEventListener('mousemove', onDocumentMouseMove, false);
     // TODO: Move the controls logic into another file if possible
     document.addEventListener('click', () => {
