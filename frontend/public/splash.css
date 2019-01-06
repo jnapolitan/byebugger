@@ -11,6 +11,14 @@ body {
   align-items: center;
 }
 
+footer {
+  bottom: 10px;
+  color: white;
+  font-size: 18px;
+  position: absolute;
+  text-shadow: -1px 0 #ff34b3, 0 1px #ff34b3, 1px 0 #ff34b3, 0 -1px #ff34b3;
+}
+
 .splash-container {
   animation: Float 1s linear infinite;
   display: flex;

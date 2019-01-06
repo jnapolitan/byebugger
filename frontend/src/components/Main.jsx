@@ -28,6 +28,7 @@ export default class Main extends React.Component {
       <div id="splash" className="splash-container">
         <img className="logo" src="../assets/images/splashText.png" alt="ByeBugger" />
         <button className="start-button" onClick={ this.initiateGame }>START</button>
+        <footer>Copyright &copy; 2019 ByeBugger</footer>
       </div>
     );
   }
