@@ -9,9 +9,15 @@ import drawMinimap from './minimap';
 import MTLLoader from './external_sources/MTLLoader';
 import OBJLoader from './external_sources/OBJLoader';
 import PointerLockControls from './PointerLockControls';
+import Stats from 'stats-js';
 
 export default class Game {
   constructor(store) {
+    // TODO: Remove before production
+    this.stats = new Stats();
+    this.stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
+    document.body.appendChild(this.stats.dom);
+
     this.WIDTH = window.innerWidth;
     this.HEIGHT = window.innerHeight;
     this.ASPECT = this.WIDTH / this.HEIGHT;
@@ -68,15 +74,15 @@ export default class Game {
     const mtlLoader = new MTLLoader();
 
     mtlLoader.setPath("./assets/models/");
-    mtlLoader.load('shotgun.mtl', (materials) => {
+    mtlLoader.load('pistol.mtl', (materials) => {
       materials.preload();
 
       const objLoader = new OBJLoader();
       objLoader.setMaterials(materials);
       objLoader.setPath("./assets/models/");
-      objLoader.load('shotgun.obj', (object) => {
+      objLoader.load('pistol.obj', (object) => {
         this.models.weapon = object.clone();
-        this.models.weapon.position.y = 18
+        this.models.weapon.position.y = 16
         this.models.weapon.scale.set(200, 200, 200);
         this.models.weapon.rotation.set(0, 3.2, 0);
         this.scene.add(this.models.weapon);
@@ -111,7 +117,14 @@ export default class Game {
     // TODO: Move the controls logic into another file if possible
     document.addEventListener('click', () => {
       this.controls.lock();
-    
+      const audio1 = new Audio('./assets/sounds/gunshot1.mp3');
+      const audio2 = new Audio('./assets/sounds/gunshot2.mp3');
+      if (Math.random() > 0.5) {
+        audio1.play();
+      } else {
+        audio2.play();
+      }
+
       // SUE: invoke swingHammer function upon clicking
       BugCaptureUtil.swingHammer(this.ai, this.controls.getObject(), this.store);
     }, false);
@@ -130,14 +143,15 @@ export default class Game {
     // TODO: Is there a cleaner way to do this?
     const minimap = document.createElement('canvas');
     minimap.setAttribute('id', 'minimap')
-    minimap.setAttribute('width', 180);
-    minimap.setAttribute('height', 180);
+    minimap.setAttribute('width', 220);
+    minimap.setAttribute('height', 220);
     document.body.appendChild(minimap);
   }
 
   animate() {
     requestAnimationFrame(this.animate);
 
+    this.stats.begin(); // TODO: Remove before production
     // Controls/movement related logic
     const time = performance.now();
     const delta = (time - this.prevTime) / 1000;
@@ -173,16 +187,16 @@ export default class Game {
     this.controls.getObject().translateZ(this.velocity.z * delta);
 
     if (this.models.weapon) {
-      this.models.weapon.position.set(
-        this.controls.getObject().position.x - Math.sin(this.controls.getObject().rotation.y + Math.PI / 6) * 0.75,
-        18,
-        this.controls.getObject().position.z + Math.cos(this.controls.getObject().rotation.y + Math.PI / 6) * 0.75
-      );
-      this.models.weapon.rotation.set(
-        this.controls.getObject().rotation.x,
-        this.controls.getObject().rotation.y - Math.PI,
-        this.controls.getObject().rotation.z
-      );
+      this.models.weapon.position.x = this.controls.getObject().position.x;
+      this.models.weapon.position.z = this.controls.getObject().position.z;
+      // this.models.weapon.rotation.copy(this.controls.getObject().rotation);
+      this.models.weapon.rotation.x = this.controls.getObject().rotation.x;
+      this.models.weapon.rotation.y = this.controls.getObject().rotation.y + (Math.PI / 2) * -1.9;
+      this.models.weapon.rotation.z = this.controls.getObject().rotation.z;
+      this.models.weapon.updateMatrix();
+      this.models.weapon.translateX(-17);
+      this.models.weapon.translateZ(14);
+      // this.models.weapon.rotation.x -= Math.PI / 4;
     }
 
     if (this.controls.getObject().position.y < 10) {
@@ -238,5 +252,6 @@ export default class Game {
 
     // Deals with what portion of the scene the player sees
     this.renderer.render(this.scene, this.camera);
+    this.stats.end(); // TODO: Remove before production
   }
 }
