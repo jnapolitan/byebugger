@@ -68,15 +68,15 @@ export default class Game {
     const mtlLoader = new MTLLoader();
 
     mtlLoader.setPath("./assets/models/");
-    mtlLoader.load('shotgun.mtl', (materials) => {
+    mtlLoader.load('pistol.mtl', (materials) => {
       materials.preload();
 
       const objLoader = new OBJLoader();
       objLoader.setMaterials(materials);
       objLoader.setPath("./assets/models/");
-      objLoader.load('shotgun.obj', (object) => {
+      objLoader.load('pistol.obj', (object) => {
         this.models.weapon = object.clone();
-        this.models.weapon.position.y = 18
+        this.models.weapon.position.y = 16
         this.models.weapon.scale.set(200, 200, 200);
         this.models.weapon.rotation.set(0, 3.2, 0);
         this.scene.add(this.models.weapon);
@@ -111,6 +111,14 @@ export default class Game {
     // TODO: Move the controls logic into another file if possible
     document.addEventListener('click', () => {
       this.controls.lock();
+      const audio1 = new Audio('./assets/sounds/gunshot1.mp3');
+      const audio2 = new Audio('./assets/sounds/gunshot2.mp3');
+      if (Math.random() > 0.5) {
+        audio1.play();
+      } else {
+        audio2.play();
+      }
+
       // SUE: invoke swingHammer function upon clicking
       BugCaptureUtil.swingHammer(this.ai, this.controls.getObject());
     }, false);
@@ -129,8 +137,8 @@ export default class Game {
     // TODO: Is there a cleaner way to do this?
     const minimap = document.createElement('canvas');
     minimap.setAttribute('id', 'minimap')
-    minimap.setAttribute('width', 240);
-    minimap.setAttribute('height', 240);
+    minimap.setAttribute('width', 220);
+    minimap.setAttribute('height', 220);
     document.body.appendChild(minimap);
   }
 
@@ -173,16 +181,16 @@ export default class Game {
     this.controls.getObject().translateZ(this.velocity.z * delta);
 
     if (this.models.weapon) {
-      this.models.weapon.position.set(
-        this.controls.getObject().position.x - Math.sin(this.controls.getObject().rotation.y + Math.PI / 6) * 0.75,
-        18,
-        this.controls.getObject().position.z + Math.cos(this.controls.getObject().rotation.y + Math.PI / 6) * 0.75
-      );
-      this.models.weapon.rotation.set(
-        this.controls.getObject().rotation.x,
-        this.controls.getObject().rotation.y - Math.PI,
-        this.controls.getObject().rotation.z
-      );
+      this.models.weapon.position.x = this.controls.getObject().position.x;
+      this.models.weapon.position.z = this.controls.getObject().position.z;
+      // this.models.weapon.rotation.copy(this.controls.getObject().rotation);
+      this.models.weapon.rotation.x = this.controls.getObject().rotation.x;
+      this.models.weapon.rotation.y = this.controls.getObject().rotation.y + (Math.PI / 2) * -1.9;
+      this.models.weapon.rotation.z = this.controls.getObject().rotation.z;
+      this.models.weapon.updateMatrix();
+      this.models.weapon.translateX(-17);
+      this.models.weapon.translateZ(14);
+      // this.models.weapon.rotation.x -= Math.PI / 4;
     }
 
     if (this.controls.getObject().position.y < 10) {

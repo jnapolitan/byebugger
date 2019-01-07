@@ -22,8 +22,8 @@ const drawMinimap = (cam, map, ai, UNITSIZE) => {
 
         // Colors every square on the minimap based on what the object is
         if (x === mapCoords.x && y === mapCoords.z) {
-          // Player square is blue
-          context.fillStyle = '#2011a2';
+          // Player square is emerald
+          context.fillStyle = '#319177';
           context.fillRect(x * 4, y * 4, (x + 1) * 4, (y + 1) * 4);
 
         } else if (isBug) {

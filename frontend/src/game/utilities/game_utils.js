@@ -15,7 +15,7 @@ export function addAI(camPos, map, scene, ai, aiAnimations) {
   const aiTexture = new t.TextureLoader().load(aiSpriteTextures[Math.floor(Math.random() * aiSpriteTextures.length)]);
 
   // Add texture, create sprite using material and set scale
-  let aiMaterial = new t.SpriteMaterial({ /*color: 0xEE3333,*/
+  let aiMaterial = new t.SpriteMaterial({
     map: aiTexture,
     fog: true
   });
@@ -90,6 +90,9 @@ export const getMapSector = (v, map, UNITSIZE) => {
 
 export const checkWallCollision = (obj, map, UNITSIZE) => {
   let currentPos = getMapSector(obj, map, UNITSIZE);
+  if (currentPos.x > map.length - 1 || currentPos.z > map.length - 1) {
+    return;
+  }
   if (map[currentPos.x] || map[currentPos.x2]) {
     if (map[currentPos.x][currentPos.z] > 0 || map[currentPos.x2][currentPos.z2] > 0 ||
       map[currentPos.x][currentPos.z2] > 0 || map[currentPos.x2][currentPos.z] > 0) {
@@ -109,7 +112,7 @@ export const getRandBetween = (lo, hi) => {
 // TODO: Export ceiling
 export const sceneSetup = (scene, map) => {
   const ceiling = new t.GridHelper(20000, 600, '#00ccfd', '#00ccfd'); // size, divisions
-  ceiling.position.y = 120;
+  ceiling.position.y = 150;
   ceiling.position.x = Math.PI / 2;
   scene.add(ceiling);
 
@@ -160,9 +163,6 @@ export const sceneSetup = (scene, map) => {
   const directionalLight2 = new t.DirectionalLight(0xF7EFBE, 0.5);
   directionalLight2.position.set(-0.5, -1, -0.5);
   scene.add(directionalLight2);
-  // Ambient lighting
-  const allLight = new t.AmbientLight(0xffffff, 0.2);
-  scene.add(allLight);
 
   let light = new t.PointLight(0xffffff, 0.8, 18);
   light.position.set(-3, 6, -3);

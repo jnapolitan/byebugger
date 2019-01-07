@@ -3,6 +3,19 @@ import React from "react";
 import Game from "../game/game";
 
 export default class Main extends React.Component {
+  componentDidMount() {
+    // TODO: Intro music - this is a semi-functional placeholder
+    // By Eric Matyas @ https://soundimage.org/
+    const musicURL = "http://soundimage.org/wp-content/uploads/2016/07/Puzzle-Game_Looping.mp3";
+    const audio = new Audio(musicURL);
+    const promise = audio.play();
+    if (promise !== undefined) {
+      promise.then(() => {
+        audio.play();
+        audio.currentTime = 0;
+      })
+    }
+  }
 
   // e is pulled in as the "event" being handled
   initiateGame(e) {
@@ -19,12 +32,6 @@ export default class Main extends React.Component {
   }
 
   render() {
-    // TODO: Intro music - this is a semi-functional placeholder
-    // By Eric Matyas @ https://soundimage.org/
-    let musicURL = "http://soundimage.org/wp-content/uploads/2016/07/Puzzle-Game_Looping.mp3";
-    let audio = new Audio(musicURL);
-    audio.play();
-
     return (
       <div id="splash" className="splash-container">
         <img className="logo" src="../assets/images/splashText.png" alt="ByeBugger" />
