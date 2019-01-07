@@ -52,7 +52,7 @@ export default class Main extends React.Component {
       <div id="splash" className="splash-container">
         <img className="logo" src="../assets/images/splashText.png" alt="ByeBugger" />
         <form onSubmit={ this.initiateGame } >
-          <input type="text" className="player-name-input" placeholder="Enter your name to join the ranks" onChange={ this.updatePlayerName() } />
+          <input type="text" className="player-name-input" placeholder="Enter your name to join the hacker ranks" onChange={ this.updatePlayerName() } />
         </form>
         <div className="buttons">
           <button className="start-button" onClick={this.initiateGame}>START</button>
