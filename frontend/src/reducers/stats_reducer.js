@@ -9,10 +9,10 @@ const statsReducer = (state = { topTenScores: {}, currentPlayerScore: 0 }, actio
 
     switch(action.type) {
         case RECEIVE_STATS:
-            newState.all = action.stats.data;
+            newState.topTenScores = action.stats.data;
             return newState;
         case RECEIVE_NEW_STAT:
-            newState.player = action.stat.data;
+            newState.currentPlayerScore = action.stat;
             return newState;
         default:
             return state;

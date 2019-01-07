@@ -22,8 +22,8 @@ export const fetchStats = () => dispatch => (
         .catch(err => console.log(err))
 );
 
-export const fetchStat = data => dispatch => (
-    postStat(data)
+export const postPlayerStat = stat => dispatch => (
+    postStat(stat)
         .then(stat => dispatch(receiveNewStat(stat)))
         .catch(err => console.log(err))
 );

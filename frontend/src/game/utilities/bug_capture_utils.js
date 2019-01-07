@@ -83,7 +83,7 @@ export const swingHammer = (ai, cam) => {
   // if bug is in direction of vector and hammerLength away - collision = true
   ai.forEach(bug => {
     if (checkIfBugHit(playerPosition, hammerHeadPosition, bug.position)) {
-      console.log("SPLAT");
+      console.log('splat');
     }
   });
 };

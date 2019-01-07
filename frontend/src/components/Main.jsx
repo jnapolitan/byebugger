@@ -4,6 +4,11 @@ import Game from "../game/game";
 
 export default class Main extends React.Component {
 
+  constructor(props) {
+    super(props);
+    this.initiateGame = this.initiateGame.bind(this);
+  }
+
   // e is pulled in as the "event" being handled
   initiateGame(e) {
     // Don't reload the page upon clicking the start game button
@@ -13,7 +18,7 @@ export default class Main extends React.Component {
     splash.classList.add("hidden");
 
     // Start the game
-    const game = new Game();
+    const game = new Game(this.props.store.dispatch);
     game.init();
     game.animate();
   }
