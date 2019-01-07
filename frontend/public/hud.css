@@ -1,13 +1,16 @@
 .hud-container {
-  position: absolute;
   bottom: 50px;
+  position: absolute;
   right: 50px;
   z-index: 1;
 }
 
 .hud-container p {
-  color: #02FF01;
-  font-family: 'Courier New', Courier, monospace;
-  font-weight: bold;
+  color: #39FF14;
+  /* color: #02FF01; */
+  font-family: 'Orbitron', sans-serif;
   font-size: 32px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  padding: 5px;
 }

@@ -111,7 +111,7 @@ export const getRandBetween = (lo, hi) => {
 
 // TODO: Export ceiling
 export const sceneSetup = (scene, map) => {
-  const ceiling = new t.GridHelper(20000, 600, '55e7ffa', '55e7ff'); // size, divisions
+  const ceiling = new t.GridHelper(20000, 1200, '#55e7ff', '#55e7ff'); // size, divisions
   ceiling.position.y = 128 - 32;
   ceiling.position.x = Math.PI / 2;
   scene.add(ceiling);
@@ -129,7 +129,7 @@ export const sceneSetup = (scene, map) => {
   // groundMirror.rotateX(-Math.PI / 2);
   // scene.add(groundMirror);
 
-  const floor = new t.GridHelper(20000, 600, '#ff34b3', '#ff34b3');
+  const floor = new t.GridHelper(20000, 1200, '#ff34b3', '#ff34b3');
   floor.position.y = 0.5;
   floor.position.x = (-Math.PI / 2);
   scene.add(floor);
