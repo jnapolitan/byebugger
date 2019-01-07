@@ -20,8 +20,8 @@ export function addAI(camPos, map, scene, ai, aiAnimations) {
     map: aiTexture,
     fog: true
   });
-  let o = new t.Sprite(aiMaterial);
-  o.scale.set(40, 40, 1);
+  let bug = new t.Sprite(aiMaterial);
+  bug.scale.set(40, 40, 1);
 
   // Generate random coords within the map until bugger is not on the player or in a wall
   let x;
@@ -34,14 +34,14 @@ export function addAI(camPos, map, scene, ai, aiAnimations) {
   // Format coords, set position, and random directions (X and Z) to be used for animating direction
   x = (x - map.length / 2) * 128;
   z = (z - map.length / 2) * 128;
-  o.position.set(x, 128 * 0.15, z);
-  o.health = 100;
-  o.randomX = Math.random();
-  o.randomZ = Math.random();
+  bug.position.set(x, 128 * 0.15, z);
+  bug.health = 100;
+  bug.randomX = Math.random();
+  bug.randomZ = Math.random();
 
   // Add TextureAnimator to animations array to be iterated through and processed in animation function
   aiAnimations.push(new TextureAnimator(aiTexture, 2, 1, 2, 1000));
-  ai.push(o);
+  ai.push(bug);
 
   // create the PositionalAudio object (passing in the listener)
   // const aiSound = new t.PositionalAudio(listener);
@@ -57,7 +57,8 @@ export function addAI(camPos, map, scene, ai, aiAnimations) {
   // });
 
   // o.add(aiSound);
-  scene.add(o);
+  scene.add(bug);
+
 };
 
 export const checkSpawn = (map, cam, UNITSIZE) => {
