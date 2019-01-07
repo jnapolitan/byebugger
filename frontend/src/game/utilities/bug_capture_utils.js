@@ -95,7 +95,6 @@ export const swingHammer = (ai, cam, store) => {
       currentHealth -= 1;
       dispatch(receiveNewStat(currentScore));
       dispatch(receiveNewHealth(currentHealth));
-      console.log(currentScore, currentHealth);
     }
   });
 };

@@ -11,7 +11,7 @@ import OBJLoader from './external_sources/OBJLoader';
 import PointerLockControls from './PointerLockControls';
 
 export default class Game {
-  constructor(store) {
+  constructor(player, store) {
     this.WIDTH = window.innerWidth;
     this.HEIGHT = window.innerHeight;
     this.ASPECT = this.WIDTH / this.HEIGHT;
@@ -33,6 +33,8 @@ export default class Game {
     this.models = {}; // To house weapon objects
 
     this.scene = new t.Scene();
+
+    this.player = player;
 
     // JULIAN: Sets number of bugs on the map
     this.NUMAI = 30;
@@ -58,7 +60,7 @@ export default class Game {
     // Creates a 2D grid of 1s and 0s, which will be used to render the 3D world
     this.map = new BSPTree().generateMap(64, 64);
 
-    // Dispatch testing
+    // JULIAN: For state and dispatch access 
     this.store = store;
   }
 
