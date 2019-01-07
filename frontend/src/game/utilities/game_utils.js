@@ -1,7 +1,7 @@
 import * as t from 'three';
 
 // Create and deploy a single AI object
-export function addAI(camPos, map, scene, ai, aiAnimations) {
+export function addAI(camPos, map, scene, ai, aiAnimations, listener) {
   // Array of three different sprite textures
   const aiSpriteTextures = [
     '/assets/images/butterfly-sprite.png',
@@ -44,22 +44,22 @@ export function addAI(camPos, map, scene, ai, aiAnimations) {
   ai.push(bug);
 
   // create the PositionalAudio object (passing in the listener)
-  // const aiSound = new t.PositionalAudio(listener);
+  const aiSound = new t.PositionalAudio(listener);
 
   // load AI sound and set it as the PositionalAudio object's buffer
-  // const audioLoader = new t.AudioLoader();
-  // audioLoader.load('https://s3-us-west-1.amazonaws.com/towndcloud-seed/bug-glitch-1.mp3', function (buffer) {
-  //   aiSound.setBuffer(buffer);
-  //   aiSound.setRefDistance(5);
-  //   aiSound.setLoop(true);
-  //   aiSound.setRolloffFactor(2);
-  //   aiSound.play();
-  // });
+  const audioLoader = new t.AudioLoader();
+  audioLoader.load('/assets/sounds/glitch_static.mp3', function (buffer) {
+    aiSound.setBuffer(buffer);
+    aiSound.setRefDistance(10);
+    aiSound.setLoop(true);
+    aiSound.setDistanceModel('linear');
+    aiSound.setMaxDistance(150);
+    aiSound.play();
+  });
 
-  // o.add(aiSound);
   scene.add(bug);
-
-};
+  bug.add(aiSound);
+}
 
 export const checkSpawn = (map, cam, UNITSIZE) => {
   let startingSpot = map[map.length / 2][map.length / 2];

@@ -54,8 +54,10 @@ export default class Game {
     this.setupScene = this.setupScene.bind(this);
     this.init = this.init.bind(this);
     this.animate = this.animate.bind(this);
+
     // Set up camera listener for AI audio JULIAN
-    // this.listener = new t.AudioListener();
+    this.listener = new t.AudioListener();
+    this.controls.getObject().add(this.listener);
 
     // ERIC: For controls
     this.direction = new t.Vector3();
@@ -105,7 +107,7 @@ export default class Game {
 
   setupAI() {
     for (var i = 0; i < this.NUMAI; i++) {
-      GameUtil.addAI(this.controls.getObject(), this.map, this.scene, this.ai, this.aiAnimations);
+      GameUtil.addAI(this.controls.getObject(), this.map, this.scene, this.ai, this.aiAnimations, this.listener);
     }
   }
 
