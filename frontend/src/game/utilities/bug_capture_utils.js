@@ -1,6 +1,7 @@
 import * as t from 'three';
 
 import { receiveNewStat } from '../../actions/stat_actions';
+import { receiveNewHealth } from '../../actions/health_actions';
 
 export const checkLineIntersection = (line1start, line1end, line2start, line2end) => {
   let det, gamma, lambda;
@@ -82,15 +83,19 @@ export const swingHammer = (ai, cam, store) => {
     z: hammerVectorZ
   };
 
-  let currentScore = store.getState().stats.currentPlayerScore;
+  const state = store.getState();
+  let currentScore = state.stats.currentPlayerScore;
+  let currentHealth = state.health;
   const dispatch = store.dispatch;
 
   // if bug is in direction of vector and hammerLength away - collision = true
   ai.forEach(bug => {
     if (checkIfBugHit(playerPosition, hammerHeadPosition, bug.position)) {
       currentScore += 1000;
+      currentHealth -= 1;
       dispatch(receiveNewStat(currentScore));
-      console.log(currentScore);
+      dispatch(receiveNewHealth(currentHealth));
+      console.log(currentScore, currentHealth);
     }
   });
 };
