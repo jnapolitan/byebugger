@@ -4,6 +4,7 @@ import * as GameUtil from './utilities/game_utils';
 import * as KeypressHandler from './keypressHandler';
 
 import BSPTree from './mapGenerator';
+import createBullet from './bullet.js'
 import createCrosshairs from './crosshairs';
 import drawMinimap from './minimap';
 import MTLLoader from './external_sources/MTLLoader';
@@ -13,7 +14,7 @@ import Stats from 'stats-js';
 
 export default class Game {
   constructor(player, store) {
-    // TODO: Remove before production
+    // TODO: Remove before pushing production
     this.stats = new Stats();
     this.stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
     document.body.appendChild(this.stats.dom);
@@ -22,7 +23,6 @@ export default class Game {
     this.HEIGHT = window.innerHeight;
     this.ASPECT = this.WIDTH / this.HEIGHT;
     this.UNITSIZE = 128; // Pixels
-    // SUE: For bug-catching
     this.AIMOVESPEED = 100;
 
     this.camera = new t.PerspectiveCamera(75, this.ASPECT, 1, 10000); // Player view
@@ -68,6 +68,10 @@ export default class Game {
 
     // JULIAN: For state and dispatch access 
     this.store = store;
+
+    // ERIC: Keep track of all active bullets
+    this.activeBullets = [];
+    this.clock = new t.Clock();
   }
 
   setupScene() {
@@ -122,9 +126,16 @@ export default class Game {
     createCrosshairs(this.camera);
 
     // SUE: Used in conjunction w Raycaster - tracks mouse position (set mouse.x and mouse.y to pointer coordinates) so we know where to shoot
-    // document.addEventListener('mousemove', onDocumentMouseMove, false);
+    // document.addEventListener('mousemove', (e) => {
+    //   e.preventDefault();
+    //   this.mouse.x = (e.clientX / this.WIDTH) * 2 - 1;
+    //   this.mouse.y = - (e.clientY / this.HEIGHT) * 2 + 1;
+    // }, false);
+
     document.addEventListener('click', () => {
+      // Locks in mouse to game screen until presses escape
       this.controls.lock();
+      createBullet(this.controls, this.controls.getObject().position, this.controls.getObject().quaternion, this.activeBullets, this.scene);
       const audio1 = new Audio('./assets/sounds/gunshot1.mp3');
       const audio2 = new Audio('./assets/sounds/gunshot2.mp3');
       const audio3 = new Audio('/assets/sounds/shell.mp3');
@@ -148,7 +159,7 @@ export default class Game {
     this.setupAI();
 
     // Add the canvas to the document
-    this.renderer.setClearColor('#111111', 1); // Sky color (if the sky was visible)
+    this.renderer.setClearColor('black', 1); // Sky color (if the sky was visible)
     document.body.appendChild(this.renderer.domElement);
     // TODO: Is there a cleaner way to do this?
     const minimap = document.createElement('canvas');
@@ -193,7 +204,7 @@ export default class Game {
     }
 
     this.controls.getObject().translateX(this.velocity.x * delta);
-    this.controls.getObject().translateY(Math.round(this.velocity.y * delta));
+    this.controls.getObject().translateY(this.velocity.y * delta);
     this.controls.getObject().translateZ(this.velocity.z * delta);
 
     if (this.models.weapon) {
@@ -213,6 +224,17 @@ export default class Game {
       this.keypresses.canJump = true;
     }
     this.prevTime = time;
+
+    // Update bullets
+    for (let i = 0; i < this.activeBullets.length; i++) {
+      if (this.activeBullets[i] === undefined) continue;
+      if (this.activeBullets[i].active === false) {
+        this.activeBullets.splice(i, 1);
+        continue;
+      }
+
+      this.activeBullets[i].translateZ(-300 * this.clock.getDelta() * 1.2);
+    }
 
     // Animate AI
     this.aiAnimations.forEach(animation => {
