@@ -3,11 +3,11 @@
   position: absolute;
   right: 50px;
   z-index: 1;
+  width: 20%;
 }
 
 .hud-container p {
   color: #39FF14;
-  /* color: #02FF01; */
   font-family: 'Orbitron', sans-serif;
   font-size: 32px;
   font-weight: bold;
