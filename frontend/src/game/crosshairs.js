@@ -18,7 +18,7 @@ const createCrosshairs = (camera) => {
   geometry.vertices.push(new t.Vector3(-x, 0, 0));
 
   const crosshairs = new t.Line(geometry, material);
-  // Place in the center of the center
+  // Place in the center of the screen
   let crosshairPositionX = (50 / 100) * 2 - 1;
   let crosshairPositionY = (50 / 100) * 2 - 1;
 

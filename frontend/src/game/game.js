@@ -75,6 +75,12 @@ export default class Game {
       objLoader.setMaterials(materials);
       objLoader.setPath("./assets/models/");
       objLoader.load('pistol.obj', (object) => {
+        object.traverse(function (child) {
+          if (child instanceof t.Mesh) {
+            // child.material.ambient.setHex(0xFF0000);
+            // child.material.color.setHex(0x00FF00);
+          }
+        });
         this.models.weapon = object.clone();
         this.models.weapon.position.y = 16
         this.models.weapon.scale.set(200, 200, 200);
