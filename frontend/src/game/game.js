@@ -83,8 +83,9 @@ export default class Game {
       objLoader.load('pistol.obj', (object) => {
         object.traverse(function (child) {
           if (child instanceof t.Mesh) {
-            // child.material.ambient.setHex(0xFF0000);
-            // child.material.color.setHex(0x00FF00);
+            if (child.material.color) {
+              child.material.color.setHex(0xFFD662);
+            }
           }
         });
         this.models.weapon = object.clone();
@@ -125,11 +126,13 @@ export default class Game {
       this.controls.lock();
       const audio1 = new Audio('./assets/sounds/gunshot1.mp3');
       const audio2 = new Audio('./assets/sounds/gunshot2.mp3');
+      const audio3 = new Audio('/assets/sounds/shell.mp3');
       if (Math.random() > 0.5) {
         audio1.play();
       } else {
         audio2.play();
       }
+      audio3.play();
 
       // SUE: invoke swingHammer function upon clicking
       BugCaptureUtil.swingHammer(this.ai, this.controls.getObject(), this.store);
@@ -189,20 +192,18 @@ export default class Game {
     }
 
     this.controls.getObject().translateX(this.velocity.x * delta);
-    this.controls.getObject().translateY(this.velocity.y * delta);
+    this.controls.getObject().translateY(Math.round(this.velocity.y * delta));
     this.controls.getObject().translateZ(this.velocity.z * delta);
 
     if (this.models.weapon) {
       this.models.weapon.position.x = this.controls.getObject().position.x;
       this.models.weapon.position.z = this.controls.getObject().position.z;
-      // this.models.weapon.rotation.copy(this.controls.getObject().rotation);
       this.models.weapon.rotation.x = this.controls.getObject().rotation.x;
       this.models.weapon.rotation.y = this.controls.getObject().rotation.y + (Math.PI / 2) * -1.9;
       this.models.weapon.rotation.z = this.controls.getObject().rotation.z;
       this.models.weapon.updateMatrix();
       this.models.weapon.translateX(-17);
       this.models.weapon.translateZ(14);
-      // this.models.weapon.rotation.x -= Math.PI / 4;
     }
 
     if (this.controls.getObject().position.y < 10) {
