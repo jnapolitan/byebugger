@@ -1,13 +1,13 @@
 import React from 'react';
-import { Route, Switch } from 'react-router-dom';
+import { Route } from 'react-router-dom';
 
 import Main from './Main';
+import HudContainer from '../components/hud/hud_container';
 
 const App = ({ store }) => (
   <>
-    <Switch>
-        <Route path="/" component={() => <Main store={ store } />} />
-    </Switch>
+    <Route path="/" component={() => <Main store={ store } />} />
+    <Route path="/" component={HudContainer} />
   </>
 );
 

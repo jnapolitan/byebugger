@@ -14,8 +14,10 @@ export default class Main extends React.Component {
     // Don't reload the page upon clicking the start game button
     e.preventDefault();
     const splash = document.getElementById("splash");
+    const hud = document.getElementById("hud");
     // Hide the splash screen
     splash.classList.add("hidden");
+    hud.classList.remove("hidden");
 
     // Start the game
     const game = new Game(this.props.store);
