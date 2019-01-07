@@ -292,7 +292,7 @@ export default class Game {
       if (aiPos.x < -1 || aiPos.x > this.map.length || aiPos.z < -1 || aiPos.z > this.map[0].length) {
         this.ai.splice(i, 1);
         this.scene.remove(aiObj);
-        GameUtil.addAI(camPos, this.map, this.scene, this.ai, this.aiAnimations);
+        GameUtil.addAI(camPos, this.map, this.scene, this.ai, this.aiAnimations, this.listener);
       }
     }
 
