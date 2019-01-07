@@ -12,6 +12,8 @@ import OBJLoader from './external_sources/OBJLoader';
 import PointerLockControls from './PointerLockControls';
 import Stats from 'stats-js';
 
+import { receiveNewHealth } from '../actions/health_actions';
+
 export default class Game {
   constructor(player, store) {
     // TODO: Remove before pushing production
@@ -116,6 +118,9 @@ export default class Game {
     let map = this.map;
     let ai = this.ai;
     setInterval(drawMinimap(cam, map, ai, 128), 1000);
+    setInterval(() => {
+      this.store.dispatch(receiveNewHealth(this.store.getState().health - 1));
+    }, 1000);
 
     this.scene.fog = new t.FogExp2('black', 0.0015);
     this.camera.position.y = this.UNITSIZE * 0.1; // Ensures the player is above the floor
