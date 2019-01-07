@@ -54,7 +54,10 @@ export default class Main extends React.Component {
         <form onSubmit={ this.initiateGame } >
           <input type="text" className="player-name-input" placeholder="Enter your name to join the ranks" onChange={ this.updatePlayerName() } />
         </form>
-        <button className="start-button" onClick={ this.initiateGame }>START</button>
+        <div className="buttons">
+          <button className="start-button" onClick={this.initiateGame}>START</button>
+          <button id="rankings-button" className="start-button">RANKS</button>
+        </div>
         <footer>Copyright &copy; 2019 ByeBugger</footer>
       </div>
     );

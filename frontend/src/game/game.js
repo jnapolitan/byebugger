@@ -123,7 +123,6 @@ export default class Game {
 
     // SUE: Used in conjunction w Raycaster - tracks mouse position (set mouse.x and mouse.y to pointer coordinates) so we know where to shoot
     // document.addEventListener('mousemove', onDocumentMouseMove, false);
-    // TODO: Move the controls logic into another file if possible
     document.addEventListener('click', () => {
       this.controls.lock();
       const audio1 = new Audio('./assets/sounds/gunshot1.mp3');
