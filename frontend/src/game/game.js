@@ -23,7 +23,7 @@ export default class Game {
     this.HEIGHT = window.innerHeight;
     this.ASPECT = this.WIDTH / this.HEIGHT;
     this.UNITSIZE = 128; // Pixels
-    this.AIMOVESPEED = 100;
+    this.AIMOVESPEED = 140;
 
     this.camera = new t.PerspectiveCamera(75, this.ASPECT, 1, 10000); // Player view
     this.controls = new PointerLockControls(this.camera); // First person controls
@@ -43,7 +43,7 @@ export default class Game {
     this.player = player;
 
     // JULIAN: Sets number of bugs on the map
-    this.NUMAI = 30;
+    this.NUMAI = 50;
     this.ai = [];
     this.aiAnimations = []; // Bug animations are stored here
 
@@ -90,7 +90,7 @@ export default class Game {
         object.traverse(function (child) {
           if (child instanceof t.Mesh) {
             if (child.material.color) {
-              child.material.color.setHex(0xFFD662);
+              child.material.color.setHex(0x39FF14);
             }
           }
         });
@@ -233,7 +233,7 @@ export default class Game {
         continue;
       }
 
-      this.activeBullets[i].translateZ(-300 * this.clock.getDelta() * 1.2);
+      this.activeBullets[i].translateZ(-800 * this.clock.getDelta() * 1.8);
     }
 
     // Animate AI

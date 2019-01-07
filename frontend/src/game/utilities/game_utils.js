@@ -126,7 +126,7 @@ export const sceneSetup = (scene, map) => {
   // });
   // groundMirror.position.y = 0.5;
   // groundMirror.rotateX(-Math.PI / 2);
-  // scene.add(groundMirror);
+  // scene.add(groundMirror);ww
 
   const floor = new t.GridHelper(20000, 1200, '#ff34b3', '#ff34b3');
   floor.position.y = 0.5;
