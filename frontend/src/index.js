@@ -2,7 +2,6 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import Root from './components/root';
 import configureStore from './store/store';
-import { fetchStats, receiveNewStat } from './actions/stat_actions';
 
 document.addEventListener('DOMContentLoaded', () => {
   const store = configureStore();
