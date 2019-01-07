@@ -177,7 +177,9 @@ export default class Game {
   }
 
   animate() {
-    requestAnimationFrame(this.animate);
+    if (!this.gameOver) {
+      requestAnimationFrame(this.animate);
+    }
 
     this.stats.begin(); // TODO: Remove before production
     // Controls/movement related logic
