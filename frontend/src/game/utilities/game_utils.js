@@ -1,7 +1,5 @@
 import * as t from 'three';
 
-import Reflector from '../external_sources/Reflector';
-
 // Create and deploy a single AI object
 export function addAI(camPos, map, scene, ai, aiAnimations) {
   // Array of three different sprite textures
