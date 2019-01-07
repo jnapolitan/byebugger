@@ -8,10 +8,4 @@ document.addEventListener('DOMContentLoaded', () => {
   const store = configureStore();
   const root = document.getElementById('root');
   ReactDOM.render(<Root store={store} />, root);
-
-  // TESTING
-  window.store = store.getState();
-  window.dispatch = store.dispatch;
-  window.fetchStats = fetchStats;
-  window.receiveNewStat = receiveNewStat;
 });

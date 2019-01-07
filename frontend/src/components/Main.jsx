@@ -18,7 +18,7 @@ export default class Main extends React.Component {
     splash.classList.add("hidden");
 
     // Start the game
-    const game = new Game(this.props.store.dispatch);
+    const game = new Game(this.props.store);
     game.init();
     game.animate();
   }

@@ -11,7 +11,7 @@ import OBJLoader from './external_sources/OBJLoader';
 import PointerLockControls from './PointerLockControls';
 
 export default class Game {
-  constructor(dispatch) {
+  constructor(store) {
     this.WIDTH = window.innerWidth;
     this.HEIGHT = window.innerHeight;
     this.ASPECT = this.WIDTH / this.HEIGHT;
@@ -41,7 +41,7 @@ export default class Game {
 
     // JULIAN: Set initial player stats
     this.health = this.TRIES;
-    this.score = 0;
+    this.score = 
     this.gameOver = false;
 
     this.setupAI = this.setupAI.bind(this);
@@ -61,7 +61,7 @@ export default class Game {
     this.map = new BSPTree().generateMap(64, 64);
 
     // Dispatch testing
-    this.dispatch = dispatch;
+    this.store = store;
   }
 
   setupScene() {
@@ -113,8 +113,9 @@ export default class Game {
     // TODO: Move the controls logic into another file if possible
     document.addEventListener('click', () => {
       this.controls.lock();
+    
       // SUE: invoke swingHammer function upon clicking
-      BugCaptureUtil.swingHammer(this.ai, this.controls.getObject(), this.score);
+      BugCaptureUtil.swingHammer(this.ai, this.controls.getObject(), this.store);
     }, false);
 
     document.addEventListener('keydown', (e) => KeypressHandler.onKeyDown(e, this.keypresses, this.velocity), false);

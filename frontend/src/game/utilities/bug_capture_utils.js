@@ -1,5 +1,7 @@
 import * as t from 'three';
 
+import { receiveNewStat } from '../../actions/stat_actions';
+
 export const checkLineIntersection = (line1start, line1end, line2start, line2end) => {
   let det, gamma, lambda;
   const a = line1start.x;
@@ -56,7 +58,7 @@ export const checkIfBugHit = (playerPosition, hammerEnd, bugCenterPosition) => {
   }
 };
 
-export const swingHammer = (ai, cam) => {
+export const swingHammer = (ai, cam, store) => {
   // Note: Bug is offset by ~20 from its center
 
   //determine direction of the swing 
@@ -80,10 +82,15 @@ export const swingHammer = (ai, cam) => {
     z: hammerVectorZ
   };
 
+  let currentScore = store.getState().stats.currentPlayerScore;
+  const dispatch = store.dispatch;
+
   // if bug is in direction of vector and hammerLength away - collision = true
   ai.forEach(bug => {
     if (checkIfBugHit(playerPosition, hammerHeadPosition, bug.position)) {
-      console.log('splat');
+      currentScore += 1000;
+      dispatch(receiveNewStat(currentScore));
+      console.log(currentScore);
     }
   });
 };
