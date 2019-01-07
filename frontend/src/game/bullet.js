@@ -13,7 +13,6 @@ const createBullet = (controls, position, quaternion, activeBullets, scene) => {
   emitter.position.copy(position);
   controls.getObject().add(emitter);
   bullet.position.copy(position);
-  bullet.position.x += 85;
   bullet.quaternion.copy(quaternion);
 
   bullet.active = true;

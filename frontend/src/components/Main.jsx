@@ -6,7 +6,8 @@ export default class Main extends React.Component {
   componentDidMount() {
     // TODO: Intro music - this is a semi-functional placeholder
     // By Eric Matyas @ https://soundimage.org/
-    const musicURL = "http://soundimage.org/wp-content/uploads/2016/07/Puzzle-Game_Looping.mp3";
+    // const musicURL = "http://soundimage.org/wp-content/uploads/2016/07/Puzzle-Game_Looping.mp3";
+    const musicURL = "https://soundimage.org/wp-content/uploads/2018/11/Dance-of-the-Satellites_Looping.mp3";
     const audio = new Audio(musicURL);
     const promise = audio.play();
     if (promise !== undefined) {

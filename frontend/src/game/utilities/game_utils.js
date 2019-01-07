@@ -35,6 +35,7 @@ export function addAI(camPos, map, scene, ai, aiAnimations) {
   x = (x - map.length / 2) * 128;
   z = (z - map.length / 2) * 128;
   o.position.set(x, 128 * 0.15, z);
+  o.health = 100;
   o.randomX = Math.random();
   o.randomZ = Math.random();
 

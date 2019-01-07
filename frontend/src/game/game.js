@@ -147,7 +147,7 @@ export default class Game {
       audio3.play();
 
       // SUE: invoke swingHammer function upon clicking
-      BugCaptureUtil.swingHammer(this.ai, this.controls.getObject(), this.store);
+      // BugCaptureUtil.swingHammer(this.ai, this.controls.getObject(), this.store);
     }, false);
 
     document.addEventListener('keydown', (e) => KeypressHandler.onKeyDown(e, this.keypresses, this.velocity), false);
@@ -234,6 +234,20 @@ export default class Game {
       }
 
       this.activeBullets[i].translateZ(-800 * this.clock.getDelta() * 1.8);
+
+      // Check to see if bug was hit
+      for (var j = this.ai.length - 1; j >= 0; j--) {
+        let bug = this.ai[j];
+        if (BugCaptureUtil.checkIfBugHit(this.controls.getObject().position, this.activeBullets[i].position, bug.position)) {
+          this.activeBullets.splice(i, 1);
+          this.scene.remove(this.activeBullets[i]);
+          bug.health -= 20;
+          if (bug.health < 0) {
+            this.scene.remove(bug);
+          }
+          break;
+        }
+      }
     }
 
     // Animate AI
