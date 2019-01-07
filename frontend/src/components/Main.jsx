@@ -51,7 +51,9 @@ export default class Main extends React.Component {
     return (
       <div id="splash" className="splash-container">
         <img className="logo" src="../assets/images/splashText.png" alt="ByeBugger" />
-        <input type="text" className="player-name-input" placeholder="Enter your name to join the ranks" onChange={ this.updatePlayerName() } />
+        <form onSubmit={ this.initiateGame } >
+          <input type="text" className="player-name-input" placeholder="Enter your name to join the ranks" onChange={ this.updatePlayerName() } />
+        </form>
         <button className="start-button" onClick={ this.initiateGame }>START</button>
         <footer>Copyright &copy; 2019 ByeBugger</footer>
       </div>

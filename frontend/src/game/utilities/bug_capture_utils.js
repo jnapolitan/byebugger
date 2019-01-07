@@ -92,7 +92,7 @@ export const swingHammer = (ai, cam, store) => {
   ai.forEach(bug => {
     if (checkIfBugHit(playerPosition, hammerHeadPosition, bug.position)) {
       currentScore += 1000;
-      currentHealth -= 1;
+      currentHealth -= 25;
       dispatch(receiveNewStat(currentScore));
       dispatch(receiveNewHealth(currentHealth));
     }

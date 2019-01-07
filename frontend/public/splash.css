@@ -83,7 +83,7 @@ footer {
 .player-name-input {
   border: 3px solid #02FF01;
   margin: 20px 0;
-  width: 50%;
+  width: 100%;
   padding: 10px;
   border-radius: 4px;
   font-size: 14px;
@@ -92,4 +92,8 @@ footer {
 .player-name-input:focus {
   border: 3px solid #FF34B3;
   outline: none;
+}
+
+.splash-container form {
+  width: 50%;
 }

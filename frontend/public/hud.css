@@ -5,7 +5,9 @@
   z-index: 1;
 }
 
-.hud-container h2 {
-  color: white;
-  font-family: inherit;
+.hud-container p {
+  color: #02FF01;
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: bold;
+  font-size: 32px;
 }
