@@ -8,6 +8,7 @@ export function addAI(camPos, map, scene, ai, aiAnimations) {
   const aiSpriteTextures = [
     '/assets/images/butterfly-sprite.png',
     '/assets/images/galaga-sprite.png',
+    '/assets/images/galaga-sprite-blue.png',
     '/assets/images/winged-sprite.png'
   ];
 
