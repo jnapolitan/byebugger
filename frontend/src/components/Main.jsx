@@ -20,6 +20,9 @@ export default class Main extends React.Component {
   constructor(props) {
     super(props);
     this.initiateGame = this.initiateGame.bind(this);
+    this.state = {
+      player: ''
+    };
   }
 
   // e is pulled in as the "event" being handled
@@ -33,15 +36,22 @@ export default class Main extends React.Component {
     hud.classList.remove("hidden");
 
     // Start the game
-    const game = new Game(this.props.store);
+    const game = new Game(this.state.player, this.props.store);
     game.init();
     game.animate();
+  }
+
+  updatePlayerName() {
+    return e => {
+      this.setState({ player: e.target.value });
+    };
   }
 
   render() {
     return (
       <div id="splash" className="splash-container">
         <img className="logo" src="../assets/images/splashText.png" alt="ByeBugger" />
+        <input type="text" className="player-name-input" placeholder="Enter your name to join the ranks" onChange={ this.updatePlayerName() } />
         <button className="start-button" onClick={ this.initiateGame }>START</button>
         <footer>Copyright &copy; 2019 ByeBugger</footer>
       </div>

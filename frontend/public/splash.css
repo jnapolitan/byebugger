@@ -79,3 +79,17 @@ footer {
   -webkit-transition: opacity 1000ms linear;
   transition: opacity 1000ms linear;
 }
+
+.player-name-input {
+  border: 3px solid #02FF01;
+  margin: 20px 0;
+  width: 50%;
+  padding: 10px;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.player-name-input:focus {
+  border: 3px solid #FF34B3;
+  outline: none;
+}

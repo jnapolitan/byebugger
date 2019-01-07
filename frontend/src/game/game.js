@@ -12,7 +12,7 @@ import PointerLockControls from './PointerLockControls';
 import Stats from 'stats-js';
 
 export default class Game {
-  constructor(store) {
+  constructor(player, store) {
     // TODO: Remove before production
     this.stats = new Stats();
     this.stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
@@ -40,6 +40,8 @@ export default class Game {
 
     this.scene = new t.Scene();
 
+    this.player = player;
+
     // JULIAN: Sets number of bugs on the map
     this.NUMAI = 30;
     this.ai = [];
@@ -64,7 +66,7 @@ export default class Game {
     // Creates a 2D grid of 1s and 0s, which will be used to render the 3D world
     this.map = new BSPTree().generateMap(64, 64);
 
-    // Dispatch testing
+    // JULIAN: For state and dispatch access 
     this.store = store;
   }
 
