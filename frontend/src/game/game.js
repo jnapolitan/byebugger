@@ -46,7 +46,7 @@ export default class Game {
     this.player = player;
 
     // JULIAN: Sets number of bugs on the map
-    this.NUMAI = 10;
+    this.NUMAI = 20;
     this.ai = [];
     this.aiAnimations = []; // Bug animations are stored here
 
@@ -70,7 +70,7 @@ export default class Game {
     this.velocity = new t.Vector3();
 
     // Creates a 2D grid of 1s and 0s, which will be used to render the 3D world
-    this.map = new BSPTree().generateMap(64, 64);
+    this.map = new BSPTree().generateMap(32, 32);
 
     // JULIAN: For state and dispatch access 
     this.store = store;
@@ -156,9 +156,11 @@ export default class Game {
       const audio2 = new Audio('./assets/sounds/shotgun2.mp3');
       const audio3 = new Audio('/assets/sounds/shell.mp3');
       if (Math.random() > 0.10) {
-        createBullet(this.controls, this.controls.getObject().position, this.controls.getObject().quaternion, this.activeBullets, this.scene, this.models.weapon.position);
-        audio1.play();
-        audio3.play();
+        if (this.models.weapon) {
+          createBullet(this.controls, this.controls.getObject().position, this.controls.getObject().quaternion, this.activeBullets, this.scene, this.models.weapon.position);
+          audio1.play();
+          audio3.play();
+        }
       } else {
         audio2.play();
       }

@@ -112,12 +112,12 @@ export const getRandBetween = (lo, hi) => {
 };
 
 export const sceneSetup = (scene, map) => {
-  const ceiling = new t.GridHelper(9000, 1200, '#55e7ff', '#55e7ff'); // size, divisions
+  const ceiling = new t.GridHelper(9000, 600, '#55e7ff', '#55e7ff'); // size, divisions
   ceiling.position.y = 96;
   ceiling.position.x = Math.PI / 2;
   scene.add(ceiling);
 
-  const floor = new t.GridHelper(9000, 1200, '#ff34b3', '#ff34b3');
+  const floor = new t.GridHelper(9000, 600, '#ff34b3', '#ff34b3');
   floor.position.y = 0.5;
   floor.position.x = (-Math.PI / 2);
   scene.add(floor);
