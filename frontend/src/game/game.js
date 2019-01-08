@@ -202,6 +202,10 @@ export default class Game {
       requestAnimationFrame(this.animate);
     }
 
+    if (this.gameOver) {
+      this.endGame();
+    }
+
     this.stats.begin(); // TODO: Remove before production
     // Controls/movement related logic
     const time = performance.now();
@@ -366,6 +370,8 @@ export default class Game {
   }
 
   endGame() {
-    
+    console.log('made it to end game')
+    const body = document.body;
+    body.classList.add('game-over');
   }
 }

@@ -3,7 +3,7 @@ import {
   RECEIVE_NEW_HEALTH
 } from '../actions/health_actions';
 
-const healthReducer = (state = 100, action) => {
+const healthReducer = (state = 5, action) => {
   Object.freeze(state);
 
   switch (action.type) {
