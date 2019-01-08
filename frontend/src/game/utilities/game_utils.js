@@ -1,15 +1,14 @@
 import * as t from 'three';
 
-// Create and deploy a single AI object
 export function addAI(camPos, map, scene, ai, aiAnimations, listener) {
-  // Array of three different sprite textures
+  // Possible bug textures
   const aiSpriteTextures = [
+    '/assets/images/butterfly-sprite.png',
     '/assets/images/butterfly-sprite.png',
     '/assets/images/galaga-sprite.png',
     '/assets/images/galaga-sprite-blue.png',
     '/assets/images/winged-sprite.png',
     '/assets/images/winged-sprite.png',
-    '/assets/images/butterfly-sprite.png'
   ];
 
   // Sample from aiSpriteTextures array to create a random bugger
@@ -114,25 +113,12 @@ export const getRandBetween = (lo, hi) => {
 
 // TODO: Export ceiling
 export const sceneSetup = (scene, map) => {
-  const ceiling = new t.GridHelper(20000, 1200, '#55e7ff', '#55e7ff'); // size, divisions
+  const ceiling = new t.GridHelper(10000, 1200, '#55e7ff', '#55e7ff'); // size, divisions
   ceiling.position.y = 128 - 32;
   ceiling.position.x = Math.PI / 2;
   scene.add(ceiling);
 
-  // Mirror floor
-  // var geometry = new t.PlaneBufferGeometry(20000, 20000);
-  // var groundMirror = new Reflector(geometry, {
-  //   clipBias: 0.003,
-  //   textureWidth: window.innerWidth * window.devicePixelRatio,
-  //   textureHeight: window.innerHeight * window.devicePixelRatio,
-  //   color: 0x111111,
-  //   recursion: 1
-  // });
-  // groundMirror.position.y = 0.5;
-  // groundMirror.rotateX(-Math.PI / 2);
-  // scene.add(groundMirror);ww
-
-  const floor = new t.GridHelper(20000, 1200, '#ff34b3', '#ff34b3');
+  const floor = new t.GridHelper(10000, 1200, '#ff34b3', '#ff34b3');
   floor.position.y = 0.5;
   floor.position.x = (-Math.PI / 2);
   scene.add(floor);

@@ -46,7 +46,7 @@ export default class Game {
     this.player = player;
 
     // JULIAN: Sets number of bugs on the map
-    this.NUMAI = 50;
+    this.NUMAI = 1;
     this.ai = [];
     this.aiAnimations = []; // Bug animations are stored here
 
@@ -78,6 +78,9 @@ export default class Game {
     // ERIC: Keep track of all active bullets
     this.activeBullets = [];
     this.clock = new t.Clock();
+
+    // Sounds
+    this.collisionSound = new Audio('./assets/sounds/oof.mp3');
   }
 
   setupScene() {
@@ -183,9 +186,8 @@ export default class Game {
     // Add the canvas to the document
     this.renderer.setClearColor('black', 1); // Sky color (if the sky was visible)
     document.body.appendChild(this.renderer.domElement);
-    // TODO: Is there a cleaner way to do this?
     const minimap = document.createElement('canvas');
-    minimap.setAttribute('id', 'minimap')
+    minimap.setAttribute('id', 'minimap');
     minimap.setAttribute('width', 220);
     minimap.setAttribute('height', 220);
     document.body.appendChild(minimap);
@@ -194,7 +196,6 @@ export default class Game {
   animate() {
     const currentHealth = this.store.getState().health;
     if (currentHealth === 0) this.gameOver = true;
-
     if (!this.gameOver && !this.paused) {
       requestAnimationFrame(this.animate);
     }
@@ -212,12 +213,10 @@ export default class Game {
 
     const camPos = this.controls.getObject().position;
 
-    const audio = new Audio('./assets/sounds/oof.mp3');
-
     if (this.keypresses.forward || this.keypresses.backward) {
       this.velocity.z -= this.direction.z * 1200.0 * delta;
       if (GameUtil.checkWallCollision(camPos, this.map, this.UNITSIZE)) {
-        audio.play();
+        this.collisionSound.play();
         this.velocity.z -= this.velocity.z * 4;
       }
     }
@@ -225,7 +224,7 @@ export default class Game {
     if (this.keypresses.left || this.keypresses.right) {
       this.velocity.x -= this.direction.x * 1200.0 * delta;
       if (GameUtil.checkWallCollision(camPos, this.map, this.UNITSIZE)) {
-        audio.play();
+        this.collisionSound.play();
         this.velocity.x -= this.velocity.x * 4;
       }
     }
@@ -260,7 +259,8 @@ export default class Game {
         continue;
       }
 
-      this.activeBullets[i].translateZ(-800 * this.clock.getDelta());
+      console.log(this.clock.getDelta());
+      this.activeBullets[i].translateZ(-50 * this.clock.getDelta());
 
       // Check to see if bug was hit
       for (var j = this.ai.length - 1; j >= 0; j--) {
