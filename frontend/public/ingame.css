@@ -1,10 +1,14 @@
 .welcomeMessage {
-  color: white;
+  color: #ff34b3;
+  font-size: 20px;
+  font-weight: 900;
+  letter-spacing: 2px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   position: absolute;
+  text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
   top: 35%;
 }
 

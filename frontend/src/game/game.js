@@ -183,7 +183,7 @@ export default class Game {
     welcomeMessage.classList.add('welcomeMessage');
 
     const playerName = document.createElement('div');
-    playerName.textContent = `Hello, ${this.player}. You've been moved to`;
+    playerName.textContent = `Hello, ${this.player}. You've been transported to`;
     welcomeMessage.appendChild(playerName);
 
     const textImage = document.createElement('img');
@@ -193,7 +193,7 @@ export default class Game {
 
     setInterval(() => {
       welcomeMessage.classList.add('fadeOut');
-    }, 1000);
+    }, 3000);
     ///
 
     const minimap = document.createElement('canvas');
@@ -201,6 +201,9 @@ export default class Game {
     minimap.setAttribute('width', 220);
     minimap.setAttribute('height', 220);
     document.body.appendChild(minimap);
+
+    // Add powerup cube
+    GameUtil.addPowerup(this.controls.getObject().position, this.scene);
   }
 
   animate() {

@@ -64,20 +64,36 @@ export function addAI(camPos, map, scene, ai, aiAnimations, listener) {
 
 ////////////////////////
 
+export const findValidSpace = (map, cam, UNITSIZE) => {
+  let x = Math.floor(Math.random() * map.length);
+  let z = Math.floor(Math.random() * map.length);
+  while (map[x][z]) {
+    x = Math.floor(Math.random() * map.length);
+    z = Math.floor(Math.random() * map.length);
+  }
+  let calcX = (x - map.length / 2) * UNITSIZE;
+  let calcZ = (z - map.length / 2) * UNITSIZE;
+  cam.position.x = calcX - 20;
+  cam.position.z = calcZ - 20;
+};
+
 export const checkSpawn = (map, cam, UNITSIZE) => {
   let startingSpot = map[map.length / 2][map.length / 2];
   if (startingSpot) {
-    let x = Math.floor(Math.random() * map.length);
-    let z = Math.floor(Math.random() * map.length);
-    while (map[x][z]) {
-      x = Math.floor(Math.random() * map.length);
-      z = Math.floor(Math.random() * map.length);
-    }
-    let calcX = (x - map.length / 2) * UNITSIZE;
-    let calcZ = (z - map.length / 2) * UNITSIZE;
-    cam.position.x = calcX - 20;
-    cam.position.z = calcZ - 20;
+    findValidSpace(map, cam, UNITSIZE);
   }
+};
+
+export const addPowerup = (camPos, scene) => {
+  const powerupGeo = new t.BoxGeometry(30, 30, 30);
+  const powerupMat = new t.MeshPhongMaterial({
+    emissive: 0xffffff,
+    emissiveIntensity: 4
+  });
+  const powerup = new t.Mesh(powerupGeo, powerupMat);
+  powerup.position.copy(camPos);
+  powerup.position.y += 5;
+  scene.add(powerup);
 };
 
 export const getMapSector = (v, map, UNITSIZE) => {
