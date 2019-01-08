@@ -347,13 +347,16 @@ export default class Game {
     this.velocity.x = 0;
     this.velocity.z = 0;
     const savedPos = this.controls.getObject().position;
+    const body = document.body;
 
     if (this.paused) {
       this.paused = !this.paused;
       this.controls.getObject().position.x = savedPos.x;
       this.controls.getObject().position.y = savedPos.y;
+      body.classList.remove('paused');
       this.animate();
     } else {
+      body.classList.add('paused');
       this.paused = !this.paused;
       this.keypresses = { forward: false, backward: false, left: false, right: false, canJump: true };
     }
