@@ -46,7 +46,7 @@ export default class Game {
     this.player = player;
 
     // JULIAN: Sets number of bugs on the map
-    this.NUMAI = 1;
+    this.NUMAI = 10;
     this.ai = [];
     this.aiAnimations = []; // Bug animations are stored here
 
@@ -130,9 +130,9 @@ export default class Game {
       if (!this.gameOver && !this.paused) {
         this.store.dispatch(receiveNewHealth(this.store.getState().health - 1));
       }
-    }, 1000);
+    }, 3000);
 
-    this.scene.fog = new t.FogExp2('black', 0.0015);
+    this.scene.fog = new t.FogExp2('black', 0.0009);
     this.camera.position.y = this.UNITSIZE * 0.1; // Ensures the player is above the floor
     GameUtil.checkSpawn(this.map, this.controls.getObject(), this.UNITSIZE);
 
@@ -152,16 +152,16 @@ export default class Game {
     document.addEventListener('click', () => {
       // Locks in mouse to game screen until presses escape
       this.controls.lock();
-      createBullet(this.controls, this.controls.getObject().position, this.controls.getObject().quaternion, this.activeBullets, this.scene);
-      const audio1 = new Audio('./assets/sounds/gunshot1.mp3');
-      const audio2 = new Audio('./assets/sounds/gunshot2.mp3');
+      const audio1 = new Audio('./assets/sounds/shotgun3.mp3');
+      const audio2 = new Audio('./assets/sounds/shotgun2.mp3');
       const audio3 = new Audio('/assets/sounds/shell.mp3');
-      if (Math.random() > 0.5) {
+      if (Math.random() > 0.10) {
+        createBullet(this.controls, this.controls.getObject().position, this.controls.getObject().quaternion, this.activeBullets, this.scene, this.models.weapon.position);
         audio1.play();
+        audio3.play();
       } else {
         audio2.play();
       }
-      audio3.play();
 
       // SUE: invoke swingHammer function upon clicking
       // BugCaptureUtil.swingHammer(this.ai, this.controls.getObject(), this.store);
@@ -259,18 +259,28 @@ export default class Game {
         continue;
       }
 
-      console.log(this.clock.getDelta());
-      this.activeBullets[i].translateZ(-50 * this.clock.getDelta());
+      this.activeBullets[i].translateZ(-1000 * this.clock.getDelta());
 
       // Check to see if bug was hit
       for (var j = this.ai.length - 1; j >= 0; j--) {
         let bug = this.ai[j];
         if (BugCaptureUtil.checkIfBugHit(this.controls.getObject().position, this.activeBullets[i].position, bug.position)) {
+          let explode = new t.TextureLoader().load('https://media.giphy.com/media/sbf9rPhSm3Pc4/200w.gif');
+          let explodeMat = new t.SpriteMaterial({ map: explode });
+          let explosion = new t.Sprite(explodeMat);
+          explosion.scale.set(200, 477, 1);
+          explosion.position.copy(bug.position);
+          this.scene.add(explosion);
+          setInterval(() => {
+            this.scene.remove(explosion);
+          }, 200);
+
           this.activeBullets.splice(i, 1);
           this.scene.remove(this.activeBullets[i]);
           bug.health -= 20;
           if (bug.health < 0) {
             this.ai.splice(j, 1);
+            // bug.remove(bug.sound);
             this.scene.remove(bug);
             // GameUtil.addAI();
 

@@ -3,9 +3,9 @@ export default class BSPTree {
     this.map = [];
     this.room = null;
 
-    this.MAX_LEAF_SIZE = 18;
-    this.ROOM_MAX_SIZE = 10;
-    this.ROOM_MIN_SIZE = 4;
+    this.MAX_LEAF_SIZE = 23;
+    this.ROOM_MAX_SIZE = 17;
+    this.ROOM_MIN_SIZE = 8;
 
     this.generateMap = this.generateMap.bind(this);
     this.createRoom = this.createRoom.bind(this);
