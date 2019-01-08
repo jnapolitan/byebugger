@@ -128,3 +128,59 @@ footer {
 ::placeholder { /* Backup, most browsers support this now */
   font-family: 'Orbitron', sans-serif;
 }
+
+/** RANKS MODAL **/
+
+.stats-modal {
+  animation: Float 1s linear infinite;
+  background: #55E7FF;
+  padding: 50px;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 20%;
+  margin: auto;
+  width: 30%;
+  border: 5px solid #ff34b3;
+  border-radius: 4px;
+  box-shadow: 10px 10px 10px 0 rgba(0, 0, 0, 0.5);
+  z-index: 1;
+}
+
+.stats-modal h1 {
+  text-align: center;
+  color: #ff34b3;
+  font-family: 'Orbitron', sans-serif;
+  padding: 20px;
+  font-weight: bold;
+  border-bottom: 5px solid #ff34b3;
+}
+
+.stats-item ol {
+  list-style: inherit;
+}
+
+.stats-item {
+  display: flex;
+  justify-content: space-between;
+  margin: 30px 0;
+}
+
+.stats-item p {
+ font-family: 'Orbitron', sans-serif;
+ color: #ff34b3;
+ font-size: 24px;
+ font-weight: bold;
+}
+
+.close-modal {
+ font-family: 'Orbitron',
+ sans-serif;
+ color: #ff34b3;
+ font-size: 24px;
+ font-weight: bold;
+ position: absolute;
+ top: 15px;
+ right: 15px;
+ cursor: pointer;
+}

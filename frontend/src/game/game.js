@@ -364,4 +364,8 @@ export default class Game {
       this.keypresses = { forward: false, backward: false, left: false, right: false, canJump: true };
     }
   }
+
+  endGame() {
+    
+  }
 }
