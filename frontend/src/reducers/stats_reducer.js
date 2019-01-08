@@ -21,3 +21,4 @@ const statsReducer = (state = { topTenScores: [], currentPlayerScore: 0 }, actio
 };
 
 export default statsReducer;
+

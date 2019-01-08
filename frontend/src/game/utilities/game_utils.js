@@ -1,5 +1,7 @@
 import * as t from 'three';
 
+////// AI-related //////
+const audioLoader = new t.AudioLoader();
 export function addAI(camPos, map, scene, ai, aiAnimations, listener) {
   // Possible bug textures
   const aiSpriteTextures = [
@@ -8,7 +10,7 @@ export function addAI(camPos, map, scene, ai, aiAnimations, listener) {
     '/assets/images/galaga-sprite.png',
     '/assets/images/galaga-sprite-blue.png',
     '/assets/images/winged-sprite.png',
-    '/assets/images/winged-sprite.png',
+    '/assets/images/winged-sprite.png'
   ];
 
   // Sample from aiSpriteTextures array to create a random bugger
@@ -46,7 +48,6 @@ export function addAI(camPos, map, scene, ai, aiAnimations, listener) {
   const aiSound = new t.PositionalAudio(listener);
 
   // load AI sound and set it as the PositionalAudio object's buffer
-  const audioLoader = new t.AudioLoader();
   audioLoader.load('/assets/sounds/glitch_static.mp3', function (buffer) {
     aiSound.setBuffer(buffer);
     aiSound.setRefDistance(10);
@@ -60,6 +61,8 @@ export function addAI(camPos, map, scene, ai, aiAnimations, listener) {
   scene.add(bug);
   bug.add(aiSound);
 }
+
+////////////////////////
 
 export const checkSpawn = (map, cam, UNITSIZE) => {
   let startingSpot = map[map.length / 2][map.length / 2];

@@ -1,0 +1,17 @@
+.welcomeMessage {
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 35%;
+}
+
+.fadeOut {
+  animation: fadeout 4s forwards;
+}
+
+@keyframes fadeout {
+  from { opacity: .9; } to { opacity: 0; }
+}
