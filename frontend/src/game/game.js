@@ -163,18 +163,16 @@ export default class Game {
       // BugCaptureUtil.swingHammer(this.ai, this.controls.getObject(), this.store);
     }, false);
 
-    document.addEventListener('keydown', (e) => KeypressHandler.onKeyDown(e, this.keypresses, this.velocity), false);
-    document.addEventListener('keyup', (e) => KeypressHandler.onKeyUp(e, this.keypresses), false);
+    // JULIAN: Pause logic 
     document.addEventListener('keydown', (e) => {
-      if (e.keyCode === 80 ) {
-        if (this.paused) {
-          this.paused = !this.paused;
-          this.animate();
-        } else {
-          this.paused = !this.paused;
-        }
+      if (e.keyCode === 80) {
+        this.pause();
       }
     });
+
+    document.addEventListener('keydown', (e) => KeypressHandler.onKeyDown(e, this.keypresses, this.velocity), false);
+    document.addEventListener('keyup', (e) => KeypressHandler.onKeyUp(e, this.keypresses), false);
+    
 
     // Add objects to the world
     this.setupScene();
@@ -325,5 +323,21 @@ export default class Game {
     // Deals with what portion of the scene the player sees
     this.renderer.render(this.scene, this.camera);
     this.stats.end(); // TODO: Remove before production
+  }
+
+  pause() {
+    this.velocity.x = 0;
+    this.velocity.z = 0;
+    const savedPos = this.controls.getObject().position;
+
+    if (this.paused) {
+      this.paused = !this.paused;
+      this.controls.getObject().position.x = savedPos.x;
+      this.controls.getObject().position.y = savedPos.y;
+      this.animate();
+    } else {
+      this.paused = !this.paused;
+      this.keypresses = { forward: false, backward: false, left: false, right: false, canJump: true };
+    }
   }
 }
