@@ -370,7 +370,8 @@ export default class Game {
   }
 
   endGame() {
-    console.log('made it to end game')
+    const gameOverAudio = new Audio('./assets/sounds/game_over.mp3');
+    gameOverAudio.play();
     const body = document.body;
     body.classList.add('game-over');
   }
