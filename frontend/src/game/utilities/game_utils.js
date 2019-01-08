@@ -55,7 +55,7 @@ export function addAI(camPos, map, scene, ai, aiAnimations, listener) {
     aiSound.setMaxDistance(150);
     aiSound.play();
   });
-  // bug.sound = aiSound;
+  bug.sound = aiSound;
 
   scene.add(bug);
   bug.add(aiSound);

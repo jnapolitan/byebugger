@@ -89,13 +89,13 @@ export default class Game {
     const mtlLoader = new MTLLoader();
 
     mtlLoader.setPath("./assets/models/");
-    mtlLoader.load('shotgun.mtl', (materials) => {
+    mtlLoader.load('rocketLauncher.mtl', (materials) => {
       materials.preload();
 
       const objLoader = new OBJLoader();
       objLoader.setMaterials(materials);
       objLoader.setPath("./assets/models/");
-      objLoader.load('shotgun.obj', (object) => {
+      objLoader.load('rocketLauncher.obj', (object) => {
         object.traverse(function (child) {
           if (child instanceof t.Mesh) {
             if (child.material.color) {
@@ -280,7 +280,7 @@ export default class Game {
           bug.health -= 20;
           if (bug.health < 0) {
             this.ai.splice(j, 1);
-            // bug.remove(bug.sound);
+            bug.sound.stop();
             this.scene.remove(bug);
             // GameUtil.addAI();
 
