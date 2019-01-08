@@ -1,3 +1,7 @@
+.paused {
+  position: relative
+}
+
 .paused::after {
   content: "";
   display: block;
@@ -7,6 +11,9 @@
   height: 100%;
   top: 0;
   left: 0;
-  background-color: rgba(black, 0.5);
-  z-index: 1;
+  background-color: rgba(1, 1, 1, 0.5);
+  background-image: url('/assets/images/paused.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  z-index: 10;
 }

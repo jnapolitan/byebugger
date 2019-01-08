@@ -128,9 +128,9 @@ export default class Game {
     // Interval for sanity countdown
     setInterval(() => {
       if (!this.gameOver && !this.paused) {
-        this.store.dispatch(receiveNewHealth(this.store.getState().health - 1));
+        this.store.dispatch(receiveNewHealth(this.store.getState().health - 5));
       }
-    }, 3000);
+    }, 5000);
 
     this.scene.fog = new t.FogExp2('black', 0.0009);
     this.camera.position.y = this.UNITSIZE * 0.1; // Ensures the player is above the floor
@@ -348,6 +348,7 @@ export default class Game {
     this.velocity.z = 0;
     const savedPos = this.controls.getObject().position;
     const body = document.body;
+    const pauseAudio = new Audio('./assets/sounds/glitch_pause.mp3');
 
     if (this.paused) {
       this.paused = !this.paused;
@@ -356,6 +357,7 @@ export default class Game {
       body.classList.remove('paused');
       this.animate();
     } else {
+      pauseAudio.play();
       body.classList.add('paused');
       this.paused = !this.paused;
       this.keypresses = { forward: false, backward: false, left: false, right: false, canJump: true };
