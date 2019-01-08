@@ -4,6 +4,12 @@ import StatItem from './stat_item';
 export default class Ranks extends React.Component {
   componentDidMount() {
     this.props.fetchStats();
+
+    const closeModal = document.getElementById("close-stats-modal");
+    closeModal.addEventListener('click', () => {
+      const stats = document.getElementById("stats-modal");
+      stats.classList.add("hidden");
+    });
   }
 
   render() {
@@ -13,7 +19,11 @@ export default class Ranks extends React.Component {
       return <StatItem stat={stat} key={stat._id} />
     })
     return (
-      <ul>{ stats }</ul>
+      <div className="stats-modal hidden" id="stats-modal">
+        <p className="close-modal" id="close-stats-modal">X</p>
+        <h1>Elite Hackers</h1>
+        <ol>{ stats }</ol>
+      </div>
     )
   }
 }

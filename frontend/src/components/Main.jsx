@@ -40,6 +40,12 @@ export default class Main extends React.Component {
     game.animate();
   }
 
+  showStats(e) {
+    e.preventDefault();
+    const stats = document.getElementById("stats-modal");
+    stats.classList.remove("hidden");
+  }
+
   updatePlayerName() {
     return e => {
       this.setState({ player: e.target.value });
@@ -55,7 +61,7 @@ export default class Main extends React.Component {
         </form>
         <div className="buttons">
           <button className="start-button" onClick={this.initiateGame}>START</button>
-          <button id="rankings-button" className="start-button">RANKS</button>
+          <button id="rankings-button" className="start-button" onClick={this.showStats}>RANKS</button>
         </div>
         <img id="controls" src="assets/images/controls.png" alt="controls"></img>
         <footer>Copyright &copy; 2019 ByeBugger</footer>

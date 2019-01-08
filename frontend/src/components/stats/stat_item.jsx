@@ -1,9 +1,9 @@
 import React from 'react';
 
 const StatItem = props => (
-  <li>
-    <p>{props.stat.player}</p>
-    <p>{props.stat.score}</p>
+  <li className="stats-item">
+    <p className="stats-player">{props.stat.player}</p>
+    <p className="stats-score">{props.stat.score}</p>
   </li>
 )
 
