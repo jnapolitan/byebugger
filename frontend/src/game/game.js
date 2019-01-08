@@ -51,6 +51,7 @@ export default class Game {
 
     // JULIAN: Set initial player stats
     this.gameOver = false;
+    this.paused = false;
 
     this.setupAI = this.setupAI.bind(this);
     this.setupScene = this.setupScene.bind(this);
@@ -117,9 +118,14 @@ export default class Game {
     let cam = this.controls.getObject();
     let map = this.map;
     let ai = this.ai;
+
     setInterval(drawMinimap(cam, map, ai, 128), 1000);
+
+    // Interval for sanity countdown
     setInterval(() => {
-      this.store.dispatch(receiveNewHealth(this.store.getState().health - 1));
+      if (!this.gameOver && !this.paused) {
+        this.store.dispatch(receiveNewHealth(this.store.getState().health - 1));
+      }
     }, 1000);
 
     this.scene.fog = new t.FogExp2('black', 0.0015);
@@ -177,7 +183,10 @@ export default class Game {
   }
 
   animate() {
-    if (!this.gameOver) {
+    const currentHealth = this.store.getState().health;
+    if (currentHealth === 0) this.gameOver = true;
+
+    if (!this.gameOver && !this.paused) {
       requestAnimationFrame(this.animate);
     }
 
