@@ -106,7 +106,8 @@ footer {
 }
 
 #controls {
-  margin-top: 30px;
+  height: 120px;
+  margin-top: 50px;
   margin-bottom: -80px;
 }
 

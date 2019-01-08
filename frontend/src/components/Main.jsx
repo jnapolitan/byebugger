@@ -19,9 +19,7 @@ export default class Main extends React.Component {
   constructor(props) {
     super(props);
     this.initiateGame = this.initiateGame.bind(this);
-    this.state = {
-      player: ''
-    };
+    this.state = { player: 'Guest' };
   }
 
   // e is pulled in as the "event" being handled
@@ -37,6 +35,7 @@ export default class Main extends React.Component {
     // Start the game
     const game = new Game(this.state.player, this.props.store);
     game.init();
+    
     game.animate();
   }
 

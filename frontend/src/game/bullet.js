@@ -1,16 +1,15 @@
 import * as t from 'three';
 
-const createBullet = (controls, position, quaternion, activeBullets, scene, wepPos) => {
-  const bulletGeo = new t.SphereGeometry(8, 16, 12);
-  bulletGeo.applyMatrix(new t.Matrix4().makeScale(1.0, 1.2, 1.5));
+const createBullet = (controls, position, quaternion, activeBullets, scene, wepPos, wepQuaternion) => {
+  const bulletGeo = new t.SphereGeometry(20, 8, 1);
   const bulletMat = new t.MeshPhongMaterial({
-    emissive: 'yellow',
-    emissiveIntensity: 2
+    emissive: 0xffffff,
+    emissiveIntensity: 4
   });
 
   let bullet = new t.Mesh(bulletGeo, bulletMat);
 
-  wepPos.z += 10; 
+  wepPos.z -= 40;
   bullet.position.copy(wepPos);
   bullet.quaternion.copy(quaternion);
 

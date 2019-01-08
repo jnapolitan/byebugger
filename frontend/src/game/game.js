@@ -5,7 +5,7 @@ import * as KeypressHandler from './keypressHandler';
 
 import BSPTree from './mapGenerator';
 import createBullet from './bullet.js'
-import createCrosshairs from './crosshairs';
+// import createCrosshairs from './crosshairs';
 import drawMinimap from './minimap';
 import MTLLoader from './external_sources/MTLLoader';
 import OBJLoader from './external_sources/OBJLoader';
@@ -140,33 +140,22 @@ export default class Game {
     this.scene.add(this.controls.getObject());
 
     // SUE: Add crosshair for weapon
-    createCrosshairs(this.camera);
-
-    // SUE: Used in conjunction w Raycaster - tracks mouse position (set mouse.x and mouse.y to pointer coordinates) so we know where to shoot
-    // document.addEventListener('mousemove', (e) => {
-    //   e.preventDefault();
-    //   this.mouse.x = (e.clientX / this.WIDTH) * 2 - 1;
-    //   this.mouse.y = - (e.clientY / this.HEIGHT) * 2 + 1;
-    // }, false);
+    // createCrosshairs(this.camera);
 
     document.addEventListener('click', () => {
       // Locks in mouse to game screen until presses escape
       this.controls.lock();
       const audio1 = new Audio('./assets/sounds/shotgun3.mp3');
       const audio2 = new Audio('./assets/sounds/shotgun2.mp3');
-      const audio3 = new Audio('/assets/sounds/shell.mp3');
+      // const audio3 = new Audio('/assets/sounds/shell.mp3');
       if (Math.random() > 0.10) {
         if (this.models.weapon) {
-          createBullet(this.controls, this.controls.getObject().position, this.controls.getObject().quaternion, this.activeBullets, this.scene, this.models.weapon.position);
+          createBullet(this.controls, this.controls.getObject().position, this.controls.getObject().quaternion, this.activeBullets, this.scene, this.models.weapon.position, this.models.weapon.quaternion);
           audio1.play();
-          audio3.play();
         }
       } else {
         audio2.play();
       }
-
-      // SUE: invoke swingHammer function upon clicking
-      // BugCaptureUtil.swingHammer(this.ai, this.controls.getObject(), this.store);
     }, false);
 
     // JULIAN: Pause logic 
@@ -188,6 +177,25 @@ export default class Game {
     // Add the canvas to the document
     this.renderer.setClearColor('black', 1); // Sky color (if the sky was visible)
     document.body.appendChild(this.renderer.domElement);
+
+    /// Refactor this out
+    const welcomeMessage = document.createElement('div');
+    welcomeMessage.classList.add('welcomeMessage');
+
+    const playerName = document.createElement('div');
+    playerName.textContent = `Hello, ${this.player}. You've been moved to`;
+    welcomeMessage.appendChild(playerName);
+
+    const textImage = document.createElement('img');
+    textImage.setAttribute('src', './assets/images/virtual-world.png');
+    document.body.appendChild(welcomeMessage);
+    welcomeMessage.appendChild(textImage);
+
+    setInterval(() => {
+      welcomeMessage.classList.add('fadeOut');
+    }, 1000);
+    ///
+
     const minimap = document.createElement('canvas');
     minimap.setAttribute('id', 'minimap');
     minimap.setAttribute('width', 220);
@@ -276,7 +284,7 @@ export default class Game {
           this.scene.add(explosion);
           setInterval(() => {
             this.scene.remove(explosion);
-          }, 200);
+          }, 600);
 
           this.activeBullets.splice(i, 1);
           this.scene.remove(this.activeBullets[i]);
