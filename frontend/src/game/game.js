@@ -165,6 +165,16 @@ export default class Game {
 
     document.addEventListener('keydown', (e) => KeypressHandler.onKeyDown(e, this.keypresses, this.velocity), false);
     document.addEventListener('keyup', (e) => KeypressHandler.onKeyUp(e, this.keypresses), false);
+    document.addEventListener('keydown', (e) => {
+      if (e.keyCode === 80 ) {
+        if (this.paused) {
+          this.paused = !this.paused;
+          this.animate();
+        } else {
+          this.paused = !this.paused;
+        }
+      }
+    });
 
     // Add objects to the world
     this.setupScene();
