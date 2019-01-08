@@ -63,7 +63,6 @@ export function addAI(camPos, map, scene, ai, aiAnimations, listener) {
 export const checkSpawn = (map, cam, UNITSIZE) => {
   let startingSpot = map[map.length / 2][map.length / 2];
   if (startingSpot) {
-    console.log("Was in a wall");
     let x = Math.floor(Math.random() * map.length);
     let z = Math.floor(Math.random() * map.length);
     while (map[x][z]) {
@@ -111,28 +110,21 @@ export const getRandBetween = (lo, hi) => {
   return Math.floor(Math.random() * (hi - lo + 1)) + lo;
 };
 
-// TODO: Export ceiling
 export const sceneSetup = (scene, map) => {
-  const ceiling = new t.GridHelper(10000, 1200, '#55e7ff', '#55e7ff'); // size, divisions
-  ceiling.position.y = 128 - 32;
+  const ceiling = new t.GridHelper(9000, 1200, '#55e7ff', '#55e7ff'); // size, divisions
+  ceiling.position.y = 96;
   ceiling.position.x = Math.PI / 2;
   scene.add(ceiling);
 
-  const floor = new t.GridHelper(10000, 1200, '#ff34b3', '#ff34b3');
+  const floor = new t.GridHelper(9000, 1200, '#ff34b3', '#ff34b3');
   floor.position.y = 0.5;
   floor.position.x = (-Math.PI / 2);
   scene.add(floor);
 
   // Walls
-  const wallMat = new t.TextureLoader().load('');
-  wallMat.repeat.set(10, 10);
-  wallMat.wrapT = t.RepeatWrapping;
-  wallMat.wrapS = t.RepeatWrapping;
-  const block = new t.BoxGeometry(128, 128 - 32, 128);
+  const block = new t.BoxGeometry(128, 96, 128);
 
-  let wallTexture = new t.MeshPhongMaterial({
-    map: wallMat
-  });
+  let wallTexture = new t.MeshBasicMaterial({ color: 'black' });
 
   const geom = new t.Geometry();
   // Create walls according to 2D map array
@@ -147,7 +139,8 @@ export const sceneSetup = (scene, map) => {
       }
     }
   }
-  // Merge meshes for increased performance (hopefully)
+
+  // Merge meshes for better memory usage
   scene.add(new t.Mesh(geom, wallTexture));
 
   // Lighting
@@ -158,13 +151,6 @@ export const sceneSetup = (scene, map) => {
   const directionalLight2 = new t.DirectionalLight(0xF7EFBE, 0.5);
   directionalLight2.position.set(-0.5, -1, -0.5);
   scene.add(directionalLight2);
-
-  let light = new t.PointLight(0xffffff, 0.8, 18);
-  light.position.set(-3, 6, -3);
-  light.castShadow = true;
-  light.shadow.camera.near = 0.1;
-  light.shadow.camera.far = 25;
-  scene.add(light);
 };
 
 // Texture animator for AI utilizing sprites 
