@@ -120,6 +120,9 @@ export default class Game {
     let ai = this.ai;
 
     setInterval(drawMinimap(cam, map, ai, 128), 1000);
+    setInterval(() => {
+      this.store.dispatch(receiveNewHealth(this.store.getState().health - 1));
+    }, 1000);
 
     // Interval for sanity countdown
     setInterval(() => {
