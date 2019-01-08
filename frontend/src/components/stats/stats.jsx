@@ -10,6 +10,13 @@ export default class Ranks extends React.Component {
       const stats = document.getElementById("stats-modal");
       stats.classList.add("hidden");
     });
+
+    // Click anywhere else to close
+    // const statsModal = document.getElementById("stats-modal");
+    // statsModal.addEventListener('click', function(e) {
+    //   if (e.target === this) return;
+    //   statsModal.classList.add("hidden");
+    // });
   }
 
   render() {
