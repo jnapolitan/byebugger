@@ -10,9 +10,10 @@ import drawMinimap from './minimap';
 import MTLLoader from './external_sources/MTLLoader';
 import OBJLoader from './external_sources/OBJLoader';
 import PointerLockControls from './PointerLockControls';
+import { receiveNewHealth } from '../actions/health_actions';
+import { receiveNewStat } from '../actions/stat_actions';
 import Stats from 'stats-js';
 
-import { receiveNewHealth } from '../actions/health_actions';
 
 export default class Game {
   constructor(player, store) {
@@ -269,7 +270,12 @@ export default class Game {
           this.scene.remove(this.activeBullets[i]);
           bug.health -= 20;
           if (bug.health < 0) {
+            this.ai.splice(j, 1);
             this.scene.remove(bug);
+            // GameUtil.addAI();
+
+            let newScore = this.store.getState().stats.currentPlayerScore + 1000;
+            this.store.dispatch(receiveNewStat(newScore));
           }
           break;
         }

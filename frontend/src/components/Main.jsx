@@ -59,6 +59,7 @@ export default class Main extends React.Component {
           <button className="start-button" onClick={this.initiateGame}>START</button>
           <button id="rankings-button" className="start-button">RANKS</button>
         </div>
+        <img id="controls" src="assets/images/controls.png" alt="controls"></img>
         <footer>Copyright &copy; 2019 ByeBugger</footer>
       </div>
     );
