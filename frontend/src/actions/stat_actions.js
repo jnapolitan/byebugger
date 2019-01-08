@@ -24,6 +24,6 @@ export const fetchStats = () => dispatch => (
 
 export const postPlayerStat = stat => dispatch => (
     postStat(stat)
-        .then(stat => dispatch(receiveNewStat(stat)))
+        .then(stat => dispatch(receiveNewStat(stat.score)))
         .catch(err => console.log(err))
 );

@@ -129,10 +129,7 @@ footer {
   font-family: 'Orbitron', sans-serif;
 }
 
-/** RANKS MODAL **/
-
 .stats-modal {
-  animation: Float 1s linear infinite;
   background: #55E7FF;
   padding: 50px;
   position: absolute;
@@ -144,7 +141,7 @@ footer {
   border: 5px solid #ff34b3;
   border-radius: 4px;
   box-shadow: 10px 10px 10px 0 rgba(0, 0, 0, 0.5);
-  z-index: 1;
+  z-index: 20;
 }
 
 .stats-modal h1 {
