@@ -11,7 +11,7 @@ import MTLLoader from './external_sources/MTLLoader';
 import OBJLoader from './external_sources/OBJLoader';
 import PointerLockControls from './PointerLockControls';
 import { receiveNewHealth } from '../actions/health_actions';
-import { receiveNewStat } from '../actions/stat_actions';
+import { receiveNewStat, postPlayerStat, fetchStats } from '../actions/stat_actions';
 import Stats from 'stats-js';
 
 
@@ -210,6 +210,10 @@ export default class Game {
       requestAnimationFrame(this.animate);
     }
 
+    if (this.gameOver) {
+      this.endGame();
+    }
+
     this.stats.begin(); // TODO: Remove before production
     // Controls/movement related logic
     const time = performance.now();
@@ -374,6 +378,21 @@ export default class Game {
   }
 
   endGame() {
+    if (this.player !== '') {
+      const score = this.store.getState().stats.currentPlayerScore;
+      const stat = { player: this.player, score: score };
+      this.store.dispatch(postPlayerStat(stat))
+        .then(this.store.dispatch(fetchStats()));
+    }
     
+    const gameOverAudio = new Audio('./assets/sounds/game_over.mp3');
+    gameOverAudio.play();
+    const body = document.body;
+    body.classList.add('game-over');
+
+    setTimeout(() => {
+      const stats = document.getElementById('stats-modal');
+      stats.classList.remove('hidden');
+    }, 2000);
   }
 }
