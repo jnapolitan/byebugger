@@ -1,9 +1,10 @@
 import * as t from 'three';
 
 const createBullet = (controls, position, quaternion, activeBullets, scene, wepPos) => {
-  const bulletGeo = new t.CubeGeometry(8, 8, 8);
+  const bulletGeo = new t.SphereGeometry(8, 16, 12);
+  bulletGeo.applyMatrix(new t.Matrix4().makeScale(1.0, 1.2, 1.5));
   const bulletMat = new t.MeshPhongMaterial({
-    emissive: 0xffffff,
+    emissive: 'yellow',
     emissiveIntensity: 2
   });
 

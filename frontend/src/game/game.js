@@ -272,6 +272,7 @@ export default class Game {
           let explosion = new t.Sprite(explodeMat);
           explosion.scale.set(200, 477, 1);
           explosion.position.copy(bug.position);
+          explosion.position.y += 120;
           this.scene.add(explosion);
           setInterval(() => {
             this.scene.remove(explosion);
