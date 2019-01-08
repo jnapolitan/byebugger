@@ -8,14 +8,12 @@ export default class Main extends React.Component {
     // By Eric Matyas @ https://soundimage.org/
     // const musicURL = "http://soundimage.org/wp-content/uploads/2016/07/Puzzle-Game_Looping.mp3";
     const musicURL = "https://soundimage.org/wp-content/uploads/2018/11/Dance-of-the-Satellites_Looping.mp3";
-    const audio = new Audio(musicURL);
-    const promise = audio.play();
-    if (promise !== undefined) {
-      promise.then(() => {
-        audio.play();
-        audio.currentTime = 0;
-      })
-    }
+    const introMusic = new Audio(musicURL);
+    introMusic.addEventListener('ended', function() {
+      this.currentTime = 0;
+      this.play();
+    }, false);
+    introMusic.play();
   }
 
   constructor(props) {

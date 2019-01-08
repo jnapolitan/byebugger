@@ -86,13 +86,13 @@ export default class Game {
     const mtlLoader = new MTLLoader();
 
     mtlLoader.setPath("./assets/models/");
-    mtlLoader.load('pistol.mtl', (materials) => {
+    mtlLoader.load('shotgun.mtl', (materials) => {
       materials.preload();
 
       const objLoader = new OBJLoader();
       objLoader.setMaterials(materials);
       objLoader.setPath("./assets/models/");
-      objLoader.load('pistol.obj', (object) => {
+      objLoader.load('shotgun.obj', (object) => {
         object.traverse(function (child) {
           if (child instanceof t.Mesh) {
             if (child.material.color) {
@@ -260,7 +260,7 @@ export default class Game {
         continue;
       }
 
-      this.activeBullets[i].translateZ(-800 * this.clock.getDelta() * 1.8);
+      this.activeBullets[i].translateZ(-800 * this.clock.getDelta());
 
       // Check to see if bug was hit
       for (var j = this.ai.length - 1; j >= 0; j--) {

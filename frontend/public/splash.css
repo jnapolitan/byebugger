@@ -14,7 +14,8 @@ body {
 footer {
   bottom: 2%;
   color: #2099D8;
-  font-size: 18px;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 14px;
   position: absolute;
 }
 
@@ -124,6 +125,6 @@ footer {
 ::-ms-input-placeholder { /* Microsoft Edge */
   font-family: 'Orbitron', sans-serif;
 }
-::placeholder { /* Most modern browsers support this now. */
+::placeholder { /* Backup, most browsers support this now */
   font-family: 'Orbitron', sans-serif;
 }
