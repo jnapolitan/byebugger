@@ -387,7 +387,14 @@ export default class Game {
       pauseAudio.play();
       body.classList.add('paused');
       this.paused = !this.paused;
-      this.keypresses = { forward: false, backward: false, left: false, right: false, canJump: true };
+      this.keypresses = {
+        forward: false,
+        backward: false,
+        left: false,
+        right: false,
+        canJump: true,
+        shiftFactor: 1
+      };
     }
   }
 
