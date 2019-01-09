@@ -38,8 +38,14 @@ export default class Main extends React.Component {
     
     game.animate();
 
+    // Early game sound effects (enter level, scary walls)
     const enterLevelAudio = new Audio("./assets/sounds/enter_level.mp3");
     enterLevelAudio.play();
+
+    setTimeout(() => {
+      const scaryWallsAudio = new Audio("./assets/sounds/scary_walls.mp3");
+      scaryWallsAudio.play();
+    }, 5000);
   }
 
   showStats(e) {
