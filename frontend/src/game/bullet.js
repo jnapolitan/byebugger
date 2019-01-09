@@ -1,7 +1,7 @@
 import * as t from 'three';
 
 const createBullet = (controls, position, quaternion, activeBullets, scene, wepPos, wepQuaternion) => {
-  const bulletGeo = new t.SphereGeometry(5, 32, 32);
+  const bulletGeo = new t.SphereGeometry(5, 15, 15);
   const bulletMat = new t.MeshPhongMaterial({
     emissive: 0xffffff,
     emissiveIntensity: 1
@@ -9,7 +9,6 @@ const createBullet = (controls, position, quaternion, activeBullets, scene, wepP
 
   let bullet = new t.Mesh(bulletGeo, bulletMat);
 
-  wepPos.z -= 40;
   bullet.position.copy(wepPos);
   bullet.quaternion.copy(quaternion);
 
