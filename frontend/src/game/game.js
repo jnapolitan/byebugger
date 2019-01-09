@@ -150,7 +150,15 @@ export default class Game {
       // const audio3 = new Audio('/assets/sounds/shell.mp3');
       if (Math.random() > 0.10) {
         if (this.models.weapon) {
-          createBullet(this.controls, this.controls.getObject().position, this.controls.getObject().quaternion, this.activeBullets, this.scene, this.models.weapon.position, this.models.weapon.quaternion);
+          createBullet(
+            this.controls, 
+            this.controls.getObject().position, 
+            this.controls.getObject().quaternion, 
+            this.activeBullets, 
+            this.scene, 
+            this.models.weapon.position, 
+            this.models.weapon.quaternion
+          );
           audio1.play();
         }
       } else {
@@ -276,7 +284,7 @@ export default class Game {
         continue;
       }
 
-      this.activeBullets[i].translateZ(-1000 * this.clock.getDelta());
+      this.activeBullets[i].translateZ(-1000 * delta);
 
       // Check to see if bug was hit
       for (var j = this.ai.length - 1; j >= 0; j--) {
@@ -295,12 +303,12 @@ export default class Game {
 
           this.activeBullets.splice(i, 1);
           this.scene.remove(this.activeBullets[i]);
-          bug.health -= 20;
+          bug.health -= 50;
           if (bug.health < 0) {
             this.ai.splice(j, 1);
             bug.sound.stop();
             this.scene.remove(bug);
-            // GameUtil.addAI();
+            GameUtil.addAI();
 
             let newScore = this.store.getState().stats.currentPlayerScore + 1000;
             this.store.dispatch(receiveNewStat(newScore));
@@ -381,7 +389,7 @@ export default class Game {
   }
 
   endGame() {
-    if (this.player !== '') {
+    if (this.player !== 'Guest') {
       const score = this.store.getState().stats.currentPlayerScore;
       const stat = { player: this.player, score: score };
       this.store.dispatch(postPlayerStat(stat))
