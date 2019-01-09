@@ -84,6 +84,7 @@ export const checkSpawn = (map, cam, UNITSIZE) => {
   }
 };
 
+// Create powerup, set to a random valid location
 export const addPowerup = (camPos, scene) => {
   const powerupGeo = new t.BoxGeometry(30, 30, 30);
   const powerupMat = new t.MeshPhongMaterial({
