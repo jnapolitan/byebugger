@@ -308,7 +308,7 @@ export default class Game {
             this.ai.splice(j, 1);
             bug.sound.stop();
             this.scene.remove(bug);
-            GameUtil.addAI();
+            GameUtil.addAI(camPos, this.map, this.scene, this.ai, this.aiAnimations, this.listener);
 
             let newScore = this.store.getState().stats.currentPlayerScore + 1000;
             this.store.dispatch(receiveNewStat(newScore));
