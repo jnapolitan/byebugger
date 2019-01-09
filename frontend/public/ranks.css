@@ -17,14 +17,12 @@
   z-index: 20;
   font-size: 20px;
   font-weight: 900;
-  color: #39FF14;
 }
 
 .stats-modal h1 {
   border-bottom: 5px solid #ff34b3;
-  color: #ff34b3;
+  color: #55e7ff;
   font-family: 'Orbitron', sans-serif;
-  font-weight: bold;
   padding: 20px;
   text-align: center;
 }
@@ -40,11 +38,14 @@
 }
 
 .stats-item p {
-  color: #ff34b3;
   color: #39FF14;
   font-family: 'Orbitron', sans-serif;
   font-size: 24px;
   font-weight: bold;
+}
+
+.stats-item:hover {
+  background-color: rgba(1, 1, 1, 1);
 }
 
 .close-modal {
