@@ -6,14 +6,6 @@ export default class Main extends React.Component {
   componentDidMount() {
     // TODO: Intro music - this is a semi-functional placeholder
     // By Eric Matyas @ https://soundimage.org/
-    // const musicURL = "http://soundimage.org/wp-content/uploads/2016/07/Puzzle-Game_Looping.mp3";
-    const musicURL = "https://soundimage.org/wp-content/uploads/2018/11/Dance-of-the-Satellites_Looping.mp3";
-    const introMusic = new Audio(musicURL);
-    introMusic.addEventListener('ended', function() {
-      this.currentTime = 0;
-      this.play();
-    }, false);
-    introMusic.play();
   }
 
   constructor(props) {
@@ -46,6 +38,16 @@ export default class Main extends React.Component {
       const scaryWallsAudio = new Audio("./assets/sounds/scary_walls.mp3");
       scaryWallsAudio.play();
     }, 5000);
+
+    const musicURL = "https://soundimage.org/wp-content/uploads/2018/11/Dance-of-the-Satellites_Looping.mp3";
+    const introMusic = new Audio(musicURL);
+    introMusic.addEventListener('ended', function () {
+      this.currentTime = 0;
+      this.play();
+    }, false);
+    if (introMusic) {
+      introMusic.play();
+    }
   }
 
   showStats(e) {

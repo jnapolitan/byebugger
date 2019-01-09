@@ -242,7 +242,6 @@ export default class Game {
     const camPos = this.controls.getObject().position;
 
     if (this.keypresses.forward || this.keypresses.backward) {
-      console.log(this.keypresses.shiftFactor);
       this.velocity.z -= this.direction.z * (900.0 * this.keypresses.shiftFactor) * delta;
       if (GameUtil.checkWallCollision(camPos, this.map, this.UNITSIZE)) {
         this.collisionSound.play();
