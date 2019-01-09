@@ -1,4 +1,4 @@
-# ByeBugger
+![alt text](https://raw.githubusercontent.com/jnapolitan/byebugger/master/frontend/public/assets/images/splashText.png)
 
 Single-player 3D interactive educational game centered around software engineering concepts.
 
