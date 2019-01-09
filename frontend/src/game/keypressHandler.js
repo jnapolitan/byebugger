@@ -1,5 +1,8 @@
 export const onKeyDown = (event, keypresses, velocity) => {
     switch (event.keyCode) {
+      case 16:
+        keypresses.shiftFactor = 2;
+        break;
       case 38: // Up
       case 87: // W
         keypresses.forward = true;
@@ -27,6 +30,9 @@ export const onKeyDown = (event, keypresses, velocity) => {
 
 export const onKeyUp = (event, keypresses) => {
     switch (event.keyCode) {
+      case 16:
+        keypresses.shiftFactor = 1;
+        break;
       case 38: // Up
       case 87: // W
         keypresses.forward = false;

@@ -65,7 +65,7 @@ export default class Game {
 
     // ERIC: For controls
     this.direction = new t.Vector3();
-    this.keypresses = { forward: false, backward: false, left: false, right: false, canJump: true };
+    this.keypresses = { forward: false, backward: false, left: false, right: false, canJump: true, shiftFactor: 1 };
     this.prevTime = performance.now();
     this.velocity = new t.Vector3();
 
@@ -242,7 +242,8 @@ export default class Game {
     const camPos = this.controls.getObject().position;
 
     if (this.keypresses.forward || this.keypresses.backward) {
-      this.velocity.z -= this.direction.z * 1200.0 * delta;
+      console.log(this.keypresses.shiftFactor);
+      this.velocity.z -= this.direction.z * (900.0 * this.keypresses.shiftFactor) * delta;
       if (GameUtil.checkWallCollision(camPos, this.map, this.UNITSIZE)) {
         this.collisionSound.play();
         this.velocity.z -= this.velocity.z * 4;

@@ -111,21 +111,21 @@ footer {
   margin-bottom: -80px;
 }
 
-::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+::-webkit-input-placeholder {
   font-family: 'Orbitron', sans-serif;
 }
-:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+:-moz-placeholder {
   font-family: 'Orbitron', sans-serif;
 }
-::-moz-placeholder { /* Mozilla Firefox 19+ */
+::-moz-placeholder {
   font-family: 'Orbitron', sans-serif;
 }
-:-ms-input-placeholder { /* Internet Explorer 10-11 */
+:-ms-input-placeholder {
   font-family: 'Orbitron', sans-serif;
 }
-::-ms-input-placeholder { /* Microsoft Edge */
+::-ms-input-placeholder {
   font-family: 'Orbitron', sans-serif;
 }
-::placeholder { /* Backup, most browsers support this now */
+::placeholder {
   font-family: 'Orbitron', sans-serif;
 }
