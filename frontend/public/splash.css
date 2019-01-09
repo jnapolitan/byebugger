@@ -135,7 +135,9 @@ footer {
   background: #55E7FF;
   border: 5px solid #ff34b3;
   border-radius: 4px;
+  text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
   box-shadow: 10px 10px 10px 0 rgba(0, 0, 0, 0.5);
+  letter-spacing: 2px;
   left: 0;
   margin: auto;
   padding: 50px;
@@ -144,6 +146,11 @@ footer {
   top: 10%;
   width: 30%;
   z-index: 20;
+  font-size: 20px;
+  font-weight: 900;
+  background-color: #111111;
+  color: #39FF14;
+  background-color: rgba(1, 1, 1, 0.8)
 }
 
 .stats-modal h1 {
@@ -167,6 +174,7 @@ footer {
 
 .stats-item p {
  color: #ff34b3;
+ color: #39FF14;
  font-family: 'Orbitron', sans-serif;
  font-size: 24px;
  font-weight: bold;
