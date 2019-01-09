@@ -143,26 +143,28 @@ export default class Game {
     // createCrosshairs(this.camera);
 
     document.addEventListener('click', () => {
-      // Locks in mouse to game screen until presses escape
-      this.controls.lock();
-      const audio1 = new Audio('./assets/sounds/shotgun3.mp3');
-      const audio2 = new Audio('./assets/sounds/shotgun2.mp3');
-      // const audio3 = new Audio('/assets/sounds/shell.mp3');
-      if (Math.random() > 0.10) {
-        if (this.models.weapon) {
-          createBullet(
-            this.controls, 
-            this.controls.getObject().position, 
-            this.controls.getObject().quaternion, 
-            this.activeBullets, 
-            this.scene, 
-            this.models.weapon.position, 
-            this.models.weapon.quaternion
-          );
-          audio1.play();
+      if (!this.gameOver && !this.paused) {
+        // Locks in mouse to game screen until presses escape
+        this.controls.lock();
+        const audio1 = new Audio('./assets/sounds/shotgun3.mp3');
+        const audio2 = new Audio('./assets/sounds/shotgun2.mp3');
+        // const audio3 = new Audio('/assets/sounds/shell.mp3');
+        if (Math.random() > 0.10) {
+          if (this.models.weapon) {
+            createBullet(
+              this.controls,
+              this.controls.getObject().position,
+              this.controls.getObject().quaternion,
+              this.activeBullets,
+              this.scene,
+              this.models.weapon.position,
+              this.models.weapon.quaternion
+            );
+            audio1.play();
+          }
+        } else {
+          audio2.play();
         }
-      } else {
-        audio2.play();
       }
     }, false);
 

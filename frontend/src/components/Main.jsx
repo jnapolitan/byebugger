@@ -37,6 +37,9 @@ export default class Main extends React.Component {
     game.init();
     
     game.animate();
+
+    const enterLevelAudio = new Audio("./assets/sounds/enter_level.mp3");
+    enterLevelAudio.play();
   }
 
   showStats(e) {
@@ -56,7 +59,13 @@ export default class Main extends React.Component {
       <div id="splash" className="splash-container">
         <img className="logo" src="../assets/images/splashText.png" alt="ByeBugger" />
         <form onSubmit={ this.initiateGame } >
-          <input type="text" className="player-name-input" placeholder="Enter your name to join the hacker ranks" onChange={ this.updatePlayerName() } />
+          <input 
+            type="text" 
+            className="player-name-input" 
+            placeholder="Enter your name to join the hacker ranks" 
+            onChange={ this.updatePlayerName() }
+            maxLength="18"
+          />
         </form>
         <div className="buttons">
           <button className="start-button" onClick={this.initiateGame}>START</button>
