@@ -119,6 +119,7 @@ export default class Game {
   }
 
   init() {
+    this.controls.lock();
     let cam = this.controls.getObject();
     let map = this.map;
     let ai = this.ai;
@@ -391,6 +392,7 @@ export default class Game {
   }
 
   endGame() {
+    this.controls.unlock();
     if (this.player !== 'Guest') {
       const score = this.store.getState().stats.currentPlayerScore;
       const stat = { player: this.player, score: score };
