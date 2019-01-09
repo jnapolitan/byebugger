@@ -121,4 +121,5 @@ Stats Model: user id, user handle, score
 
 ## Credits
 * [Kirokaze for intro screen background](https://www.deviantart.com/kirokaze/)
+* [Eric Skiff for 8bit music](https://ericskiff.com/music/)
 * [ThreeJS](https://github.com/mrdoob/three.js/)
