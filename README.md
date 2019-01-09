@@ -118,3 +118,7 @@ Stats Model: user id, user handle, score
 - Implement completed bonus features - **All team members**
 - Finalize assets and aesthetic - **All team members**
 - Finish testing and debugging - **All team members**
+
+## Credits
+* [Kirokaze for intro screen background](https://www.deviantart.com/kirokaze/)
+* [ThreeJS](https://github.com/mrdoob/three.js/)
