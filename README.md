@@ -1,8 +1,8 @@
-# ByeBugger
+![alt text](https://raw.githubusercontent.com/jnapolitan/byebugger/master/frontend/public/assets/images/splashText.png)
 
-Single-player 3D interactive educational game centered around software engineering concepts.
+Single-player 3D shooter
 
-- [Live Site]()
+- [Live Site](http://byebugger.herokuapp.com/#/)
 - [Background and Overview](#background-and-overview)
 - [Technologies](#technologies)
 - [Functionality and MVP](#functionality-and-mvp)
@@ -15,7 +15,7 @@ Single-player 3D interactive educational game centered around software engineeri
 
 ## Background and Overview
 
-ByeBugger is a single-player interactive 3D educational game that teaches players software engineering concepts through the act of catching and solving bugs. Running into bugs and learning how to debug common coding problems are integral parts to the software development process. ByeBugger introduces its player to this process by having him/her run through a map to catch bugs. When caught, these bugs present themselves as real computer software bugs (in Ruby and Javascript), which the player needs to solve to gain points and move up the leader board. Will you catch 'em all and reign above all the other ByeBuggers out there?
+(Updated 1/9/2019) ByeBugger is a single-player retro-style first-person shooter. Every game session is unique as the map is procedurally generated using binary space partitioning. The algorithm yields a 2D array of 1s and 0s, where 1s represent walls and 0s represent empty spaces. The 2D array is then passed to a rendering function, which uses Three.JS to convert the two-dimensional map to a three-dimensional world. Custom controls, bullet physics, and collision-detection were implemented to simulate a traditional FPS view.
 
 <!-- We will need to:
 - store user and info (time of when they played, their score) in database
@@ -118,3 +118,8 @@ Stats Model: user id, user handle, score
 - Implement completed bonus features - **All team members**
 - Finalize assets and aesthetic - **All team members**
 - Finish testing and debugging - **All team members**
+
+## Credits
+* [Kirokaze for intro screen background](https://www.deviantart.com/kirokaze/)
+* [Eric Skiff for 8bit music](https://ericskiff.com/music/)
+* [ThreeJS](https://github.com/mrdoob/three.js/)
