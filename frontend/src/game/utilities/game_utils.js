@@ -5,12 +5,7 @@ const audioLoader = new t.AudioLoader();
 export function addAI(camPos, map, scene, ai, aiAnimations, listener) {
   // Possible bug textures
   const aiSpriteTextures = [
-    '/assets/images/butterfly-sprite.png',
-    '/assets/images/butterfly-sprite.png',
-    '/assets/images/galaga-sprite.png',
-    '/assets/images/galaga-sprite-blue.png',
-    '/assets/images/winged-sprite.png',
-    '/assets/images/winged-sprite.png'
+    '/assets/images/sue-park-sprite.png'
   ];
 
   // Sample from aiSpriteTextures array to create a random bugger
