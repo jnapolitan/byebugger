@@ -1,6 +1,6 @@
 /** RANKS MODAL **/
 .stats-modal {
-  background: #55E7FF;
+  background-color: rgba(1, 1, 1, 0.8);
   border: 5px solid #ff34b3;
   border-radius: 4px;
   text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
@@ -17,9 +17,7 @@
   z-index: 20;
   font-size: 20px;
   font-weight: 900;
-  background-color: #111111;
   color: #39FF14;
-  background-color: rgba(1, 1, 1, 0.8)
 }
 
 .stats-modal h1 {
