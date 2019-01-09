@@ -145,7 +145,10 @@ export const sceneSetup = (scene, map) => {
   // Walls
   const block = new t.BoxGeometry(128, 96, 128);
 
-  let wallTexture = new t.MeshBasicMaterial({ color: 'black' });
+  // let wallTexture = new t.MeshBasicMaterial({ color: 'black' });
+  let wallTexture = new t.MeshBasicMaterial({
+    map: new t.TextureLoader().load('https://vignette.wikia.nocookie.net/nintendo/images/6/6c/Gold_Block.png/revision/latest?cb=20150419125748&path-prefix=en')
+  });
 
   const geom = new t.Geometry();
   // Create walls according to 2D map array

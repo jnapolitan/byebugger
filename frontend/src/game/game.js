@@ -214,7 +214,7 @@ export default class Game {
     document.body.appendChild(minimap);
 
     // Add powerup cube
-    GameUtil.addPowerup(this.controls.getObject().position, this.scene);
+    // GameUtil.addPowerup(this.controls.getObject().position, this.scene);
   }
 
   animate() {
