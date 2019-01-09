@@ -1,8 +1,8 @@
 ![alt text](https://raw.githubusercontent.com/jnapolitan/byebugger/master/frontend/public/assets/images/splashText.png)
 
-Single-player 3D interactive educational game centered around software engineering concepts.
+Single-player 3D shooter
 
-- [Live Site]()
+- [Live Site](http://byebugger.herokuapp.com/#/)
 - [Background and Overview](#background-and-overview)
 - [Technologies](#technologies)
 - [Functionality and MVP](#functionality-and-mvp)
