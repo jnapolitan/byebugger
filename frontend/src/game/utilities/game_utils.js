@@ -10,7 +10,8 @@ export function addAI(camPos, map, scene, ai, aiAnimations, listener) {
     '/assets/images/butterfly-sprite.png',
     '/assets/images/winged-sprite.png',
     '/assets/images/butterfly-sprite.png',
-    '/assets/images/winged-sprite.png'
+    '/assets/images/winged-sprite.png',
+    '/assets/images/boss1.png'
   ];
 
   // Sample from aiSpriteTextures array to create a random bugger
