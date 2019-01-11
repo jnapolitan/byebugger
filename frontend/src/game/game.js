@@ -382,6 +382,8 @@ export default class Game {
       this.controls.getObject().position.x = savedPos.x;
       this.controls.getObject().position.y = savedPos.y;
       body.classList.remove('paused');
+      // Reconnect the controls so the player can continue to use them
+      this.controls.connect();
       this.animate();
     } else {
       pauseAudio.play();
@@ -395,6 +397,9 @@ export default class Game {
         canJump: true,
         shiftFactor: 1
       };
+
+      // Disconnect the controls momentarily as to lock the current position
+      this.controls.disconnect();
     }
   }
 

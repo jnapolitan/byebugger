@@ -15,7 +15,8 @@ export function addAI(camPos, map, scene, ai, aiAnimations, listener) {
   ];
 
   // Sample from aiSpriteTextures array to create a random bugger
-  const aiTexture = new t.TextureLoader().load(aiSpriteTextures[Math.floor(Math.random() * aiSpriteTextures.length)]);
+  let texture = aiSpriteTextures[Math.floor(Math.random() * aiSpriteTextures.length)];
+  const aiTexture = new t.TextureLoader().load(texture);
 
   // Add texture, create sprite using material and set scale
   let aiMaterial = new t.SpriteMaterial({
@@ -23,7 +24,11 @@ export function addAI(camPos, map, scene, ai, aiAnimations, listener) {
     fog: true
   });
   let bug = new t.Sprite(aiMaterial);
-  bug.scale.set(40, 40, 1);
+  if (texture === '/assets/images/boss1.png') {
+    bug.scale.set(200, 200, 1);
+  } else {
+    bug.scale.set(40, 40, 1);
+  }
 
   // Generate random coords within the map until bugger is not on the player or in a wall
   let x;
@@ -38,6 +43,10 @@ export function addAI(camPos, map, scene, ai, aiAnimations, listener) {
   z = (z - map.length / 2) * 128;
   bug.position.set(x, 128 * 0.15, z);
   bug.health = 100;
+  if (texture === '/assets/images/boss1.png') {
+    bug.position.y += 38;
+    bug.health = 300;
+  }
   bug.randomX = Math.random();
   bug.randomZ = Math.random();
 
