@@ -149,7 +149,7 @@ export default class Game {
         this.controls.lock();
         const audio1 = new Audio('./assets/sounds/shotgun3.mp3');
         const audio2 = new Audio('./assets/sounds/shotgun2.mp3');
-        // const audio3 = new Audio('/assets/sounds/shell.mp3');
+        audio1.volume = 0.4;
         if (Math.random() > 0.10) {
           if (this.models.weapon) {
             createBullet(
@@ -186,7 +186,7 @@ export default class Game {
     this.setupAI();
 
     // Add the canvas to the document
-    this.renderer.setClearColor('black', 1); // Sky color (if the sky was visible)
+    this.renderer.setClearColor('#111111', 1); // Sky color (if the sky was visible)
     document.body.appendChild(this.renderer.domElement);
 
     /// Refactor this out
@@ -209,8 +209,8 @@ export default class Game {
 
     const minimap = document.createElement('canvas');
     minimap.setAttribute('id', 'minimap');
-    minimap.setAttribute('width', 220);
-    minimap.setAttribute('height', 220);
+    minimap.setAttribute('width', 120);
+    minimap.setAttribute('height', 120);
     document.body.appendChild(minimap);
 
     // Add powerup cube
@@ -293,12 +293,12 @@ export default class Game {
       for (var j = this.ai.length - 1; j >= 0; j--) {
         let bug = this.ai[j];
         if (BugCaptureUtil.checkIfBugHit(this.controls.getObject().position, this.activeBullets[i].position, bug.position)) {
-          let explode = new t.TextureLoader().load('https://media.giphy.com/media/sbf9rPhSm3Pc4/200w.gif');
+          let explode = new t.TextureLoader().load('./assets/images/explode.png');
           let explodeMat = new t.SpriteMaterial({ map: explode });
           let explosion = new t.Sprite(explodeMat);
-          explosion.scale.set(200, 477, 1);
+          explosion.scale.set(230, 290, 1);
           explosion.position.copy(bug.position);
-          explosion.position.y += 120;
+          explosion.position.y += 70;
           this.scene.add(explosion);
           setInterval(() => {
             this.scene.remove(explosion);
@@ -313,7 +313,7 @@ export default class Game {
             this.scene.remove(bug);
             GameUtil.addAI(camPos, this.map, this.scene, this.ai, this.aiAnimations, this.listener);
 
-            let newScore = this.store.getState().stats.currentPlayerScore + 1000;
+            let newScore = this.store.getState().stats.currentPlayerScore + bug.points;
             this.store.dispatch(receiveNewStat(newScore));
           }
           break;

@@ -25,9 +25,11 @@ export function addAI(camPos, map, scene, ai, aiAnimations, listener) {
   });
   let bug = new t.Sprite(aiMaterial);
   if (texture === '/assets/images/boss1.png') {
-    bug.scale.set(200, 200, 1);
+    bug.scale.set(80, 80, 1);
+    bug.points = 3000;
   } else {
     bug.scale.set(40, 40, 1);
+    bug.points = 1000;
   }
 
   // Generate random coords within the map until bugger is not on the player or in a wall
@@ -44,7 +46,7 @@ export function addAI(camPos, map, scene, ai, aiAnimations, listener) {
   bug.position.set(x, 128 * 0.15, z);
   bug.health = 100;
   if (texture === '/assets/images/boss1.png') {
-    bug.position.y += 38;
+    bug.position.y += 15;
     bug.health = 300;
   }
   bug.randomX = Math.random();
@@ -142,12 +144,12 @@ export const getRandBetween = (lo, hi) => {
 };
 
 export const sceneSetup = (scene, map) => {
-  const ceiling = new t.GridHelper(9000, 600, '#55e7ff', '#55e7ff'); // size, divisions
-  ceiling.position.y = 96;
+  const ceiling = new t.GridHelper(9000, 512, '#55e7ff', '#55e7ff'); // size, divisions
+  ceiling.position.y = 128;
   ceiling.position.x = Math.PI / 2;
   scene.add(ceiling);
 
-  const floor = new t.GridHelper(9000, 600, '#ff34b3', '#ff34b3');
+  const floor = new t.GridHelper(9000, 512, '#ff34b3', '#ff34b3');
   floor.position.y = 0.5;
   floor.position.x = (-Math.PI / 2);
   scene.add(floor);
