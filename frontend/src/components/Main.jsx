@@ -39,7 +39,6 @@ export default class Main extends React.Component {
       scaryWallsAudio.play();
     }, 5000);
 
-    // const musicURL = "https://soundimage.org/wp-content/uploads/2018/11/Dance-of-the-Satellites_Looping.mp3";
     // Special thanks to Eric Skiff for the amazing 8bit music
     // Music: Eric Skiff - Song Name - Resistor Anthems - Available at http://EricSkiff.com/music
     const tracks = ["https://ericskiff.com/music/Resistor%20Anthems/09%20Come%20and%20Find%20Me%20-%20B%20mix.mp3",

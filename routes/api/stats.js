@@ -6,7 +6,7 @@ const passport = require('passport');
 router.get("/", (req, res) => {
     Stat.find()
         .sort({ score: -1 })
-        .limit(10)
+        .limit(30)
         .then(stats => res.json(stats))
         .catch(err => res.status(404).json({ noStatsFound: 'No stats found' }));
 });

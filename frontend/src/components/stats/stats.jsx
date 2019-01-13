@@ -28,7 +28,7 @@ export default class Ranks extends React.Component {
     return (
       <div className="stats-modal hidden" id="stats-modal">
         <p className="close-modal" id="close-stats-modal">X</p>
-        <h1>Top 10 Hackers</h1>
+        <h1>Top 30 Hackers</h1>
         <ol>{ stats }</ol>
       </div>
     )
