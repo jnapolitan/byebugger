@@ -46,7 +46,7 @@ export default class Game {
     this.player = player;
 
     // JULIAN: Sets number of bugs on the map
-    this.NUMAI = 20;
+    this.NUMAI = 30;
     this.ai = [];
     this.aiAnimations = []; // Bug animations are stored here
 
