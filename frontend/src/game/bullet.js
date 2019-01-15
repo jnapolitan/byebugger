@@ -16,7 +16,7 @@ const createBullet = (controls, position, quaternion, activeBullets, scene, wepP
   setTimeout(() => {
     bullet.active = false;
     scene.remove(bullet);
-  }, 1000);
+  }, 800);
 
   activeBullets.push(bullet);
   scene.add(bullet);
