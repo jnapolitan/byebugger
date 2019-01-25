@@ -9,7 +9,7 @@ Single-player 3D shooter
 
 ## Background and Overview
 
-(Updated 1/9/2019) ByeBugger is a single-player retro-style first-person shooter. Every game session is unique as the map is procedurally generated using binary space partitioning. The algorithm yields a 2D array of 1s and 0s, where 1s represent walls and 0s represent empty spaces. The 2D array is then passed to a rendering function, which uses Three.JS to convert the two-dimensional map to a three-dimensional world. Custom controls, bullet physics, and collision-detection were implemented to simulate a traditional FPS view.
+ByeBugger is a single-player retro-style first-person shooter. Every game session is unique as the map is procedurally generated using binary space partitioning. The algorithm yields a 2D array of 1s and 0s, where 1s represent walls and 0s represent empty spaces. The 2D array is then passed to a rendering function, which uses Three.JS to convert the two-dimensional map to a three-dimensional world. Custom controls, bullet physics, and collision-detection were implemented to simulate a traditional FPS view.
 
 ## Functionality and MVP
 
