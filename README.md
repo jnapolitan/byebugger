@@ -11,7 +11,7 @@ Single-player 3D shooter
 
 ByeBugger is a single-player retro-style first-person shooter built using the three.js library within a MERN stack. Every game session is unique as the map is procedurally generated using binary space partitioning. Custom controls, bullet physics, and collision-detection were implemented to simulate a traditional FPS view.
 
-![demo](https://s3-us-west-1.amazonaws.com/misc-hosted/byebugger-demo.gif)
+![demo](https://github.com/jnapolitan/byebugger/blob/master/frontend/public/assets/images/byebugger-demo.gif)
 
 ## Highlighted Features
 
