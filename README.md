@@ -6,6 +6,7 @@
 - [Background and Overview](#background-and-overview)
 - [Highlighted Features](#highlighted-features)
 - [Technologies](#technologies)
+- [Credits](#credits)
 
 ## Background and Overview
 
