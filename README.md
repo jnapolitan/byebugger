@@ -1,6 +1,6 @@
 ![logo](https://raw.githubusercontent.com/jnapolitan/byebugger/master/frontend/public/assets/images/splashText.png)
 
-Single-player 3D shooter
+3D 8-bit Style First-Person Shooter
 
 - [Live Site](http://byebugger.herokuapp.com/#/)
 - [Background and Overview](#background-and-overview)
