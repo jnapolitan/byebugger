@@ -51,6 +51,7 @@ Stats Model: username/handle, score
 #### Frontend: React/Redux
 
 ## Credits
+Big thanks to...
 * [Kirokaze for intro screen background](https://www.deviantart.com/kirokaze/)
 * [Eric Skiff for 8bit music](https://ericskiff.com/music/)
 * [ThreeJS](https://github.com/mrdoob/three.js/)
