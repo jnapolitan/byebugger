@@ -1,4 +1,4 @@
-![alt text](https://raw.githubusercontent.com/jnapolitan/byebugger/master/frontend/public/assets/images/splashText.png)
+![logo](https://raw.githubusercontent.com/jnapolitan/byebugger/master/frontend/public/assets/images/splashText.png)
 
 Single-player 3D shooter
 
