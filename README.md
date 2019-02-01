@@ -17,7 +17,7 @@ ByeBugger is a 3D 8-bit style shooter in the first-person format. It was built i
 ## Highlighted Features
 
 ### Procedurally generated maps
-ByeBugger uses [binary space partitioning ](https://en.wikipedia.org/wiki/Binary_space_partitioning) to generate a new custom map every time a player enters the game. The algorithm yields a 2D array of 1s and 0s, where 1s represent walls and 0s represent empty spaces. The 2D array is then passed to a rendering function, which uses three.js to convert the two-dimensional map to a three-dimensional world. 
+It would be boring if the player had to roam the same map every time they played, right? To fix this, we generate a 2D matrix of 1s and 0s, 1s representing walls and 0s representing reachable spaces. We used the [binary space partitioning algorithm](https://en.wikipedia.org/wiki/Binary_space_partitioning) to randomly subdivide the matrix into many rooms connected by corridors. The matrix is then passed to the main game loop, where it is used to determine where walls will be rendered in the 3D game environment.
 
 ### Custom collision
 For the player, collision logic was designed in true retro style by calling an accelerated reverse velocity function whenever the player object comes within a certain distance of a wall. This ensures the player is unable to enter walls, and allows for some deeper environment characteristics like an *umph* sound effect when bumping into a wall and bouncing back.
