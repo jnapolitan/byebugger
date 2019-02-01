@@ -5,12 +5,12 @@
 - [Live Site](http://byebugger.herokuapp.com/#/)
 - [Background and Overview](#background-and-overview)
 - [Highlighted Features](#highlighted-features)
-- [Technologies](#technologies)
+- [Technologies Used](#technologies)
 - [Credits](#credits)
 
 ## Background and Overview
 
-ByeBugger is a single-player retro-style first-person shooter built using the three.js library within a MERN stack. Every game session is unique as the map is procedurally generated using binary space partitioning. Custom controls, bullet physics, and collision-detection were implemented to simulate a traditional FPS view.
+ByeBugger is a 3D 8-bit style shooter in the first-person format. It was built in the MERN stack (MongoDB, Express.js, React.js & Redux, and Node.js); rendering of 3D objects was accomplished using Three.js, which uses WebGL underneath the hood.
 
 ![demo](https://github.com/jnapolitan/byebugger/blob/master/frontend/public/assets/images/byebugger-demo.gif)
 
@@ -42,7 +42,7 @@ if (this.keypresses.left || this.keypresses.right) {
 
 ## Technologies
 
-ByeBugger is implemented using the MERN stack (MongoDB, Express, React, and Node.js) to keep track of players and a leaderboard of scores, as well as abstract game elements into React components such as the HUD (head up display). The game scene and objects are rendered using HTML5 Canvas and WebGL/three.js and HUD elements are updated via Redux global state.
+ByeBugger is implemented using the MERN stack (MongoDB, Express.js, React.js & Redux, and Node.js) to keep track of players and a leaderboard of scores, as well as abstract game elements into React components such as the HUD (head up display). The game scene and objects are rendered using HTML5 Canvas and WebGL/three.js and HUD elements are updated via Redux global state.
 
 #### Backend: MongoDB/Node.js/Express.js
 
